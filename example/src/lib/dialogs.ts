@@ -9,5 +9,5 @@ export interface CustomDialogState {
 }
 
 // 2. Create the dialog management system using the factory
-export const { manager: dialogManager, useDialogs } =
+export const { manager: dialogManager, useDialogsState } =
   createDialogManager<CustomDialogState>();

@@ -19,19 +19,19 @@ interface TestState {
 
 describe('createDialogManager (개발자 경험(DX) 중심 API)', () => {
   let manager: ReturnType<typeof createDialogManager<TestState>>['manager'];
-  let useDialogs: ReturnType<
+  let useDialogsState: ReturnType<
     typeof createDialogManager<TestState>
-  >['useDialogs'];
+  >['useDialogsState'];
 
   beforeEach(() => {
     // defaults 기능이 제거되었으므로, 인자 없이 호출합니다.
     const toolkit = createDialogManager<TestState>();
     manager = toolkit.manager;
-    useDialogs = toolkit.useDialogs;
+    useDialogsState = toolkit.useDialogsState;
   });
 
   it('컴포넌트와 상태를 분리하여 다이얼로그를 열어야 한다', () => {
-    const { result } = renderHook(() => useDialogs());
+    const { result } = renderHook(() => useDialogsState());
     act(() => {
       manager.open(TestComponent, { type: 'modal', message: 'Hello' });
     });
@@ -49,7 +49,7 @@ describe('createDialogManager (개발자 경험(DX) 중심 API)', () => {
   // it('상태에 기본값을 적용해야 한다', ...);
 
   it('다이얼로그를 닫아야 한다', () => {
-    const { result } = renderHook(() => useDialogs());
+    const { result } = renderHook(() => useDialogsState());
     let dialogId = '';
     act(() => {
       dialogId = manager.open(TestComponent, {

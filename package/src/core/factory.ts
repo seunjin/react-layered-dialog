@@ -1,6 +1,5 @@
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { DialogManager } from './manager';
-import type { DialogInstance } from './types';
 
 // --- Factory Function (Public API) ---
 
@@ -13,9 +12,9 @@ export function createDialogManager<T>() {
    *
    * @returns {DialogInstance<T>[]} 현재 열려있는 모든 다이얼로그 인스턴스의 배열
    */
-  const useDialogs: () => DialogInstance<T>[] = () => {
+  const useDialogsState = () => {
     return useSyncExternalStore(manager.subscribe, manager.getSnapshot);
   };
 
-  return { manager, useDialogs };
+  return { manager, useDialogsState };
 }

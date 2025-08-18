@@ -1,4 +1,4 @@
-import { dialogManager, useDialogs } from './lib/dialogs';
+import { dialogManager, useDialogsState } from './lib/dialogs';
 import { SampleDialog } from './SampleDialog';
 import type { CustomDialogState } from './lib/dialogs';
 import type { DialogInstance } from 'react-layered-dialog';
@@ -28,7 +28,7 @@ const dialogWrapperStyle: React.CSSProperties = {
 };
 
 function App() {
-  const dialogs: DialogInstance<CustomDialogState>[] = useDialogs();
+  const dialogs: DialogInstance<CustomDialogState>[] = useDialogsState();
   console.log(dialogs);
 
   const handleOpenAlert = () => {
