@@ -1,22 +1,12 @@
+// manager.ts
 import type React from 'react';
-import type {
-  BaseDialogState,
-  DialogInstance,
-  DialogState,
-  Listener,
-  ManagerConfig,
-} from './types';
+import type { DialogInstance, DialogState, Listener } from './types';
 
-// --- DialogManager Class (Internal Implementation) ---
-
-export class DialogManager<T extends BaseDialogState> {
+export class DialogManager<T> {
   private dialogs: DialogInstance<T>[] = [];
   private listeners: Set<Listener> = new Set();
-  private config: ManagerConfig<T>;
 
-  constructor(config: ManagerConfig<T> = {}) {
-    this.config = config;
-  }
+  constructor() {}
 
   subscribe = (listener: Listener): (() => void) => {
     this.listeners.add(listener);
@@ -35,13 +25,11 @@ export class DialogManager<T extends BaseDialogState> {
 
   open = (
     Component: React.ComponentType<DialogState<T>>,
-    state: T, // State is now the user-defined type T
+    state: T // 사용자가 정의한 상태 T를 직접 받습니다.
   ): string => {
     const id = `dialog-${Date.now()}-${Math.random()}`;
-    const defaults = (state.type && this.config.defaults?.[state.type]) || {};
 
     const finalState: DialogState<T> = {
-      ...defaults,
       ...state,
       id,
       isOpen: true,

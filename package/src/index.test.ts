@@ -1,38 +1,36 @@
+// index.test.ts
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createDialogManager, BaseDialogState } from './index';
+import { createDialogManager } from './index';
 import type React from 'react';
 
-// --- Test Setup ---
+// --- 테스트 설정 ---
 
 const TestComponent: React.FC<object> = () => null;
-const AnotherTestComponent: React.FC<object> = () => null;
 
-// TestState now extends BaseDialogState and inherits id and isOpen
-interface TestState extends BaseDialogState {
+// 테스트 상태 정의
+interface TestState {
   type: 'modal' | 'toast';
   message: string;
   useOverlay?: boolean;
 }
 
-// --- Tests ---
+// --- 테스트 ---
 
-describe('createDialogManager (DX-focused API)', () => {
+describe('createDialogManager (개발자 경험(DX) 중심 API)', () => {
   let manager: ReturnType<typeof createDialogManager<TestState>>['manager'];
-  let useDialogs: ReturnType<typeof createDialogManager<TestState>>['useDialogs'];
+  let useDialogs: ReturnType<
+    typeof createDialogManager<TestState>
+  >['useDialogs'];
 
   beforeEach(() => {
-    const toolkit = createDialogManager<TestState>({
-      defaults: {
-        modal: { useOverlay: true },
-        toast: { useOverlay: false, message: 'Default' },
-      },
-    });
+    // defaults 기능이 제거되었으므로, 인자 없이 호출합니다.
+    const toolkit = createDialogManager<TestState>();
     manager = toolkit.manager;
     useDialogs = toolkit.useDialogs;
   });
 
-  it('should open a dialog with separate component and state', () => {
+  it('컴포넌트와 상태를 분리하여 다이얼로그를 열어야 한다', () => {
     const { result } = renderHook(() => useDialogs());
     act(() => {
       manager.open(TestComponent, { type: 'modal', message: 'Hello' });
@@ -47,24 +45,17 @@ describe('createDialogManager (DX-focused API)', () => {
     expect(dialogInstance.state.message).toBe('Hello');
   });
 
-  it('should apply defaults to the state', () => {
-    const { result } = renderHook(() => useDialogs());
-    act(() => {
-      manager.open(AnotherTestComponent, { type: 'toast' });
-    });
+  // defaults 기능이 제거되었으므로, 이와 관련된 테스트는 삭제합니다.
+  // it('상태에 기본값을 적용해야 한다', ...);
 
-    expect(result.current).toHaveLength(1);
-    const dialogInstance = result.current[0];
-    expect(dialogInstance.Component).toBe(AnotherTestComponent);
-    expect(dialogInstance.state.useOverlay).toBe(false);
-    expect(dialogInstance.state.message).toBe('Default');
-  });
-
-  it('should close a dialog', () => {
+  it('다이얼로그를 닫아야 한다', () => {
     const { result } = renderHook(() => useDialogs());
     let dialogId = '';
     act(() => {
-      dialogId = manager.open(TestComponent, { type: 'modal', message: 'First' });
+      dialogId = manager.open(TestComponent, {
+        type: 'modal',
+        message: 'First',
+      });
     });
     expect(result.current).toHaveLength(1);
 

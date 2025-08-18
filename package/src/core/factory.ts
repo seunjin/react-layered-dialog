@@ -1,13 +1,11 @@
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { DialogManager } from './manager';
-import type { BaseDialogState, DialogInstance, ManagerConfig } from './types';
+import type { DialogInstance } from './types';
 
 // --- Factory Function (Public API) ---
 
-export function createDialogManager<T extends BaseDialogState>(
-  config?: ManagerConfig<T>
-) {
-  const manager = new DialogManager<T>(config);
+export function createDialogManager<T>() {
+  const manager = new DialogManager<T>();
 
   /**
    * DialogManager의 상태를 구독하고 현재 열려있는 모든 다이얼로그 인스턴스를 반환하는 React Hook입니다.
