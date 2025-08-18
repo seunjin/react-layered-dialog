@@ -1,7 +1,7 @@
 import { dialogManager, useDialogs } from './lib/dialogs';
 import { SampleDialog } from './SampleDialog';
-import type { DialogInstance } from 'react-layered-dialog';
 import type { CustomDialogState } from './lib/dialogs';
+import type { DialogInstance } from 'react-layered-dialog';
 
 // Styles for the container and dialog wrapper
 const appStyle: React.CSSProperties = {
@@ -36,6 +36,7 @@ function App() {
       type: 'alert',
       title: 'Alert Dialog',
       message: 'This is an alert with a default overlay.',
+      useOverlay: true, // 명시적으로 값을 전달합니다.
     });
   };
 
@@ -44,7 +45,7 @@ function App() {
       type: 'confirm',
       title: 'Confirm Dialog',
       message: 'This is a confirm dialog.',
-      // We can override defaults
+      // `defaults` 기능이 제거되었으므로, 모든 상태를 명시적으로 전달해야 합니다.
       useOverlay: true,
     });
   };

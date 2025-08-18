@@ -1,10 +1,7 @@
-import {
-  createDialogManager,
-  type BaseDialogState,
-} from 'react-layered-dialog';
+import { createDialogManager } from 'react-layered-dialog';
 
 // 1. Define the app-specific state for all dialogs
-export interface CustomDialogState extends BaseDialogState {
+export interface CustomDialogState {
   type: 'alert' | 'confirm';
   title: string;
   message: string;
@@ -13,14 +10,4 @@ export interface CustomDialogState extends BaseDialogState {
 
 // 2. Create the dialog management system using the factory
 export const { manager: dialogManager, useDialogs } =
-  createDialogManager<CustomDialogState>({
-    // 3. Define default state properties for different dialog types
-    defaults: {
-      alert: {
-        useOverlay: true,
-      },
-      confirm: {
-        useOverlay: true,
-      },
-    },
-  });
+  createDialogManager<CustomDialogState>();
