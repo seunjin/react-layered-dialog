@@ -27,7 +27,7 @@ export class DialogManager<T> {
     Component: React.ComponentType<DialogState<T>>,
     state: T // 사용자가 정의한 상태 T를 직접 받습니다.
   ): string => {
-    const id = `dialog-${Date.now()}-${Math.random()}`;
+    const id = crypto.randomUUID();
 
     const finalState: DialogState<T> = {
       ...state,
