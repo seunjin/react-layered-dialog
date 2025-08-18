@@ -5,8 +5,6 @@ import {
 
 // 1. Define the app-specific state for all dialogs
 export interface CustomDialogState extends BaseDialogState {
-  id: string; // Added
-  isOpen: boolean; // Added
   type: 'alert' | 'confirm';
   title: string;
   message: string;

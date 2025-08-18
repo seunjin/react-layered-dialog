@@ -1,8 +1,9 @@
 import { dialogManager } from './lib/dialogs';
 import type { CustomDialogState } from './lib/dialogs';
+import type { DialogState } from 'react-layered-dialog';
 
-// The component now receives the entire state object as its props.
-type SampleDialogProps = CustomDialogState;
+// The component now receives the full internal state object as its props.
+type SampleDialogProps = DialogState<CustomDialogState>;
 
 const dialogStyle: React.CSSProperties = {
   border: '1px solid #ccc',

@@ -1,7 +1,7 @@
 import { dialogManager, useDialogs } from './lib/dialogs';
 import { SampleDialog } from './SampleDialog';
-import type { DialogInstance } from 'react-layered-dialog'; // Import DialogInstance
-import type { CustomDialogState } from './lib/dialogs'; // Import CustomDialogState
+import type { DialogInstance } from 'react-layered-dialog';
+import type { CustomDialogState } from './lib/dialogs';
 
 // Styles for the container and dialog wrapper
 const appStyle: React.CSSProperties = {
@@ -28,7 +28,6 @@ const dialogWrapperStyle: React.CSSProperties = {
 };
 
 function App() {
-  // Explicitly type the dialogs variable
   const dialogs: DialogInstance<CustomDialogState>[] = useDialogs();
   console.log(dialogs);
 
