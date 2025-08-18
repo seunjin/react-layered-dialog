@@ -5,3 +5,8 @@ pre-commit:
         run: pnpm lint
     - test:
         run: pnpm test
+
+commit-msg:
+  commands:
+    - lint-commit:
+        run: pnpm commitlint --edit {1}
