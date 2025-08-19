@@ -3,30 +3,6 @@ import { SampleDialog } from './SampleDialog';
 import type { CustomDialogState } from './lib/dialogs';
 import type { DialogInstance } from 'react-layered-dialog';
 
-// Styles for the container and dialog wrapper
-const appStyle: React.CSSProperties = {
-  fontFamily: 'sans-serif',
-  padding: '16px',
-};
-
-const dialogContainerStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  paddingTop: '10vh',
-  backgroundColor: 'rgba(0, 0, 0, 0.2)',
-  pointerEvents: 'none',
-};
-
-const dialogWrapperStyle: React.CSSProperties = {
-  pointerEvents: 'auto',
-};
-
 function App() {
   const dialogs: DialogInstance<CustomDialogState>[] = useDialogsState();
   console.log(dialogs);
@@ -45,31 +21,38 @@ function App() {
       type: 'confirm',
       title: 'Confirm Dialog',
       message: 'This is a confirm dialog.',
-      // `defaults` 기능이 제거되었으므로, 모든 상태를 명시적으로 전달해야 합니다.
       useOverlay: true,
     });
   };
 
   return (
-    <div style={appStyle}>
-      <h1>React Layered Dialog - Final Example</h1>
-      <p>Click the buttons to open different types of dialogs.</p>
-      <button onClick={handleOpenAlert}>Open Alert</button>
-      <button onClick={handleOpenConfirm} style={{ marginLeft: '8px' }}>
+    <div className="font-sans p-4">
+      <h1 className="text-2xl font-bold mb-4">
+        React Layered Dialog - Final Example
+      </h1>
+      <p className="mb-4">
+        Click the buttons to open different types of dialogs.
+      </p>
+      <button
+        onClick={handleOpenAlert}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+      >
+        Open Alert
+      </button>
+      <button
+        onClick={handleOpenConfirm}
+        className="ml-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
+      >
         Open Confirm
       </button>
 
       {/* Render the dialogs */}
-      {dialogs.length > 0 && (
-        <div style={dialogContainerStyle}>
-          {dialogs.map((dialog) => (
-            <div key={dialog.state.id} style={dialogWrapperStyle}>
-              {/* Pass the entire state object to the component */}
-              <dialog.Component {...dialog.state} />
-            </div>
-          ))}
-        </div>
-      )}
+      {dialogs.length > 0 &&
+        dialogs.map((dialog) => (
+          <div key={dialog.state.id} className="pointer-events-auto">
+            <dialog.Component {...dialog.state} />
+          </div>
+        ))}
     </div>
   );
 }
