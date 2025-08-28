@@ -6,7 +6,6 @@ import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 
 // 페이지 컴포넌트 임포트
 import { Introduction } from '@/pages/Introduction';
-import { Installation } from '@/pages/Installation';
 import { Examples } from '@/pages/Examples';
 
 // --- 레이아웃 컴포넌트 ---
@@ -30,8 +29,7 @@ const Sidebar = ({
   setCurrentView: (view: string) => void;
 }) => {
   const menuItems = [
-    { id: 'intro', label: '소개' },
-    { id: 'install', label: '설치법' },
+    { id: 'intro', label: '소개 및 설치법' },
     { id: 'examples', label: '사용 예제' },
   ];
 
@@ -70,8 +68,6 @@ function App() {
 
   const renderContent = () => {
     switch (currentView) {
-      case 'install':
-        return <Installation />;
       case 'examples':
         return <Examples />;
       case 'intro':
