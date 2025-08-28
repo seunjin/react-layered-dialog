@@ -37,6 +37,19 @@ function App() {
         >
           비동기 Confirm 열기
         </button>
+        <button
+          onClick={() =>
+            open('alert', {
+              title: '배경 없는 오버레이 테스트',
+              message: '배경이 투명하지만, 바깥을 클릭하면 닫힙니다.',
+              dimmed: false,
+              closeOnOverlayClick: true,
+            })
+          }
+          className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
+        >
+          배경 없는 Alert 열기
+        </button>
         {dialogs.length > 0 && (
           <button
             onClick={closeAll}

@@ -42,7 +42,7 @@ export function createUseDialogs<T extends { type: string }>(
       type: K,
       // Omit<...>으로 순수 사용자 상태를 가져온 뒤, BaseState의 일부 속성을 결합합니다.
       payload: Omit<StateForType<K>, 'type' | 'isOpen'> &
-        Pick<BaseState, 'zIndex'> & { id?: string }
+        Pick<BaseState, 'zIndex' | 'dimmed' | 'closeOnOverlayClick' | 'dismissable' | 'scrollLock'> & { id?: string }
     ) => {
       const { id, ...userState } = payload;
 

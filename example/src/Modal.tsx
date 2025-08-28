@@ -1,18 +1,32 @@
 import { close } from './lib/dialogs';
 import type { ModalState } from './lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 type ModalProps = DialogState<ModalState>;
 
-export const Modal = ({ id, children, zIndex }: ModalProps) => {
+export const Modal = ({
+  id,
+  children,
+  zIndex,
+  dimmed = true,
+  closeOnOverlayClick = true,
+}: ModalProps) => {
+  const handleOverlayClick = () => {
+    if (closeOnOverlayClick) {
+      close(id);
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex }}
     >
+      {/* 오버레이: dimmed prop에 따라 배경색이 결정됩니다. */}
       <motion.div
-        className="absolute inset-0 bg-black/20"
+        className={`absolute inset-0 ${dimmed ? 'bg-black/20' : 'bg-transparent'}`}
+        onClick={handleOverlayClick}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

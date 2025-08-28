@@ -14,29 +14,19 @@ export interface BaseState {
   zIndex?: number;
 
   /**
-   * 다이얼로그 뒤의 오버레이(배경) 설정.
-   * `true`일 경우 기본값 사용, `false`일 경우 미사용.
+   * 다이얼로그 뒤에 반투명한 배경(dim)을 표시할지 여부.
    * @default true
    */
-  overlay?: {
-    /**
-     * 오버레이 클릭 시 다이얼로그를 닫을지 여부.
-     * @default true
-     */
-    closeOnClick?: boolean;
-    /**
-     * 오버레이의 투명도. 0 (투명) ~ 1 (불투명).
-     * @default 0.5
-     */
-    opacity?: number;
-    /**
-     * 오버레이에 적용할 추가적인 CSS 클래스.
-     */
-    className?: string;
-  } | boolean;
+  dimmed?: boolean;
 
   /**
-   * 다이얼로그를 Esc 키나 오버레이 클릭으로 닫을 수 있는지 여부.
+   * 오버레이(배경) 클릭 시 다이얼로그를 닫을지 여부.
+   * @default true
+   */
+  closeOnOverlayClick?: boolean;
+
+  /**
+   * 다이얼로그를 Esc 키로 닫을 수 있는지 여부.
    * @default true
    */
   dismissable?: boolean;
