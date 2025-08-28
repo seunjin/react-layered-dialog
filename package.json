@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "prepare": "lefthook install",
+    "dev": "pnpm --filter example run dev",
+    "build": "pnpm --filter react-layered-dialog run build",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "lint:md": "markdownlint \"**/*.md\" --ignore node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
@@ -11,7 +13,7 @@
     "test:ui": "vitest --ui",
     "changeset": "changeset",
     "release:version": "changeset version",
-    "release:publish": "pnpm --filter react-layered-dialog build && changeset publish"
+    "release:publish": "pnpm run build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6",
