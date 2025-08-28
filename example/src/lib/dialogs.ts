@@ -6,6 +6,7 @@ export interface CustomDialogState {
   title: string;
   message: string;
   useOverlay?: boolean;
+  closeOnOutsideClick?: boolean;
 }
 
 // 2. Create the dialog management system using the factory

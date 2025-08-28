@@ -11,8 +11,9 @@ function App() {
     dialogManager.open(SampleDialog, {
       type: 'alert',
       title: 'Alert Dialog',
-      message: 'This is an alert with a default overlay.',
-      useOverlay: true, // 명시적으로 값을 전달합니다.
+      message: 'This is the first dialog.',
+      useOverlay: true,
+      closeOnOutsideClick: true,
     });
   };
 
@@ -49,9 +50,7 @@ function App() {
       {/* Render the dialogs */}
       {dialogs.length > 0 &&
         dialogs.map((dialog) => (
-          <div key={dialog.state.id} className="pointer-events-auto">
-            <dialog.Component {...dialog.state} />
-          </div>
+          <dialog.Component key={dialog.state.id} {...dialog.state} />
         ))}
     </div>
   );
