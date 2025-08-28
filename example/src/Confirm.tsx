@@ -1,6 +1,7 @@
 import { close } from './lib/dialogs';
 import type { ConfirmState } from './lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
+import { motion } from 'framer-motion';
 
 type ConfirmProps = DialogState<ConfirmState>;
 
@@ -10,26 +11,39 @@ export const Confirm = ({
   message,
   onConfirm,
   onCancel,
+  zIndex,
 }: ConfirmProps) => {
   const handleConfirm = () => {
-    // "확인" 버튼은 이제 onConfirm 콜백만 실행합니다.
-    // 다이얼로그를 닫는 책임은 onConfirm 함수를 구현한 쪽에 있습니다.
     onConfirm?.();
   };
 
   const handleCancel = () => {
     if (onCancel) {
-      // onCancel 콜백이 있으면, 닫기를 포함한 모든 제어권을 위임합니다.
       onCancel();
     } else {
-      // onCancel 콜백이 없으면, 기본 동작으로 다이얼로그를 닫습니다.
       close(id);
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/20">
-      <div className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]">
+    <div
+      className="fixed inset-0 flex items-center justify-center"
+      style={{ zIndex }}
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        className="absolute inset-0 bg-black/20"
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]"
+      >
         <h3 className="text-lg font-bold">{title}</h3>
         <p className="mt-2 text-sm text-gray-500">{message}</p>
         <div className="mt-4 flex justify-end gap-2">
@@ -46,7 +60,7 @@ export const Confirm = ({
             확인
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
