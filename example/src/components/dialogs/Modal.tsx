@@ -1,7 +1,10 @@
-import { closeDialog } from '@/lib/dialogs';
+import { useEffect } from 'react';
+import { useDialogs } from '@/lib/dialogs';
 import type { ModalState } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import { motion } from 'motion/react';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
 type ModalProps = DialogState<ModalState>;
 
@@ -10,7 +13,24 @@ export const Modal = ({
   zIndex,
   dimmed = true,
   closeOnOverlayClick = true,
+  dismissable = true,
 }: ModalProps) => {
+  const { dialogs, closeDialog } = useDialogs();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isTopDialog = dialogs.length > 0 && dialogs[dialogs.length - 1].state.zIndex === zIndex;
+      if (event.key === 'Escape' && dismissable && isTopDialog) {
+        closeDialog();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [dismissable, closeDialog, dialogs, zIndex]);
+
   const handleOverlayClick = () => {
     if (closeOnOverlayClick) {
       closeDialog();
@@ -22,7 +42,6 @@ export const Modal = ({
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex }}
     >
-      {/* 오버레이: dimmed prop에 따라 배경색이 결정됩니다. */}
       <motion.div
         className={`absolute inset-0 ${dimmed ? 'bg-black/20' : 'bg-transparent'}`}
         onClick={handleOverlayClick}
@@ -39,12 +58,9 @@ export const Modal = ({
         transition={{ duration: 0.2, ease: 'easeInOut' }}
       >
         <div className="absolute top-2 right-2">
-          <button
-            onClick={() => closeDialog()}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            &times;
-          </button>
+          <Button variant="ghost" size="icon" onClick={() => closeDialog()}>
+            <X className="h-4 w-4" />
+          </Button>
         </div>
         <div>{children}</div>
       </motion.div>

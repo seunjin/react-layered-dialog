@@ -1,7 +1,9 @@
-import { closeDialog } from '@/lib/dialogs';
+import { useEffect, useCallback } from 'react';
+import { useDialogs } from '@/lib/dialogs';
 import type { ConfirmState } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import { motion } from 'motion/react';
+import { Button } from '@/components/ui/button';
 
 type ConfirmProps = DialogState<ConfirmState>;
 
@@ -12,18 +14,35 @@ export const Confirm = ({
   onCancel,
   zIndex,
   dimmed = true,
-  closeOnOverlayClick = true,
+  closeOnOverlayClick = false,
+  dismissable = false,
 }: ConfirmProps) => {
-  const handleConfirm = () => {
-    onConfirm?.();
-  };
+  const { dialogs, closeDialog } = useDialogs();
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     if (onCancel) {
       onCancel();
     } else {
       closeDialog();
     }
+  }, [onCancel, closeDialog]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isTopDialog = dialogs.length > 0 && dialogs[dialogs.length - 1].state.zIndex === zIndex;
+      if (event.key === 'Escape' && dismissable && isTopDialog) {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [dismissable, handleCancel, dialogs, zIndex]);
+
+  const handleConfirm = () => {
+    onConfirm?.();
   };
 
   const handleOverlayClick = () => {
@@ -37,7 +56,6 @@ export const Confirm = ({
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex }}
     >
-      {/* 오버레이: dimmed prop에 따라 배경색이 결정됩니다. */}
       <motion.div
         className={`absolute inset-0 ${dimmed ? 'bg-black/20' : 'bg-transparent'}`}
         onClick={handleOverlayClick}
@@ -56,18 +74,10 @@ export const Confirm = ({
         <h3 className="text-lg font-bold">{title}</h3>
         <p className="mt-2 text-sm text-gray-500">{message}</p>
         <div className="mt-4 flex justify-end gap-2">
-          <button
-            onClick={handleCancel}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-          >
+          <Button variant="outline" onClick={handleCancel}>
             취소
-          </button>
-          <button
-            onClick={handleConfirm}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            확인
-          </button>
+          </Button>
+          <Button onClick={handleConfirm}>확인</Button>
         </div>
       </motion.div>
     </div>
