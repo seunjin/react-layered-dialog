@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -7,14 +7,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
 import { Loader2, Github } from 'lucide-react';
 import { useDialogs } from '@/lib/dialogs';
 import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
@@ -24,14 +16,11 @@ import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 const Header = () => (
   <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
     <h1 className="text-xl font-bold tracking-tight">React Layered Dialog</h1>
-    <div className="flex items-center gap-2">
-      <a href="https://github.com/seunjin/react-layered-dialog" target="_blank" rel="noopener noreferrer">
-        <Button variant="outline" size="icon">
-          <Github className="h-4 w-4" />
-        </Button>
-      </a>
-      <DialogStateViewer />
-    </div>
+    <a href="https://github.com/seunjin/react-layered-dialog" target="_blank" rel="noopener noreferrer">
+      <Button variant="outline" size="icon">
+        <Github className="h-4 w-4" />
+      </Button>
+    </a>
   </header>
 );
 
@@ -66,35 +55,6 @@ const Sidebar = ({
   );
 };
 
-const DialogStateViewer = () => {
-  const { dialogs } = useDialogs();
-  return (
-    <Sheet modal={false}>
-      <SheetTrigger asChild>
-        <Button variant="outline">실시간 상태 보기</Button>
-      </SheetTrigger>
-      <SheetContent
-        className="w-full max-w-lg p-0"
-        onInteractOutside={(event) => {
-          event.preventDefault();
-        }}
-      >
-        <SheetHeader className="p-6">
-          <SheetTitle>실시간 상태 뷰어</SheetTitle>
-          <SheetDescription>
-            현재 DialogManager가 관리하고 있는 다이얼로그 목록입니다.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="px-6 pb-6 h-[calc(100vh-8rem)]">
-          <pre className="h-full overflow-auto rounded-md bg-gray-900 p-4 text-sm font-mono text-white">
-            <code>{JSON.stringify(dialogs, null, 2)}</code>
-          </pre>
-        </div>
-      </SheetContent>
-    </Sheet>
-  );
-};
-
 // --- 데모 컨텐츠 컴포넌트 ---
 
 const BasicUsageDemo = () => {
@@ -115,7 +75,7 @@ const BasicUsageDemo = () => {
     <Card>
       <CardHeader>
         <CardTitle>기본 사용법</CardTitle>
-        <CardDescription>가장 일반적인 다이얼로그 타입들을 여는 예제입니다.</CardDescription>
+        <CardDescription>가장 일반적인 다이얼로그 타입들을 여는 예제입니다. (F12를 눌러 콘솔을 확인하세요)</CardDescription>
       </CardHeader>
       <CardContent className="flex gap-2 flex-wrap">
         <Button onClick={() => openDialog('alert', { title: '알림', message: '이것은 Alert 다이얼로그입니다.' })}>Alert 열기</Button>
@@ -161,7 +121,7 @@ const AdvancedFeaturesDemo = () => {
     <Card>
       <CardHeader>
         <CardTitle>고급 기능</CardTitle>
-        <CardDescription>다이얼로그 안에서 다른 다이얼로그를 제어하는 예제입니다.</CardDescription>
+        <CardDescription>다이얼로그 안에서 다른 다이얼로그를 제어하는 예제입니다. (F12를 눌러 콘솔을 확인하세요)</CardDescription>
       </CardHeader>
       <CardContent>
         <Button onClick={handleLayeredOpen} disabled={dialogs.length > 0}>고급 제어판 열기</Button>
@@ -201,7 +161,7 @@ const AsyncHandlingDemo = () => {
     <Card>
       <CardHeader>
         <CardTitle>비동기 처리</CardTitle>
-        <CardDescription>API 요청과 같은 비동기 작업과 다이얼로그를 연동하는 예제입니다.</CardDescription>
+        <CardDescription>API 요청과 같은 비동기 작업과 다이얼로그를 연동하는 예제입니다. (F12를 눌러 콘솔을 확인하세요)</CardDescription>
       </CardHeader>
       <CardContent>
         <Button onClick={handleAsyncDelete}>삭제 Confirm</Button>
@@ -213,7 +173,17 @@ const AsyncHandlingDemo = () => {
 // --- 메인 앱 ---
 
 function App() {
+  const { dialogs } = useDialogs();
   const [currentView, setCurrentView] = useState('basic');
+
+  useEffect(() => {
+    console.log(
+      '%c[React Layered Dialog] %cState Changed:',
+      'color: #7c3aed; font-weight: bold;',
+      'color: inherit;',
+      dialogs
+    );
+  }, [dialogs]);
 
   const renderContent = () => {
     switch (currentView) {
