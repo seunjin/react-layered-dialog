@@ -1,11 +1,4 @@
 import { useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useDialogs } from '@/lib/dialogs';
@@ -38,14 +31,6 @@ export const AsyncHandlingDemo = () => {
   const handleAsyncDelete = () => openDialog('modal', { children: <AsyncConfirmContent />, dismissable: false });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>비동기 처리</CardTitle>
-        <CardDescription>API 요청과 같은 비동기 작업과 다이얼로그를 연동하는 예제입니다.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button onClick={handleAsyncDelete}>삭제 Confirm</Button>
-      </CardContent>
-    </Card>
+    <Button onClick={handleAsyncDelete}>삭제 Confirm</Button>
   );
 };

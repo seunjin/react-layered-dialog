@@ -1,10 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDialogs } from '@/lib/dialogs';
 
@@ -40,14 +33,6 @@ export const AdvancedFeaturesDemo = () => {
   const handleLayeredOpen = () => openDialog('modal', { children: <AdvancedControlDialog /> });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>고급 기능</CardTitle>
-        <CardDescription>다이얼로그 안에서 다른 다이얼로그를 제어하는 예제입니다.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button onClick={handleLayeredOpen} disabled={dialogs.length > 0}>고급 제어판 열기</Button>
-      </CardContent>
-    </Card>
+    <Button onClick={handleLayeredOpen} disabled={dialogs.length > 0}>고급 제어판 열기</Button>
   );
 };
