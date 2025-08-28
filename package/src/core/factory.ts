@@ -1,20 +1,68 @@
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+// factory.ts
+import type React from 'react';
 import { DialogManager } from './manager';
+import { useSyncExternalStore } from 'react';
+import type { DialogState, SomeDialogInstance } from './types';
 
-// --- Factory Function (Public API) ---
-
-export function createDialogManager<T>() {
+export function createDialogManager<T extends { type: string }>() {
   const manager = new DialogManager<T>();
 
-  /**
-   * DialogManager의 상태를 구독하고 현재 열려있는 모든 다이얼로그 인스턴스를 반환하는 React Hook입니다.
-   * 이 훅은 컴포넌트가 다이얼로그 목록의 변경 사항을 자동으로 감지하고 다시 렌더링하도록 합니다.
-   *
-   * @returns {DialogInstance<T>[]} 현재 열려있는 모든 다이얼로그 인스턴스의 배열
-   */
-  const useDialogsState = () => {
+  const useDialogsState = (): SomeDialogInstance<T>[] => {
     return useSyncExternalStore(manager.subscribe, manager.getSnapshot);
   };
 
   return { manager, useDialogsState };
+}
+
+/**
+ * 다이얼로그 컴포넌트들을 'type' 문자열을 키로 하여 매핑한 객체 타입
+ */
+type ComponentMap<T extends { type: string }> = {
+  [K in T['type']]: React.ComponentType<DialogState<Extract<T, { type: K }>>>;
+};
+
+/**
+ * 타입이 완벽하게 설정된 useDialogs 훅을 생성하는 팩토리 함수.
+ * @param manager createDialogManager에서 생성된 manager 인스턴스
+ * @param componentMap 다이얼로그 'type'과 컴포넌트를 매핑한 객체
+ */
+export function createUseDialogs<T extends { type: string }>(
+  manager: DialogManager<T>,
+  componentMap: ComponentMap<T>
+) {
+  // `type`을 기반으로 해당하는 상태 타입을 추론하는 헬퍼
+  type StateForType<K extends T['type']> = Extract<T, { type: K }>;
+
+  const useDialogs = () => {
+    const dialogs = useSyncExternalStore(manager.subscribe, manager.getSnapshot);
+
+    const open = <K extends T['type']>(
+      type: K,
+      payload: Omit<StateForType<K>, 'type' | 'isOpen'> & { id?: string }
+    ) => {
+      const { id, ...userState } = payload;
+
+      const component = componentMap[type];
+      if (!component) {
+        throw new Error(`[react-layered-dialog] Component for type "${type}" not found.`);
+      }
+
+      const finalState = {
+        type,
+        id,
+        ...userState,
+      } as unknown as StateForType<K>;
+
+      return manager.open(component, finalState);
+    };
+
+    return {
+      dialogs,
+      open,
+      close: manager.close,
+      closeAll: manager.closeAll,
+    };
+  };
+
+  return useDialogs;
 }

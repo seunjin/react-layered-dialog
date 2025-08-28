@@ -23,3 +23,13 @@ export interface DialogInstance<T> {
 }
 
 export type Listener = () => void;
+
+/**
+ * 상태 타입의 유니온을 기반으로 구체적인 DialogInstance 타입의 유니온을 생성합니다.
+ * 예: SomeDialogInstance<AlertState | ConfirmState>는
+ * DialogInstance<AlertState> | DialogInstance<ConfirmState>가 됩니다.
+ * 이를 통해 타입스크립트가 컴포넌트와 상태 간의 연결을 추적할 수 있습니다.
+ */
+export type SomeDialogInstance<T extends { type: string }> = {
+  [K in T['type']]: DialogInstance<Extract<T, { type: K }>>;
+}[T['type']];

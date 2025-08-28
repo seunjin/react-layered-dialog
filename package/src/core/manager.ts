@@ -1,9 +1,14 @@
 // manager.ts
 import type React from 'react';
-import type { DialogInstance, DialogState, Listener } from './types';
+import type {
+  DialogInstance,
+  DialogState,
+  Listener,
+  SomeDialogInstance,
+} from './types';
 
-export class DialogManager<T> {
-  private dialogs: DialogInstance<T>[] = [];
+export class DialogManager<T extends { type: string }> {
+  private dialogs: SomeDialogInstance<T>[] = [];
   private listeners: Set<Listener> = new Set();
 
   constructor() {}
@@ -13,7 +18,7 @@ export class DialogManager<T> {
     return () => this.listeners.delete(listener);
   };
 
-  getSnapshot = (): DialogInstance<T>[] => {
+  getSnapshot = (): SomeDialogInstance<T>[] => {
     return this.dialogs;
   };
 
@@ -23,30 +28,45 @@ export class DialogManager<T> {
     }
   };
 
-  open = (
-    Component: React.ComponentType<DialogState<T>>,
-    state: T // 사용자가 정의한 상태 T를 직접 받습니다.
+  open = <P extends T & { id?: string }>(
+    Component: React.ComponentType<DialogState<P>>,
+    state: P
   ): string => {
-    const id = crypto.randomUUID();
+    const finalId = state.id ?? crypto.randomUUID();
 
-    const finalState: DialogState<T> = {
+    if (state.id && this.dialogs.some((d) => d.state.id === state.id)) {
+      console.warn(
+        `[react-layered-dialog] Duplicate ID detected: "${state.id}". A dialog with this ID is already open. This may lead to unexpected behavior.`
+      );
+    }
+
+    const finalState: DialogState<P> = {
       ...state,
-      id,
+      id: finalId,
       isOpen: true,
     };
 
-    const newDialog: DialogInstance<T> = {
+    const newDialog: DialogInstance<P> = {
       Component,
       state: finalState,
     };
 
-    this.dialogs = [...this.dialogs, newDialog];
+    this.dialogs = [
+      ...this.dialogs,
+      newDialog as unknown as SomeDialogInstance<T>,
+    ];
     this.emitChange();
-    return id;
+    return finalId;
   };
 
-  close = (id: string) => {
-    this.dialogs = this.dialogs.filter((dialog) => dialog.state.id !== id);
+  close = (id?: string): void => {
+    if (id) {
+      // ID가 있으면 특정 다이얼로그를 제거합니다.
+      this.dialogs = this.dialogs.filter((dialog) => dialog.state.id !== id);
+    } else if (this.dialogs.length > 0) {
+      // ID가 없으면 마지막 다이얼로그를 제거합니다. (pop 동작)
+      this.dialogs = this.dialogs.slice(0, -1);
+    }
     this.emitChange();
   };
 
