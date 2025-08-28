@@ -116,4 +116,17 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* shadcn/ui 컴포넌트 커서 문제 해결 */
+  [role='tab'],
+  button,
+  [role='button'] {
+    @apply cursor-pointer;
+  }
+
+  [role='tab']:disabled,
+  button:disabled,
+  [role='button']:disabled {
+    @apply cursor-not-allowed;
+  }
 }

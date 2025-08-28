@@ -70,10 +70,10 @@ function App() {
           <Button variant="outline" onClick={() => closeDialog()}>
             이 다이얼로그만 닫기
           </Button>
-          <Button variant="destructive" onClick={handleCloseSecond}>
+          <Button variant="outline" onClick={handleCloseSecond}>
             중간 다이얼로그 닫기
           </Button>
-          <Button variant="destructive" onClick={closeAllDialogs}>
+          <Button variant="outline" onClick={closeAllDialogs}>
             전체 닫기
           </Button>
         </div>
@@ -87,12 +87,6 @@ function App() {
 
     const handleConfirm = () => {
       setIsPending(true);
-      // closeDialog();
-      // openDialog('modal', {
-      //   children: <p>삭제 중...</p>,
-      //   dismissable: false,
-      //   closeOnOverlayClick: false,
-      // });
 
       setTimeout(() => {
         closeDialog();
@@ -110,11 +104,7 @@ function App() {
           정말로 이 항목을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
         </p>
         <div className="mt-4 flex justify-end gap-2">
-          <Button
-            variant="outline"
-            onClick={() => closeDialog()}
-            disabled={isPending}
-          >
+          <Button variant="outline" onClick={() => closeDialog()}>
             취소
           </Button>
           <Button onClick={handleConfirm} disabled={isPending}>
@@ -139,7 +129,6 @@ function App() {
   const handleAsyncDelete = () => {
     openDialog('modal', {
       children: <AsyncConfirmContent />,
-      dismissable: false,
     });
   };
 
