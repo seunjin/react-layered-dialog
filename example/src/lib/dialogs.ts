@@ -1,18 +1,22 @@
-import { createDialogManager, createUseDialogs } from 'react-layered-dialog';
+import {
+  createDialogManager,
+  createUseDialogs,
+  type BaseState,
+} from 'react-layered-dialog';
 import { Alert } from '../Alert';
 import { Confirm } from '../Confirm';
 import { Modal } from '../Modal';
 import type React from 'react';
 
-// 1. 각 다이얼로그의 상태 타입을 순수하게 정의합니다. (id 제거)
-export interface AlertState {
+// 1. 각 다이얼로그의 상태 타입을 BaseState를 확장하여 정의합니다.
+export interface AlertState extends BaseState {
   type: 'alert';
   title: string;
   message: string;
   onOk?: () => void;
 }
 
-export interface ConfirmState {
+export interface ConfirmState extends BaseState {
   type: 'confirm';
   title: string;
   message: string;
@@ -20,7 +24,7 @@ export interface ConfirmState {
   onCancel?: () => void;
 }
 
-export interface ModalState {
+export interface ModalState extends BaseState {
   type: 'modal';
   children: React.ReactNode;
 }
@@ -28,8 +32,10 @@ export interface ModalState {
 // 2. 모든 상태 타입을 유니온으로 결합하고 export 합니다.
 export type CustomDialogState = AlertState | ConfirmState | ModalState;
 
-// 3. 다이얼로그 관리 시스템의 핵심을 생성합니다.
-const { manager } = createDialogManager<CustomDialogState>();
+// 3. 다이얼로그 관리 시스템의 핵심을 생성합니다. (필요 시 zIndex 설정 가능)
+const { manager } = createDialogManager<CustomDialogState>({
+  // baseZIndex: 2000, // 예시: z-index 시작 값 변경
+});
 
 // 4. 'type'과 컴포넌트를 매핑하는 객체를 만듭니다.
 const componentMap = {

@@ -2,10 +2,12 @@
 import type React from 'react';
 import { DialogManager } from './manager';
 import { useSyncExternalStore } from 'react';
-import type { DialogState, SomeDialogInstance } from './types';
+import type { BaseState, DialogsConfig, DialogState, SomeDialogInstance } from './types';
 
-export function createDialogManager<T extends { type: string }>() {
-  const manager = new DialogManager<T>();
+export function createDialogManager<T extends { type: string }>(
+  config?: DialogsConfig
+) {
+  const manager = new DialogManager<T>(config?.baseZIndex);
 
   const useDialogsState = (): SomeDialogInstance<T>[] => {
     return useSyncExternalStore(manager.subscribe, manager.getSnapshot);
@@ -38,7 +40,9 @@ export function createUseDialogs<T extends { type: string }>(
 
     const open = <K extends T['type']>(
       type: K,
-      payload: Omit<StateForType<K>, 'type' | 'isOpen'> & { id?: string }
+      // Omit<...>으로 순수 사용자 상태를 가져온 뒤, BaseState의 일부 속성을 결합합니다.
+      payload: Omit<StateForType<K>, 'type' | 'isOpen'> &
+        Pick<BaseState, 'zIndex'> & { id?: string }
     ) => {
       const { id, ...userState } = payload;
 

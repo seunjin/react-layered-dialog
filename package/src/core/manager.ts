@@ -10,8 +10,11 @@ import type {
 export class DialogManager<T extends { type: string }> {
   private dialogs: SomeDialogInstance<T>[] = [];
   private listeners: Set<Listener> = new Set();
+  private baseZIndex: number;
 
-  constructor() {}
+  constructor(baseZIndex: number = 1000) {
+    this.baseZIndex = baseZIndex;
+  }
 
   subscribe = (listener: Listener): (() => void) => {
     this.listeners.add(listener);
@@ -28,7 +31,7 @@ export class DialogManager<T extends { type: string }> {
     }
   };
 
-  open = <P extends T & { id?: string }>(
+  open = <P extends T & { id?: string; zIndex?: number }>(
     Component: React.ComponentType<DialogState<P>>,
     state: P
   ): string => {
@@ -36,7 +39,7 @@ export class DialogManager<T extends { type: string }> {
 
     if (state.id && this.dialogs.some((d) => d.state.id === state.id)) {
       console.warn(
-        `[react-layered-dialog] Duplicate ID detected: "${state.id}". A dialog with this ID is already open. This may lead to unexpected behavior.`
+        `[react-layered-dialog] Duplicate ID detected: "${state.id}". This may lead to unexpected behavior.`
       );
     }
 
@@ -44,6 +47,8 @@ export class DialogManager<T extends { type: string }> {
       ...state,
       id: finalId,
       isOpen: true,
+      // zIndex를 사용자가 제공하지 않았다면, 자동으로 계산하여 주입합니다.
+      zIndex: state.zIndex ?? this.baseZIndex + this.dialogs.length,
     };
 
     const newDialog: DialogInstance<P> = {
