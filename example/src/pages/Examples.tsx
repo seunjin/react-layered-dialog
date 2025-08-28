@@ -1,23 +1,21 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
 import { BasicUsageDemo } from '@/components/demos/BasicUsageDemo';
 import { AdvancedFeaturesDemo } from '@/components/demos/AdvancedFeaturesDemo';
 import { AsyncHandlingDemo } from '@/components/demos/AsyncHandlingDemo';
 
 export const Examples = () => (
-  <Tabs defaultValue="basic">
-    <TabsList className="grid w-full grid-cols-3">
-      <TabsTrigger value="basic">기본 사용법</TabsTrigger>
-      <TabsTrigger value="advanced">고급 기능</TabsTrigger>
-      <TabsTrigger value="async">비동기 처리</TabsTrigger>
-    </TabsList>
-    <TabsContent value="basic">
-      <BasicUsageDemo />
-    </TabsContent>
-    <TabsContent value="advanced">
-      <AdvancedFeaturesDemo />
-    </TabsContent>
-    <TabsContent value="async">
-      <AsyncHandlingDemo />
-    </TabsContent>
-  </Tabs>
+  <div className="space-y-8">
+    <Alert>
+      <Terminal className="h-4 w-4" />
+      <AlertTitle>개발자 콘솔을 확인하세요!</AlertTitle>
+      <AlertDescription>
+        F12를 눌러 개발자 콘솔을 열면, 모든 다이얼로그 상태 변화가 실시간으로 기록되는 것을 확인할 수 있습니다.
+      </AlertDescription>
+    </Alert>
+
+    <BasicUsageDemo />
+    <AdvancedFeaturesDemo />
+    <AsyncHandlingDemo />
+  </div>
 );

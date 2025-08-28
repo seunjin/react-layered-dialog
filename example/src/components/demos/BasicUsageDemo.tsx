@@ -26,7 +26,7 @@ export const BasicUsageDemo = () => {
     <Card>
       <CardHeader>
         <CardTitle>기본 사용법</CardTitle>
-        <CardDescription>가장 일반적인 다이얼로그 타입들을 여는 예제입니다. (F12를 눌러 콘솔을 확인하세요)</CardDescription>
+        <CardDescription>가장 일반적인 다이얼로그 타입들을 여는 예제입니다.</CardDescription>
       </CardHeader>
       <CardContent className="flex gap-2 flex-wrap">
         <Button onClick={() => openDialog('alert', { title: '알림', message: '이것은 Alert 다이얼로그입니다.' })}>Alert 열기</Button>
