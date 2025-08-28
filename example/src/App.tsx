@@ -5,8 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useDialogs } from './lib/dialogs';
-import { DialogRenderer } from './DialogRenderer';
+import { useDialogs } from '@/lib/dialogs';
+import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 
 function App() {
   const { openDialog, closeDialog } = useDialogs();

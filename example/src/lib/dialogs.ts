@@ -3,9 +3,9 @@ import {
   createUseDialogs,
   type BaseState,
 } from 'react-layered-dialog';
-import { Alert } from '../Alert';
-import { Confirm } from '../Confirm';
-import { Modal } from '../Modal';
+import { Alert } from '@/components/dialogs/Alert';
+import { Confirm } from '@/components/dialogs/Confirm';
+import { Modal } from '@/components/dialogs/Modal';
 import type React from 'react';
 
 // 1. 각 다이얼로그의 상태 타입을 BaseState를 확장하여 정의합니다.

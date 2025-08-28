@@ -1,5 +1,5 @@
-import { closeDialog } from './lib/dialogs';
-import type { ModalState } from './lib/dialogs';
+import { closeDialog } from '@/lib/dialogs';
+import type { ModalState } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import { motion } from 'motion/react';
 

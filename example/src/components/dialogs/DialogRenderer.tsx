@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'motion/react';
 import type { SomeDialogInstance } from 'react-layered-dialog';
-import type { CustomDialogState } from './lib/dialogs';
-import { useDialogs } from './lib/dialogs';
+import type { CustomDialogState } from '@/lib/dialogs';
+import { useDialogs } from '@/lib/dialogs';
 
 import { Alert } from './Alert';
 import { Confirm } from './Confirm';
