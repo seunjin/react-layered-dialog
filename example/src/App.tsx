@@ -85,7 +85,7 @@ function App() {
       <Header />
       <div className="flex flex-1 ">
         <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-8 overflow-y-auto max-w-4xl mx-auto">
           {renderContent()}
         </main>
       </div>

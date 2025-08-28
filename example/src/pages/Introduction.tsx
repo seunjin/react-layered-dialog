@@ -24,21 +24,18 @@ const CodeBlock = ({ children }: { children: ReactNode }) => (
 export const Introduction = () => (
   <div className="space-y-8">
     <div>
-      <TypographyH1>소개 및 설치법</TypographyH1>
+      <TypographyH1>소개 및 설치</TypographyH1>
       <TypographyLead>
-        선언적이고 타입-안전한 방식으로 React 다이얼로그를 관리하세요.
+        React 다이얼로그 관리를 위한 선언적이고 타입-안전한 솔루션
       </TypographyLead>
 
       <TypographyP>
-        React 애플리케이션에서 다이얼로그(모달, 확인창, 알림창 등)를 관리하는 것은 종종 복잡한 상태 관리, z-index 충돌, 그리고 컴포넌트 간의 prop drilling을 유발합니다.
-      </TypographyP>
-      <TypographyP>
-        <strong>React Layered Dialog</strong>는 이러한 문제들을 해결하기 위해 설계되었습니다. 단일 `useDialogs` 훅을 통해 애플리케이션 어디서든 다이얼로그를 열고 닫을 수 있는 중앙집중적인 API를 제공하여, 다이얼로그 관리를 단순하고 예측 가능하게 만듭니다.
+        React 애플리케이션에서 다이얼로그를 관리하는 것은 흔히 복잡한 상태 관리와 z-index 충돌을 야기합니다. **React Layered Dialog**는 이러한 문제를 해결하고자 탄생했으며, 중앙 집중식 API를 통해 다이얼로그 관리를 단순화합니다.
       </TypographyP>
     </div>
 
     <div>
-      <TypographyH2>설치</TypographyH2>
+      <TypographyH2>설치 방법</TypographyH2>
       <Card className="mt-6">
         <CardHeader>
           <CardDescription>
@@ -46,7 +43,7 @@ export const Introduction = () => (
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="npm">
+          <Tabs defaultValue="pnpm">
             <TabsList>
               <TabsTrigger value="npm">npm</TabsTrigger>
               <TabsTrigger value="yarn">yarn</TabsTrigger>
@@ -103,19 +100,19 @@ export const Introduction = () => (
       </TypographyP>
       <div className="mt-6 space-y-4">
         <div>
-          <TypographyH4>1. DialogManager (The Brain)</TypographyH4>
+          <TypographyH4>1. DialogManager (핵심 엔진)</TypographyH4>
           <TypographyP>
             라이브러리의 핵심 두뇌입니다. React에 의존하지 않는 순수 TypeScript 클래스로, 열려있는 모든 다이얼로그의 상태를 배열로 관리합니다. `open`, `close`와 같은 메서드를 통해 이 배열을 조작합니다.
           </TypographyP>
         </div>
         <div>
-          <TypographyH4>2. useSyncExternalStore (The Bridge)</TypographyH4>
+          <TypographyH4>2. useSyncExternalStore (React와의 연결)</TypographyH4>
           <TypographyP>
             React 18에 도입된 이 훅은 React 외부의 상태 저장소(여기서는 `DialogManager`)를 React 컴포넌트와 연결하는 다리 역할을 합니다. `DialogManager`의 상태가 변경될 때마다 `useSyncExternalStore`가 이를 감지하여 컴포넌트의 효율적인 리렌더링을 트리거합니다.
           </TypographyP>
         </div>
         <div>
-          <TypographyH4>3. DialogRenderer (The Stage)</TypographyH4>
+          <TypographyH4>3. DialogRenderer (렌더링 레이어)</TypographyH4>
           <TypographyP>
             `DialogManager`가 관리하는 다이얼로그 상태 배열을 구독하는 컴포넌트입니다. 실제 다이얼로그 컴포넌트들(Alert, Confirm, Modal 등)을 DOM에 렌더링하는 무대 역할을 합니다.
           </TypographyP>
