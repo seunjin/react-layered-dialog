@@ -5,7 +5,7 @@ export function TypographyH1({ children, className, ...props }: { children: Reac
   return (
     <h1
       className={cn(
-        'scroll-m-20 text-4xl font-black tracking-tight lg:text-5xl mb-6 text-slate-900 dark:text-slate-50',
+        'scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl mb-6 text-slate-900 dark:text-slate-50',
         className
       )}
       {...props}
