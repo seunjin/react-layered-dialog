@@ -45,7 +45,7 @@ function App() {
         모달 내부에 복잡한 UI나 상호작용을 자유롭게 추가할 수 있습니다.
       </p>
       <div className="mt-4 flex justify-end">
-        <Button variant="ghost" onClick={() => closeDialog()}>
+        <Button variant="outline" onClick={() => closeDialog()}>
           닫기
         </Button>
       </div>
@@ -53,22 +53,28 @@ function App() {
   );
 
   // 중첩된 다이얼로그의 컨텐츠
-  const NestedDialogContent = () => (
-    <div>
-      <h3 className="text-lg font-bold">중첩된 다이얼로그</h3>
-      <p className="mt-2 text-sm text-gray-500">
-        이 다이얼로그는 제어판 위로 열렸습니다.
-      </p>
-      <div className="mt-4 flex flex-col gap-2">
-        <Button variant="outline" onClick={() => closeDialog()}>
-          이 다이얼로그만 닫기
-        </Button>
-        <Button variant="outline" onClick={closeAllDialogs}>
-          모든 다이얼로그 닫기
-        </Button>
+  const NestedDialogContent = () => {
+    const handleOpenNested = () => {
+      openDialog('modal', { children: <NestedDialogContent /> });
+    };
+    return (
+      <div>
+        <h3 className="text-lg font-bold">중첩된 다이얼로그</h3>
+        <p className="mt-2 text-sm text-gray-500">
+          이 다이얼로그는 제어판 위로 열렸습니다.
+        </p>
+        <div className="mt-4 flex flex-col gap-2">
+          <Button onClick={handleOpenNested}>중첩 모달 열기</Button>
+          <Button variant="outline" onClick={() => closeDialog()}>
+            이 다이얼로그만 닫기
+          </Button>
+          <Button variant="outline" onClick={closeAllDialogs}>
+            모든 다이얼로그 닫기
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // 고급 기능 탭에서 사용할 제어용 다이얼로그 컨텐츠
   const AdvancedControlDialog = () => {
@@ -83,9 +89,7 @@ function App() {
           여기서 다른 다이얼로그를 열어 중첩시킬 수 있습니다.
         </p>
         <div className="mt-4 flex flex-col gap-2">
-          <Button variant="outline" onClick={handleOpenNested}>
-            중첩 모달 열기
-          </Button>
+          <Button onClick={handleOpenNested}>중첩 모달 열기</Button>
           <Button variant="outline" onClick={() => closeDialog()}>
             제어판 닫기
           </Button>
@@ -188,19 +192,19 @@ function App() {
                   Alert 열기
                 </Button>
                 <Button
-                  variant="secondary"
                   onClick={() =>
                     openDialog('confirm', {
                       title: '확인',
                       message: '계속 진행하시겠습니까?',
-                      onConfirm: () => closeDialog(),
+                      onConfirm() {
+                        closeDialog();
+                      },
                     })
                   }
                 >
                   Confirm 열기
                 </Button>
                 <Button
-                  variant="outline"
                   onClick={() =>
                     openDialog('modal', { children: <CustomModalContent /> })
                   }
