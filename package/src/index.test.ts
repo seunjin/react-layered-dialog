@@ -52,7 +52,7 @@ describe('createDialogManager (개발자 경험(DX) 중심 API)', () => {
     const { result } = renderHook(() => useDialogsState());
     let dialogId = '';
     act(() => {
-      dialogId = manager.open(TestComponent, {
+      dialogId = manager.openDialog(TestComponent, {
         type: 'modal',
         message: 'First',
       });
@@ -60,7 +60,7 @@ describe('createDialogManager (개발자 경험(DX) 중심 API)', () => {
     expect(result.current).toHaveLength(1);
 
     act(() => {
-      manager.close(dialogId);
+      manager.closeDialog(dialogId);
     });
     expect(result.current).toHaveLength(0);
   });

@@ -1,4 +1,4 @@
-import { close } from './lib/dialogs';
+import { closeDialog } from './lib/dialogs';
 import type { AlertState } from './lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import { motion } from 'motion/react';
@@ -6,7 +6,6 @@ import { motion } from 'motion/react';
 type AlertProps = DialogState<AlertState>;
 
 export const Alert = ({
-  id,
   title,
   message,
   onOk,
@@ -16,7 +15,7 @@ export const Alert = ({
 }: AlertProps) => {
   const handleOk = () => {
     onOk?.();
-    close(id);
+    closeDialog();
   };
 
   const handleOverlayClick = () => {

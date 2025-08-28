@@ -31,7 +31,7 @@ export class DialogManager<T extends { type: string }> {
     }
   };
 
-  open = <P extends T & { id?: string; zIndex?: number }>(
+  openDialog = <P extends T & { id?: string; zIndex?: number }>(
     Component: React.ComponentType<DialogState<P>>,
     state: P
   ): string => {
@@ -64,7 +64,7 @@ export class DialogManager<T extends { type: string }> {
     return finalId;
   };
 
-  close = (id?: string): void => {
+  closeDialog = (id?: string): void => {
     if (id) {
       // ID가 있으면 특정 다이얼로그를 제거합니다.
       this.dialogs = this.dialogs.filter((dialog) => dialog.state.id !== id);
@@ -75,8 +75,10 @@ export class DialogManager<T extends { type: string }> {
     this.emitChange();
   };
 
-  closeAll = () => {
+  closeAllDialogs = () => {
     this.dialogs = [];
     this.emitChange();
   };
 }
+
+

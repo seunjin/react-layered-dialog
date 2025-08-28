@@ -1,4 +1,4 @@
-import { close } from './lib/dialogs';
+import { closeDialog } from './lib/dialogs';
 import type { ConfirmState } from './lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import { motion } from 'motion/react';
@@ -6,7 +6,6 @@ import { motion } from 'motion/react';
 type ConfirmProps = DialogState<ConfirmState>;
 
 export const Confirm = ({
-  id,
   title,
   message,
   onConfirm,
@@ -23,7 +22,7 @@ export const Confirm = ({
     if (onCancel) {
       onCancel();
     } else {
-      close(id);
+      closeDialog();
     }
   };
 

@@ -38,7 +38,7 @@ export function createUseDialogs<T extends { type: string }>(
   const useDialogs = () => {
     const dialogs = useSyncExternalStore(manager.subscribe, manager.getSnapshot);
 
-    const open = <K extends T['type']>(
+    const openDialog = <K extends T['type']>(
       type: K,
       // Omit<...>으로 순수 사용자 상태를 가져온 뒤, BaseState의 일부 속성을 결합합니다.
       payload: Omit<StateForType<K>, 'type' | 'isOpen'> &
@@ -57,14 +57,14 @@ export function createUseDialogs<T extends { type: string }>(
         ...userState,
       } as unknown as StateForType<K>;
 
-      return manager.open(component, finalState);
+      return manager.openDialog(component, finalState);
     };
 
     return {
       dialogs,
-      open,
-      close: manager.close,
-      closeAll: manager.closeAll,
+      openDialog,
+      closeDialog: manager.closeDialog,
+      closeAllDialogs: manager.closeAllDialogs,
     };
   };
 

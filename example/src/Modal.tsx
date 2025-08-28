@@ -1,4 +1,4 @@
-import { close } from './lib/dialogs';
+import { closeDialog } from './lib/dialogs';
 import type { ModalState } from './lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import { motion } from 'motion/react';
@@ -6,7 +6,6 @@ import { motion } from 'motion/react';
 type ModalProps = DialogState<ModalState>;
 
 export const Modal = ({
-  id,
   children,
   zIndex,
   dimmed = true,
@@ -14,7 +13,7 @@ export const Modal = ({
 }: ModalProps) => {
   const handleOverlayClick = () => {
     if (closeOnOverlayClick) {
-      close(id);
+      closeDialog();
     }
   };
 
@@ -41,7 +40,7 @@ export const Modal = ({
       >
         <div className="absolute top-2 right-2">
           <button
-            onClick={() => close(id)}
+            onClick={() => closeDialog()}
             className="text-gray-400 hover:text-gray-600"
           >
             &times;

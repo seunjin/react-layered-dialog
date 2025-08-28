@@ -48,5 +48,5 @@ const componentMap = {
 export const useDialogs = createUseDialogs(manager, componentMap);
 
 // 6. 컴포넌트에서 사용할 수 있도록 close 함수들을 export 합니다.
-export const close = manager.close;
-export const closeAll = manager.closeAll;
+export const closeDialog = manager.closeDialog;
+export const closeAllDialogs = manager.closeAllDialogs;
