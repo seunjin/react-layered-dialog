@@ -19,7 +19,9 @@ export const Modal = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const isTopDialog = dialogs.length > 0 && dialogs[dialogs.length - 1].state.zIndex === zIndex;
+      const isTopDialog =
+        dialogs.length > 0 &&
+        dialogs[dialogs.length - 1].state.zIndex === zIndex;
       if (event.key === 'Escape' && dismissable && isTopDialog) {
         closeDialog();
       }
@@ -52,9 +54,9 @@ export const Modal = ({
       />
       <motion.div
         className="relative rounded-lg bg-white p-6 shadow-lg min-w-[400px]"
-        initial={{ scale: 0.95 }}
-        animate={{ scale: 1 }}
-        exit={{ scale: 0.95 }}
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
         transition={{ duration: 0.2, ease: 'easeInOut' }}
       >
         <div className="absolute top-2 right-2">

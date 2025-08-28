@@ -52,29 +52,42 @@ function App() {
     </div>
   );
 
+  // 중첩된 다이얼로그의 컨텐츠
+  const NestedDialogContent = () => (
+    <div>
+      <h3 className="text-lg font-bold">중첩된 다이얼로그</h3>
+      <p className="mt-2 text-sm text-gray-500">
+        이 다이얼로그는 제어판 위로 열렸습니다.
+      </p>
+      <div className="mt-4 flex flex-col gap-2">
+        <Button variant="outline" onClick={() => closeDialog()}>
+          이 다이얼로그만 닫기
+        </Button>
+        <Button variant="outline" onClick={closeAllDialogs}>
+          모든 다이얼로그 닫기
+        </Button>
+      </div>
+    </div>
+  );
+
   // 고급 기능 탭에서 사용할 제어용 다이얼로그 컨텐츠
-  const AdvancedControlDialog = ({ layeredIds }: { layeredIds: string[] }) => {
-    const handleCloseSecond = () => {
-      if (layeredIds.length > 1) {
-        closeDialog(layeredIds[1]);
-      }
+  const AdvancedControlDialog = () => {
+    const handleOpenNested = () => {
+      openDialog('modal', { children: <NestedDialogContent /> });
     };
 
     return (
       <div>
         <h3 className="text-lg font-bold">고급 제어판</h3>
         <p className="mt-2 text-sm text-gray-500">
-          이 다이얼로그 안에서 다른 다이얼로그들을 제어할 수 있습니다.
+          여기서 다른 다이얼로그를 열어 중첩시킬 수 있습니다.
         </p>
         <div className="mt-4 flex flex-col gap-2">
+          <Button variant="outline" onClick={handleOpenNested}>
+            중첩 모달 열기
+          </Button>
           <Button variant="outline" onClick={() => closeDialog()}>
-            이 다이얼로그만 닫기
-          </Button>
-          <Button variant="outline" onClick={handleCloseSecond}>
-            중간 다이얼로그 닫기
-          </Button>
-          <Button variant="outline" onClick={closeAllDialogs}>
-            전체 닫기
+            제어판 닫기
           </Button>
         </div>
       </div>
@@ -104,7 +117,11 @@ function App() {
           정말로 이 항목을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
         </p>
         <div className="mt-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => closeDialog()}>
+          <Button
+            variant="outline"
+            onClick={() => closeDialog()}
+            disabled={isPending}
+          >
             취소
           </Button>
           <Button onClick={handleConfirm} disabled={isPending}>
@@ -119,16 +136,15 @@ function App() {
   // --- 핸들러 함수 ---
 
   const handleLayeredOpen = () => {
-    const id1 = openDialog('modal', { children: <p>첫 번째 다이얼로그</p> });
-    const id2 = openDialog('modal', { children: <p>두 번째 다이얼로그</p> });
     openDialog('modal', {
-      children: <AdvancedControlDialog layeredIds={[id1, id2]} />,
+      children: <AdvancedControlDialog />,
     });
   };
 
   const handleAsyncDelete = () => {
     openDialog('modal', {
       children: <AsyncConfirmContent />,
+      dismissable: false,
     });
   };
 
@@ -208,7 +224,7 @@ function App() {
                   onClick={handleLayeredOpen}
                   disabled={dialogs.length > 0}
                 >
-                  다이얼로그 겹쳐 열기
+                  고급 제어판 열기
                 </Button>
               </CardContent>
               <CardFooter>
