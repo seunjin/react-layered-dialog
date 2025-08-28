@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Github } from 'lucide-react';
+import { Github } from 'lucide-react';
 import { useDialogs } from '@/lib/dialogs';
 import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
+
+// 페이지 컴포넌트 임포트
+import { Introduction } from '@/pages/Introduction';
+import { Installation } from '@/pages/Installation';
+import { Examples } from '@/pages/Examples';
 
 // --- 레이아웃 컴포넌트 ---
 
@@ -32,9 +30,9 @@ const Sidebar = ({
   setCurrentView: (view: string) => void;
 }) => {
   const menuItems = [
-    { id: 'basic', label: '기본 사용법' },
-    { id: 'advanced', label: '고급 기능' },
-    { id: 'async', label: '비동기 처리' },
+    { id: 'intro', label: '소개' },
+    { id: 'install', label: '설치법' },
+    { id: 'examples', label: '사용 예제' },
   ];
 
   return (
@@ -55,126 +53,11 @@ const Sidebar = ({
   );
 };
 
-// --- 데모 컨텐츠 컴포넌트 ---
-
-const BasicUsageDemo = () => {
-  const { openDialog, closeDialog } = useDialogs();
-  const CustomModalContent = () => (
-    <div>
-      <h3 className="text-lg font-bold">커스텀 모달</h3>
-      <p className="mt-2 text-sm text-gray-500">
-        모달 내부에 복잡한 UI나 상호작용을 자유롭게 추가할 수 있습니다.
-      </p>
-      <div className="mt-4 flex justify-end">
-        <Button variant="outline" onClick={() => closeDialog()}>닫기</Button>
-      </div>
-    </div>
-  );
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>기본 사용법</CardTitle>
-        <CardDescription>가장 일반적인 다이얼로그 타입들을 여는 예제입니다. (F12를 눌러 콘솔을 확인하세요)</CardDescription>
-      </CardHeader>
-      <CardContent className="flex gap-2 flex-wrap">
-        <Button onClick={() => openDialog('alert', { title: '알림', message: '이것은 Alert 다이얼로그입니다.' })}>Alert 열기</Button>
-        <Button onClick={() => openDialog('confirm', { title: '확인', message: '계속 진행하시겠습니까?', onConfirm: () => closeDialog() })}>Confirm 열기</Button>
-        <Button onClick={() => openDialog('modal', { children: <CustomModalContent /> })}>Modal 열기</Button>
-      </CardContent>
-    </Card>
-  );
-};
-
-const AdvancedFeaturesDemo = () => {
-  const { dialogs, openDialog, closeAllDialogs, closeDialog } = useDialogs();
-  const NestedDialogContent = () => {
-    const handleOpenNested = () => openDialog('modal', { children: <NestedDialogContent /> });
-    return (
-      <div>
-        <h3 className="text-lg font-bold">중첩된 다이얼로그</h3>
-        <p className="mt-2 text-sm text-gray-500">이 다이얼로그는 제어판 위로 열렸습니다.</p>
-        <div className="mt-4 flex flex-col gap-2">
-          <Button onClick={handleOpenNested}>중첩 모달 열기</Button>
-          <Button variant="outline" onClick={() => closeDialog()}>이 다이얼로그만 닫기</Button>
-          <Button variant="outline" onClick={closeAllDialogs}>모든 다이얼로그 닫기</Button>
-        </div>
-      </div>
-    );
-  };
-  const AdvancedControlDialog = () => {
-    const handleOpenNested = () => openDialog('modal', { children: <NestedDialogContent /> });
-    return (
-      <div>
-        <h3 className="text-lg font-bold">고급 제어판</h3>
-        <p className="mt-2 text-sm text-gray-500">여기서 다른 다이얼로그를 열어 중첩시킬 수 있습니다.</p>
-        <div className="mt-4 flex flex-col gap-2">
-          <Button onClick={handleOpenNested}>중첩 모달 열기</Button>
-          <Button variant="outline" onClick={() => closeDialog()}>제어판 닫기</Button>
-        </div>
-      </div>
-    );
-  };
-  const handleLayeredOpen = () => openDialog('modal', { children: <AdvancedControlDialog /> });
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>고급 기능</CardTitle>
-        <CardDescription>다이얼로그 안에서 다른 다이얼로그를 제어하는 예제입니다. (F12를 눌러 콘솔을 확인하세요)</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button onClick={handleLayeredOpen} disabled={dialogs.length > 0}>고급 제어판 열기</Button>
-      </CardContent>
-    </Card>
-  );
-};
-
-const AsyncHandlingDemo = () => {
-  const { openDialog, closeDialog } = useDialogs();
-  const AsyncConfirmContent = () => {
-    const [isPending, setIsPending] = useState(false);
-    const handleConfirm = () => {
-      setIsPending(true);
-      setTimeout(() => {
-        closeDialog(); // Confirm 모달을 닫고
-        openDialog('alert', { title: '성공', message: '항목이 성공적으로 삭제되었습니다.' });
-      }, 1500);
-    };
-    return (
-      <div>
-        <h3 className="text-lg font-bold">삭제 확인</h3>
-        <p className="mt-2 text-sm text-gray-500">정말로 이 항목을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
-        <div className="mt-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => closeDialog()} disabled={isPending}>취소</Button>
-          <Button onClick={handleConfirm} disabled={isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isPending ? '삭제 중...' : '확인'}
-          </Button>
-        </div>
-      </div>
-    );
-  };
-  const handleAsyncDelete = () => openDialog('modal', { children: <AsyncConfirmContent />, dismissable: false });
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>비동기 처리</CardTitle>
-        <CardDescription>API 요청과 같은 비동기 작업과 다이얼로그를 연동하는 예제입니다. (F12를 눌러 콘솔을 확인하세요)</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button onClick={handleAsyncDelete}>삭제 Confirm</Button>
-      </CardContent>
-    </Card>
-  );
-};
-
 // --- 메인 앱 ---
 
 function App() {
   const { dialogs } = useDialogs();
-  const [currentView, setCurrentView] = useState('basic');
+  const [currentView, setCurrentView] = useState('intro');
 
   useEffect(() => {
     console.log(
@@ -187,13 +70,13 @@ function App() {
 
   const renderContent = () => {
     switch (currentView) {
-      case 'advanced':
-        return <AdvancedFeaturesDemo />;
-      case 'async':
-        return <AsyncHandlingDemo />;
-      case 'basic':
+      case 'install':
+        return <Installation />;
+      case 'examples':
+        return <Examples />;
+      case 'intro':
       default:
-        return <BasicUsageDemo />;
+        return <Introduction />;
     }
   };
 
