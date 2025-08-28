@@ -33,7 +33,7 @@ describe('createDialogManager (개발자 경험(DX) 중심 API)', () => {
   it('컴포넌트와 상태를 분리하여 다이얼로그를 열어야 한다', () => {
     const { result } = renderHook(() => useDialogsState());
     act(() => {
-      manager.open(TestComponent, { type: 'modal', message: 'Hello' });
+      manager.openDialog(TestComponent, { type: 'modal', message: 'Hello' });
     });
 
     expect(result.current).toHaveLength(1);
