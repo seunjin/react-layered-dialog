@@ -6,10 +6,9 @@ import { MainLayout } from '@/components/layout/MainLayout';
 
 // 페이지 컴포넌트 임포트
 import { Introduction } from '@/pages/Introduction';
-import { BasicDialogs } from '@/pages/examples/BasicDialogs';
+import { UsageExamples } from '@/pages/examples/UsageExamples';
 import { CustomDialog } from '@/pages/examples/CustomDialog';
 import { CoreSetup } from '@/pages/examples/CoreSetup';
-import { RenderingLayer } from '@/pages/examples/RenderingLayer';
 
 function App() {
   const { dialogs } = useDialogs();
@@ -28,10 +27,9 @@ function App() {
       <MainLayout>
         <Routes>
           <Route path="/" element={<Introduction />} />
-          <Route path="/examples/basic" element={<BasicDialogs />} />
+          <Route path="/examples/usage" element={<UsageExamples />} />
           <Route path="/examples/custom" element={<CustomDialog />} />
           <Route path="/examples/setup" element={<CoreSetup />} />
-          <Route path="/examples/renderer" element={<RenderingLayer />} />
         </Routes>
       </MainLayout>
       <DialogRenderer />

@@ -8,10 +8,9 @@ export const Sidebar = () => {
   const menuItems = [{ path: '/', label: '소개 및 설치법' }];
 
   const exampleMenuItems = [
-    { path: '/examples/basic', label: '기본 다이얼로그' },
+    { path: '/examples/setup', label: '핵심 설정' },
+    { path: '/examples/usage', label: '사용 예제' },
     { path: '/examples/custom', label: '커스텀 다이얼로그' },
-    { path: '/examples/setup', label: '핵심 파일 설정' },
-    { path: '/examples/renderer', label: '렌더링 레이어' },
   ];
 
   return (

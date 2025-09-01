@@ -1,5 +1,6 @@
 import {
   TypographyH2,
+  TypographyH3,
   TypographyP,
 } from '@/components/ui/typography';
 import type { ReactNode } from 'react';
@@ -13,67 +14,126 @@ const CodeBlock = ({ children }: { children: ReactNode }) => (
 export const CoreSetup = () => (
   <div className="space-y-8">
     <div>
-      <TypographyH2>핵심 파일 설정: dialogs.ts</TypographyH2>
-      <TypographyP>
-        `dialogs.ts` 파일은 라이브러리와 애플리케이션을 연결하는 핵심적인 역할을 합니다. 이곳에서 다이얼로그의 종류와 상태(state)를 정의하고, `useDialogs` 훅을 생성하여 앱 전체에서 사용할 수 있도록 설정합니다.
+      <TypographyH2>라이브러리 핵심 설정</TypographyH2>
+      <TypographyP className="mt-2">
+        `react-layered-dialog`를 사용하기 위해서는 두 가지 핵심 파일을 설정해야
+        합니다: 다이얼로그의 종류와 로직을 정의하는
+        <code className="font-mono text-sm bg-muted rounded px-1 py-0.5 mx-1">
+          lib/dialogs.ts
+        </code>
+        와, 다이얼로그를 실제로 화면에 렌더링하는
+        <code className="font-mono text-sm bg-muted rounded px-1 py-0.5 mx-1">
+          DialogRenderer.tsx
+        </code>
+        입니다. 이 페이지에서 전체 설정 과정을 안내합니다.
       </TypographyP>
     </div>
 
     <div>
+      <TypographyH3>1. `lib/dialogs.ts`: 다이얼로그 시스템 정의</TypographyH3>
+      <TypographyP className="mt-2">
+        이 파일은 라이브러리와 애플리케이션을 연결하는 허브 역할을 합니다.
+        아래 코드와 같이 5단계에 걸쳐 다이얼로그의 타입, 상태, 컴포넌트
+        매핑을 정의하고 앱 전체에서 사용할 `useDialogs` 훅을 생성합니다.
+      </TypographyP>
       <CodeBlock>
-{`import {
+        {`// lib/dialogs.ts
+
+import {
   createDialogManager,
   createUseDialogs,
   type BaseState,
 } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
-import { Modal } from '@/components/dialogs/Modal';
 import type React from 'react';
 
-// 1. 각 다이얼로그의 상태 타입을 BaseState를 확장하여 정의합니다.
+// 1. 다이얼로그 타입 정의 (Type Definition)
 export interface AlertState extends BaseState {
   type: 'alert';
   title: string;
   message: string;
-  onOk?: () => void;
 }
-
 export interface ConfirmState extends BaseState {
   type: 'confirm';
   title: string;
   message: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
+  onConfirm: () => void;
 }
 
-export interface ModalState extends BaseState {
-  type: 'modal';
-  children: React.ReactNode;
-}
+// 2. 상태 유니온 (State Union)
+export type CustomDialogState = AlertState | ConfirmState;
 
-// 2. 모든 상태 타입을 유니온으로 결합하고 export 합니다.
-export type CustomDialogState = AlertState | ConfirmState | ModalState;
+// 3. 매니저 생성 (Manager Creation)
+const { manager } = createDialogManager<CustomDialogState>();
 
-// 3. 다이얼로그 관리 시스템의 핵심을 생성합니다. (필요 시 zIndex 설정 가능)
-const { manager } = createDialogManager<CustomDialogState>({
-  // baseZIndex: 2000, // 예시: z-index 시작 값 변경
-});
-
-// 4. 'type'과 컴포넌트를 매핑하는 객체를 만듭니다.
+// 4. 컴포넌트 맵핑 (Component Mapping)
 const componentMap = {
   alert: Alert,
   confirm: Confirm,
-  modal: Modal,
 };
 
-// 5. 라이브러리가 제공하는 팩토리를 사용하여 최종 
-useDialogs> 훅을 생성합니다.
+// 5. 훅 생성 및 내보내기 (Hook Creation & Export)
 export const useDialogs = createUseDialogs(manager, componentMap);
-
-// 6. 컴포넌트에서 사용할 수 있도록 close 함수들을 export 합니다.
 export const closeDialog = manager.closeDialog;
-export const closeAllDialogs = manager.closeAllDialogs;`}
+`}
+      </CodeBlock>
+    </div>
+
+    <div>
+      <TypographyH3>2. `DialogRenderer.tsx`: 렌더링 레이어</TypographyH3>
+      <TypographyP className="mt-2">
+        `DialogRenderer`는 `useDialogs` 훅이 관리하는 다이얼로그 상태 배열을
+        구독하고, 실제 React 컴포넌트로 변환하여 화면에 렌더링합니다. 이
+        컴포넌트는 앱의 최상위 레이어에 한 번만 포함되면 됩니다.
+      </TypographyP>
+      <CodeBlock>
+        {`// components/dialogs/DialogRenderer.tsx
+
+import { AnimatePresence } from 'motion/react';
+import { useDialogs } from '@/lib/dialogs';
+
+export const DialogRenderer = () => {
+  const { dialogs } = useDialogs();
+
+  return (
+    <AnimatePresence>
+      {dialogs.map(({ Component, state }) => (
+        <Component key={state.id} {...state} />
+      ))}
+    </AnimatePresence>
+  );
+};
+`}
+      </CodeBlock>
+    </div>
+
+    <div>
+      <TypographyH3>3. `App.tsx`: 앱에 적용하기</TypographyH3>
+      <TypographyP className="mt-2">
+        마지막으로, 생성한 `DialogRenderer`를 애플리케이션의 최상위 컴포넌트(일반적으로 `App.tsx`)에 추가합니다. 이렇게 하면 앱 어디에서든 `openDialog`를 호출하여 다이얼로그를 열 수 있습니다.
+      </TypographyP>
+      <CodeBlock>
+        {`// App.tsx
+
+import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { Routes, Route } from 'react-router-dom';
+// ... other imports
+
+function App() {
+  return (
+    <>
+      <MainLayout>
+        <Routes>{/* ... routes ... */}</Routes>
+      </MainLayout>
+      
+      {/* DialogRenderer를 앱 최상단에 추가 */}
+      <DialogRenderer />
+    </>
+  );
+}
+`}
       </CodeBlock>
     </div>
   </div>
