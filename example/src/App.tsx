@@ -14,7 +14,6 @@ import { QuickStart } from '@/pages/examples/QuickStart';
 function App() {
   const { dialogs } = useDialogs();
 
-
   useEffect(() => {
     console.log(
       '%c[React Layered Dialog] %cState Changed:',

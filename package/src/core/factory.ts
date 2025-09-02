@@ -2,18 +2,13 @@
 import type React from 'react';
 import { DialogManager } from './manager';
 import { useSyncExternalStore } from 'react';
-import type { BaseState, DialogsConfig, DialogState, SomeDialogInstance } from './types';
+import type { BaseState, DialogState, DialogsConfig } from './types';
 
 export function createDialogManager<T extends { type: string }>(
   config?: DialogsConfig
 ) {
   const manager = new DialogManager<T>(config?.baseZIndex);
-
-  const useDialogsState = (): SomeDialogInstance<T>[] => {
-    return useSyncExternalStore(manager.subscribe, manager.getSnapshot);
-  };
-
-  return { manager, useDialogsState };
+  return { manager };
 }
 
 /**
