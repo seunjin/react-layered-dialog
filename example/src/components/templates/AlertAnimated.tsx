@@ -1,34 +1,29 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
-import type { ConfirmState } from '@/lib/dialogs';
+import type { AlertState } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 
-type ConfirmProps = DialogState<ConfirmState>;
+type AlertProps = DialogState<AlertState>;
 
-export const Confirm = ({
+export const Alert = ({
   title,
   message,
-  onConfirm,
-  onCancel,
+  onOk,
   zIndex,
   dimmed = true,
   closeOnOverlayClick = false,
   dismissable = false,
-}: ConfirmProps) => {
+}: AlertProps) => {
   const { dialogs, closeDialog } = useDialogs();
-  const confirmButtonRef = useRef<HTMLButtonElement>(null);
+  const okButtonRef = useRef<HTMLButtonElement>(null);
 
-  // '취소' 버튼 클릭 또는 Escape 키 입력 시 실행될 콜백 함수
-  const handleCancel = useCallback(() => {
-    // onCancel prop이 있으면 실행, 없으면 기본 closeDialog 호출
-    if (onCancel) {
-      onCancel();
-    } else {
-      closeDialog();
-    }
-  }, [onCancel, closeDialog]);
+  // '확인' 버튼 클릭 시 실행될 콜백 함수
+  const handleOk = useCallback(() => {
+    onOk?.();
+    closeDialog();
+  }, [onOk, closeDialog]);
 
   // 키보드 이벤트(Escape) 처리
   useEffect(() => {
@@ -38,44 +33,32 @@ export const Confirm = ({
         dialogs.length > 0 &&
         dialogs[dialogs.length - 1].state.zIndex === zIndex;
       if (event.key === 'Escape' && dismissable && isTopDialog) {
-        handleCancel();
+        handleOk();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [dismissable, handleCancel, dialogs, zIndex]);
-
-  // '확인' 버튼 클릭 처리
-  const handleConfirm = () => {
-    onConfirm?.();
-  };
-
-  // 오버레이 클릭 처리
-  const handleOverlayClick = () => {
-    if (closeOnOverlayClick) {
-      handleCancel();
-    }
-  };
+  }, [dismissable, handleOk, dialogs, zIndex]);
 
   // 다이얼로그가 열렸을 때 확인 버튼에 자동으로 포커스
   useEffect(() => {
-    confirmButtonRef.current?.focus();
+    okButtonRef.current?.focus();
   }, []);
 
   return (
     <div
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex }}
-      role="dialog"
+      role="alertdialog"
       aria-modal="true"
-      aria-labelledby="confirm-title"
-      aria-describedby="confirm-message"
+      aria-labelledby="alert-title"
+      aria-describedby="alert-message"
     >
       {/* 오버레이(배경) */}
       <motion.div
         className={`absolute inset-0 ${dimmed ? 'bg-black/20' : 'bg-transparent'}`}
-        onClick={handleOverlayClick}
+        onClick={() => closeOnOverlayClick && handleOk()}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -89,17 +72,14 @@ export const Confirm = ({
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ duration: 0.2, ease: 'easeInOut' }}
       >
-        <h3 id="confirm-title" className="text-lg font-bold">
+        <h3 id="alert-title" className="text-lg font-bold">
           {title}
         </h3>
-        <p id="confirm-message" className="mt-2 text-sm text-gray-500">
+        <p id="alert-message" className="mt-2 text-sm text-gray-500">
           {message}
         </p>
-        <div className="mt-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={handleCancel}>
-            취소
-          </Button>
-          <Button ref={confirmButtonRef} onClick={handleConfirm}>
+        <div className="mt-4 flex justify-end">
+          <Button ref={okButtonRef} onClick={handleOk}>
             확인
           </Button>
         </div>

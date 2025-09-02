@@ -1,5 +1,6 @@
 import { CodeBlock } from '@/components/ui/CodeBlock';
 import { InlineCode } from '@/components/ui/InlineCode';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   TypographyH2,
   TypographyH3,
@@ -80,14 +81,47 @@ export const closeDialog = manager.closeDialog;
         2. <InlineCode>DialogRenderer.tsx</InlineCode>: 렌더링 레이어
       </TypographyH3>
       <TypographyP className="mt-2">
-        <InlineCode>DialogRenderer</InlineCode>는
-        <InlineCode>useDialogs</InlineCode> 훅이 관리하는 다이얼로그 상태 배열을
-        구독하고, 실제 React 컴포넌트로 변환하여 화면에 렌더링합니다. 이
-        컴포넌트는 앱의 최상위 레이어에 한 번만 포함되면 됩니다.
+        <InlineCode>DialogRenderer</InlineCode>는 다이얼로그 상태를 실제
+        컴포넌트로 렌더링하는 역할을 합니다. 애니메이션이 필요 없다면 기본
+        버전을, 부드러운 등장/퇴장 효과를 원한다면{' '}
+        <InlineCode>motion</InlineCode> 라이브러리를 사용하는 애니메이션 버전을
+        선택하세요.
       </TypographyP>
-      <CodeBlock
-        language="tsx"
-        code={`// components/dialogs/DialogRenderer.tsx
+      <Tabs defaultValue="basic" className="mt-4">
+        <TabsList>
+          <TabsTrigger value="basic">기본 (애니메이션 없음)</TabsTrigger>
+          <TabsTrigger value="animated">애니메이션</TabsTrigger>
+        </TabsList>
+        <TabsContent value="basic" className="mt-2">
+          <CodeBlock
+            language="tsx"
+            code={`// components/dialogs/DialogRenderer.tsx
+
+import { useDialogs } from '@/lib/dialogs';
+
+export const DialogRenderer = () => {
+  const { dialogs } = useDialogs();
+
+  return (
+    <>
+      {dialogs.map(({ Component, state }) => (
+        <Component key={state.id} {...state} />
+      ))}
+    </>
+  );
+};
+`}
+          />
+        </TabsContent>
+        <TabsContent value="animated" className="mt-2">
+          <TypographyP className="text-sm text-muted-foreground mb-2">
+            애니메이션을 사용하려면{' '}
+            <InlineCode>motion</InlineCode> 라이브러리를 설치해야 합니다:{' '}
+            <InlineCode>pnpm add motion</InlineCode>
+          </TypographyP>
+          <CodeBlock
+            language="tsx"
+            code={`// components/dialogs/DialogRenderer.tsx
 
 import { AnimatePresence } from 'motion/react';
 import { useDialogs } from '@/lib/dialogs';
@@ -104,7 +138,9 @@ export const DialogRenderer = () => {
   );
 };
 `}
-      />
+          />
+        </TabsContent>
+      </Tabs>
     </div>
 
     <div>
@@ -112,7 +148,7 @@ export const DialogRenderer = () => {
         3. <InlineCode>App.tsx</InlineCode>: 앱에 적용하기
       </TypographyH3>
       <TypographyP className="mt-2">
-        마지막으로, 생성한 <InlineCode>DialogRenderer</InlineCode>를
+        마지막으로, 선택한 버전의 <InlineCode>DialogRenderer</InlineCode>를
         애플리케이션의 최상위 컴포넌트(일반적으로 `App.tsx`)에 추가합니다.
         이렇게 하면 앱 어디에서든 <InlineCode>openDialog</InlineCode>를 호출하여
         다이얼로그를 열 수 있습니다.

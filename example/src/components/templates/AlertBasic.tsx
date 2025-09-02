@@ -2,7 +2,6 @@ import { useEffect, useCallback, useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { AlertState } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
-import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 
 type AlertProps = DialogState<AlertState>;
@@ -36,17 +35,9 @@ export const Alert = ({
         handleOk();
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [dismissable, handleOk, dialogs, zIndex]);
-
-  // 오버레이 클릭 처리
-  const handleOverlayClick = () => {
-    if (closeOnOverlayClick) {
-      handleOk();
-    }
-  };
 
   // 다이얼로그가 열렸을 때 확인 버튼에 자동으로 포커스
   useEffect(() => {
@@ -63,22 +54,12 @@ export const Alert = ({
       aria-describedby="alert-message"
     >
       {/* 오버레이(배경) */}
-      <motion.div
+      <div
         className={`absolute inset-0 ${dimmed ? 'bg-black/20' : 'bg-transparent'}`}
-        onClick={handleOverlayClick}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        onClick={() => closeOnOverlayClick && handleOk()}
       />
       {/* 다이얼로그 본문 */}
-      <motion.div
-        className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]"
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
-      >
+      <div className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]">
         <h3 id="alert-title" className="text-lg font-bold">
           {title}
         </h3>
@@ -90,7 +71,7 @@ export const Alert = ({
             확인
           </Button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

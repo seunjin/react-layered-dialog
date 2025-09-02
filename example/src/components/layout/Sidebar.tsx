@@ -9,6 +9,7 @@ export const Sidebar = () => {
 
   const exampleMenuItems = [
     { path: '/examples/setup', label: '핵심 설정' },
+    { path: '/examples/quick-start', label: '빠른 시작' },
     { path: '/examples/usage', label: '사용 예제' },
     { path: '/examples/custom', label: '커스텀 다이얼로그' },
   ];

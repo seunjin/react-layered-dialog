@@ -9,9 +9,11 @@ import { Introduction } from '@/pages/Introduction';
 import { UsageExamples } from '@/pages/examples/UsageExamples';
 import { CustomDialog } from '@/pages/examples/CustomDialog';
 import { CoreSetup } from '@/pages/examples/CoreSetup';
+import { QuickStart } from '@/pages/examples/QuickStart';
 
 function App() {
   const { dialogs } = useDialogs();
+
 
   useEffect(() => {
     console.log(
@@ -27,6 +29,7 @@ function App() {
       <MainLayout>
         <Routes>
           <Route path="/" element={<Introduction />} />
+          <Route path="/examples/quick-start" element={<QuickStart />} />
           <Route path="/examples/usage" element={<UsageExamples />} />
           <Route path="/examples/custom" element={<CustomDialog />} />
           <Route path="/examples/setup" element={<CoreSetup />} />
