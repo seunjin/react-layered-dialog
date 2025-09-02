@@ -1,20 +1,16 @@
+import { CodeBlock } from '@/components/ui/CodeBlock';
+import { InlineCode } from '@/components/ui/InlineCode';
 import { TypographyH2, TypographyP } from '@/components/ui/typography';
-import type { ReactNode } from 'react';
-
-const CodeBlock = ({ children }: { children: ReactNode }) => (
-  <pre className="mt-2 rounded-md bg-muted p-4 text-sm font-mono text-muted-foreground overflow-x-auto">
-    <code>{children}</code>
-  </pre>
-);
 
 export const CustomDialog = () => (
   <div className="space-y-8">
     <div>
       <TypographyH2>커스텀 다이얼로그: Modal</TypographyH2>
       <TypographyP>
-        `Modal` 컴포넌트는 `children` prop을 통해 어떤 React 컴포넌트든 내부에
-        렌더링할 수 있는 유연성을 제공합니다. 이를 통해 복잡한 폼이나 사용자
-        정의 UI를 다이얼로그로 손쉽게 만들 수 있습니다.
+        <InlineCode>Modal</InlineCode> 컴포넌트는{' '}
+        <InlineCode>children</InlineCode> prop을 통해 어떤 React 컴포넌트든
+        내부에 렌더링할 수 있는 유연성을 제공합니다. 이를 통해 복잡한 폼이나
+        사용자 정의 UI를 다이얼로그로 손쉽게 만들 수 있습니다.
       </TypographyP>
     </div>
 
@@ -22,8 +18,9 @@ export const CustomDialog = () => (
       <TypographyP>
         <strong>Modal.tsx</strong>
       </TypographyP>
-      <CodeBlock>
-        {`import { useEffect } from 'react';
+      <CodeBlock
+        language="tsx"
+        code={`import { useEffect } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { ModalState } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
@@ -95,7 +92,7 @@ export const Modal = ({
   );
 };
 `}
-      </CodeBlock>
+      />
     </div>
   </div>
 );
