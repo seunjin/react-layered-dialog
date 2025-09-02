@@ -4,7 +4,7 @@ import { useDialogs } from '@/lib/dialogs';
 import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 import { MainLayout } from '@/components/layout/MainLayout';
 
-// 페이지 컴포넌트 임포트
+// 페이지 컴포넌트 임포트 (누락된 부분 추가)
 import { Introduction } from '@/pages/Introduction';
 import { UsageExamples } from '@/pages/examples/UsageExamples';
 import { CustomDialog } from '@/pages/examples/CustomDialog';
@@ -12,6 +12,7 @@ import { CoreSetup } from '@/pages/examples/CoreSetup';
 import { QuickStart } from '@/pages/examples/QuickStart';
 
 function App() {
+  // 1. useDialogs 훅으로부터 완벽한 타입을 가진 dialogs 배열을 가져옵니다.
   const { dialogs } = useDialogs();
 
   useEffect(() => {
@@ -34,7 +35,9 @@ function App() {
           <Route path="/examples/setup" element={<CoreSetup />} />
         </Routes>
       </MainLayout>
-      <DialogRenderer />
+
+      {/* 2. dialogs 배열을 prop으로 전달합니다. */}
+      <DialogRenderer dialogs={dialogs} />
     </>
   );
 }

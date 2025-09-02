@@ -1,84 +1,85 @@
 // manager.ts
-import type React from 'react';
-import type {
-  DialogInstance,
-  DialogState,
-  Listener,
-  SomeDialogInstance,
-} from './types';
+import type { DialogState, Listener } from './types';
 
+let dialogIdCounter = 0;
+
+/**
+ * 다이얼로그 상태를 관리하는 핵심 클래스.
+ * 다이얼로그의 열기, 닫기, 상태 변경 감지 기능을 제공합니다.
+ */
 export class DialogManager<T extends { type: string }> {
-  private dialogs: SomeDialogInstance<T>[] = [];
+  private dialogs: DialogState<T>[] = [];
   private listeners: Set<Listener> = new Set();
   private baseZIndex: number;
 
-  constructor(baseZIndex: number = 1000) {
+  constructor(baseZIndex = 1000) {
     this.baseZIndex = baseZIndex;
   }
 
+  // 외부 스토어 구독 (useSyncExternalStore 용)
   subscribe = (listener: Listener): (() => void) => {
     this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
   };
 
-  getSnapshot = (): SomeDialogInstance<T>[] => {
+  // 현재 상태 스냅샷 반환 (useSyncExternalStore 용)
+  getSnapshot = (): DialogState<T>[] => {
     return this.dialogs;
   };
 
   private emitChange = () => {
-    for (const listener of this.listeners) {
-      listener();
-    }
+    this.listeners.forEach((listener) => listener());
   };
 
-  openDialog = <P extends T & { id?: string; zIndex?: number }>(
-    Component: React.ComponentType<DialogState<P>>,
-    state: P
-  ): string => {
-    const finalId = state.id ?? crypto.randomUUID();
+  /**
+   * 새 다이얼로그를 엽니다.
+   * @param state 다이얼로그에 전달될 상태 객체
+   * @returns 생성된 다이얼로그의 고유 ID
+   */
+  openDialog = (state: T & { id?: string }): string => {
+    const id = state.id ?? `dialog-${dialogIdCounter++}`;
 
-    if (state.id && this.dialogs.some((d) => d.state.id === state.id)) {
+    if (this.dialogs.some((d) => d.id === id)) {
       console.warn(
-        `[react-layered-dialog] Duplicate ID detected: "${state.id}". This may lead to unexpected behavior.`
+        `[react-layered-dialog] Duplicate dialog ID "${id}". This may cause unexpected behavior.`
       );
     }
 
-    const finalState: DialogState<P> = {
+    const newDialog: DialogState<T> = {
       ...state,
-      id: finalId,
+      id,
       isOpen: true,
-      // zIndex를 사용자가 제공하지 않았다면, 자동으로 계산하여 주입합니다.
-      zIndex: state.zIndex ?? this.baseZIndex + this.dialogs.length,
+      zIndex: this.baseZIndex + this.dialogs.length,
     };
 
-    const newDialog: DialogInstance<P> = {
-      Component,
-      state: finalState,
-    };
-
-    this.dialogs = [
-      ...this.dialogs,
-      newDialog as unknown as SomeDialogInstance<T>,
-    ];
+    this.dialogs = [...this.dialogs, newDialog];
     this.emitChange();
-    return finalId;
+    return id;
   };
 
-  closeDialog = (id?: string): void => {
+  /**
+   * 특정 ID의 다이얼로그를 닫거나, ID가 없으면 마지막 다이얼로그를 닫습니다.
+   * @param id 닫을 다이얼로그의 ID (선택 사항)
+   */
+  closeDialog = (id?: string) => {
+    if (this.dialogs.length === 0) return;
+
     if (id) {
-      // ID가 있으면 특정 다이얼로그를 제거합니다.
-      this.dialogs = this.dialogs.filter((dialog) => dialog.state.id !== id);
-    } else if (this.dialogs.length > 0) {
-      // ID가 없으면 마지막 다이얼로그를 제거합니다. (pop 동작)
+      this.dialogs = this.dialogs.filter((d) => d.id !== id);
+    } else {
       this.dialogs = this.dialogs.slice(0, -1);
     }
     this.emitChange();
   };
 
+  /**
+   * 모든 다이얼로그를 닫습니다.
+   */
   closeAllDialogs = () => {
+    if (this.dialogs.length === 0) return;
     this.dialogs = [];
     this.emitChange();
   };
 }
-
-

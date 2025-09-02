@@ -2,7 +2,7 @@
 import type React from 'react';
 import { DialogManager } from './manager';
 import { useSyncExternalStore } from 'react';
-import type { BaseState, DialogState, DialogsConfig } from './types';
+import type { BaseState, DialogState, DialogsConfig, DialogInstance } from './types';
 
 export function createDialogManager<T extends { type: string }>(
   config?: DialogsConfig
@@ -11,49 +11,38 @@ export function createDialogManager<T extends { type: string }>(
   return { manager };
 }
 
-/**
- * 다이얼로그 컴포넌트들을 'type' 문자열을 키로 하여 매핑한 객체 타입
- */
 type ComponentMap<T extends { type: string }> = {
   [K in T['type']]: React.ComponentType<DialogState<Extract<T, { type: K }>>>;
 };
 
-/**
- * 타입이 완벽하게 설정된 useDialogs 훅을 생성하는 팩토리 함수.
- * @param manager createDialogManager에서 생성된 manager 인스턴스
- * @param componentMap 다이얼로그 'type'과 컴포넌트를 매핑한 객체
- */
 export function createUseDialogs<T extends { type: string }>(
   manager: DialogManager<T>,
   componentMap: ComponentMap<T>
 ) {
-  // `type`을 기반으로 해당하는 상태 타입을 추론하는 헬퍼
   type StateForType<K extends T['type']> = Extract<T, { type: K }>;
 
   const useDialogs = () => {
-    const dialogs = useSyncExternalStore(manager.subscribe, manager.getSnapshot);
+    const dialogStates = useSyncExternalStore(manager.subscribe, manager.getSnapshot);
 
     const openDialog = <K extends T['type']>(
       type: K,
-      // Omit<...>으로 순수 사용자 상태를 가져온 뒤, BaseState의 일부 속성을 결합합니다.
       payload: Omit<StateForType<K>, 'type' | 'isOpen'> &
         Pick<BaseState, 'zIndex' | 'dimmed' | 'closeOnOverlayClick' | 'dismissable' | 'scrollLock'> & { id?: string }
     ) => {
-      const { id, ...userState } = payload;
-
-      const component = componentMap[type];
-      if (!component) {
-        throw new Error(`[react-layered-dialog] Component for type "${type}" not found.`);
-      }
-
       const finalState = {
         type,
-        id,
-        ...userState,
+        ...payload,
       } as unknown as StateForType<K>;
-
-      return manager.openDialog(component, finalState);
+      return manager.openDialog(finalState);
     };
+
+    // state 배열을 "상관된 유니온" 타입의 객체 배열로 변환합니다.
+    const dialogs = dialogStates.map((state) => {
+      return {
+        Component: componentMap[state.type as T['type']],
+        state,
+      };
+    }) as DialogInstance<T>[]; // 최종 타입을 단언합니다.
 
     return {
       dialogs,
