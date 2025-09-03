@@ -14,7 +14,8 @@ const menuConfig = [
     title: 'Core Concepts',
     items: [
       { path: '/core-concepts/how-it-works', label: 'How it Works' },
-      { path: '/core-concepts/creating-a-dialog', label: 'Creating a Dialog' },
+      { path: '/core-concepts/state-vs-behavior', label: 'State vs. Behavior' },
+      { path: '/core-concepts/key-types', label: 'Key Types' },
     ],
   },
   {
@@ -24,6 +25,7 @@ const menuConfig = [
       { path: '/guides/nested-dialogs', label: 'Nested Dialogs' },
       { path: '/guides/state-management', label: 'Update Dialog State' },
       { path: '/guides/animations', label: 'Animations' },
+      { path: '/guides/building-a-custom-component', label: 'Building a Custom Component' },
     ],
   },
   {
@@ -47,7 +49,10 @@ const menuConfig = [
   {
     title: 'API Reference',
     items: [
-      { path: '/api/functions-and-hooks', label: 'Functions & Hooks' },
+      { path: '/api/create-dialog-manager', label: 'createDialogManager' },
+      { path: '/api/create-use-dialogs', label: 'createUseDialogs' },
+      { path: '/api/use-dialogs-hook', label: 'useDialogs Hook' },
+      { path: '/api/use-layer-behavior-hook', label: 'useLayerBehavior Hook' },
     ],
   },
   {
