@@ -6,118 +6,12 @@ import {
   TypographyP,
 } from '@/components/ui/typography';
 
-const dialogsTsCode = `// src/lib/dialogs.ts
-import {
-  createDialogManager,
-  createUseDialogs,
-  type BaseState,
-} from 'react-layered-dialog';
-import { Alert } from '@/components/dialogs/Alert';
-
-// 1. 다이얼로그 상태 타입 정의
-export interface AlertState extends BaseState {
-  type: 'alert';
-  title: string;
-  message: string;
-}
-
-// 2. 모든 다이얼로그 상태 타입을 포함하는 유니온 타입 생성
-export type CustomDialogState = AlertState;
-
-// 3. 다이얼로그 매니저 생성
-const { manager } = createDialogManager<CustomDialogState>();
-
-// 4. 다이얼로그 타입과 컴포넌트를 매핑하는 객체 생성
-const componentMap = {
-  alert: Alert,
-};
-
-// 5. 앱 전체에서 사용할 훅과 함수 생성 및 내보내기
-export const useDialogs = createUseDialogs(manager, componentMap);
-export const openDialog = manager.openDialog;
-export const closeDialog = manager.closeDialog;
-`;
-
-const alertComponentCode = `// src/components/dialogs/Alert.tsx
-import { closeDialog } from '@/lib/dialogs';
-import type { AlertState } from '@/lib/dialogs';
-import type { DialogState } from 'react-layered-dialog';
-
-type AlertProps = DialogState<AlertState>;
-
-export const Alert = ({ title, message, zIndex }: AlertProps) => {
-  return (
-    <div style={{ zIndex }}>
-      {/* 오버레이 */}
-      <div className="fixed inset-0 bg-black/30" />
-      
-      {/* 다이얼로그 패널 */}
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg">
-          <h3 className="text-lg font-semibold">{title}</h3>
-          <p className="mt-2 text-sm text-gray-600">{message}</p>
-          <button 
-            onClick={closeDialog} 
-            className="mt-4 w-full rounded-md bg-blue-500 px-4 py-2 text-white"
-          >
-            확인
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-`;
-
-const dialogRendererCode = `// src/components/dialogs/DialogRenderer.tsx
-import { useDialogs } from '@/lib/dialogs';
-
-export const DialogRenderer = () => {
-  const { dialogs } = useDialogs();
-
-  return (
-    <>
-      {dialogs.map(({ Component, state }) => (
-        <Component key={state.id} {...state} />
-      ))}
-    </>
-  );
-};
-`;
-
-const appTsxCode = `// src/App.tsx
-import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
-// ... other imports
-
-function App() {
-  return (
-    <>
-      {/* 앱의 메인 콘텐츠 */}
-      <MainLayout>
-        {/* ... 라우트 ... */}
-      </MainLayout>
-      
-      {/* DialogRenderer를 앱 최상단에 추가 */}
-      <DialogRenderer />
-    </>
-  );
-}
-`;
-
-const usageCode = `// MyComponent.tsx
-import { openDialog } from '@/lib/dialogs';
-
-const MyComponent = () => {
-  const showAlert = () => {
-    openDialog('alert', {
-      title: '안녕하세요!',
-      message: '이것은 react-layered-dialog를 사용한 알림창입니다.',
-    });
-  };
-
-  return <button onClick={showAlert}>알림창 열기</button>;
-};
-`;
+// `?raw`를 사용하여 코드 파일의 원본 텍스트를 가져옵니다.
+import dialogsTsCode from '@/code-templates/dialogs.ts.txt?raw';
+import alertComponentCode from '@/code-templates/AlertBasic.tsx.txt?raw';
+import dialogRendererCode from '@/code-templates/DialogRenderer.tsx.txt?raw';
+import appTsxCode from '@/code-templates/App.tsx.txt?raw';
+import usageCode from '@/code-templates/usage.tsx.txt?raw';
 
 export const QuickStart = () => (
   <div className="space-y-12">

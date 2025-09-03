@@ -1,0 +1,15 @@
+// src/components/dialogs/DialogRenderer.tsx
+import { useDialogs } from '@/lib/dialogs';
+import { AnimatePresence } from 'motion/react';
+
+export const DialogRenderer = () => {
+  const { dialogs } = useDialogs();
+
+  return (
+    <AnimatePresence>
+      {dialogs.map(({ Component, state }) => (
+        <Component key={state.id} {...state} />
+      ))}
+    </AnimatePresence>
+  );
+};

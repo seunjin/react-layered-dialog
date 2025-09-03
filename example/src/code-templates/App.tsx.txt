@@ -1,0 +1,17 @@
+// src/App.tsx
+import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
+// ... other imports
+
+function App() {
+  return (
+    <>
+      {/* 앱의 메인 콘텐츠 */}
+      <MainLayout>
+        {/* ... 라우트 ... */}
+      </MainLayout>
+      
+      {/* DialogRenderer를 앱 최상단에 추가 */}
+      <DialogRenderer />
+    </>
+  );
+}
