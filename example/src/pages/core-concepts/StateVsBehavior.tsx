@@ -1,12 +1,12 @@
-import { CodeBlock } from '@/components/ui/CodeBlock';
-import { InlineCode } from '@/components/ui/InlineCode';
+import { CodeBlock } from '@/components/docs/CodeBlock';
+import { InlineCode } from '@/components/docs/InlineCode';
 import {
   TypographyH1,
   TypographyH2,
   TypographyH3,
   TypographyP,
   TypographyLead,
-} from '@/components/ui/typography';
+} from '@/components/docs/typography';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const propsAndHookExample = `// 👍 상태와 동작이 분리된 방식

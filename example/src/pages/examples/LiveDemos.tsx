@@ -1,9 +1,9 @@
-import { TypographyH2, TypographyP } from '@/components/ui/typography';
+import { TypographyH2, TypographyP } from '@/components/docs/typography';
 import { BasicUsageDemo } from '@/components/demos/BasicUsageDemo';
 import { AdvancedFeaturesDemo } from '@/components/demos/AdvancedFeaturesDemo';
 import { AsyncHandlingDemo } from '@/components/demos/AsyncHandlingDemo';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { InlineCode } from '@/components/ui/InlineCode';
+import { InlineCode } from '@/components/docs/InlineCode';
 
 export const LiveDemos = () => (
   <div className="space-y-12">

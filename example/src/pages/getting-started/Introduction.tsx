@@ -5,13 +5,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { InlineCode } from '@/components/ui/InlineCode';
+import { InlineCode } from '@/components/docs/InlineCode';
 import {
   TypographyH1,
   TypographyP,
   TypographyLead,
-} from '@/components/ui/typography';
-import { CodeBlock } from '@/components/ui/CodeBlock';
+} from '@/components/docs/typography';
+import { CodeBlock } from '@/components/docs/CodeBlock';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const Introduction = () => (

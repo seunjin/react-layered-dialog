@@ -1,9 +1,9 @@
-import { InlineCode } from '@/components/ui/InlineCode';
+import { InlineCode } from '@/components/docs/InlineCode';
 import {
   TypographyH2,
   TypographyH3,
   TypographyP,
-} from '@/components/ui/typography';
+} from '@/components/docs/typography';
 
 export const HowItWorks = () => (
   <div className="space-y-8">

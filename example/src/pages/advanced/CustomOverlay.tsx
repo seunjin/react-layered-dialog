@@ -1,4 +1,4 @@
-import { TypographyH2 } from '@/components/ui/typography';
+import { TypographyH2 } from '@/components/docs/typography';
 
 export const CustomOverlay = () => (
   <div>

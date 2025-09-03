@@ -1,10 +1,10 @@
-import { CodeBlock } from '@/components/ui/CodeBlock';
-import { InlineCode } from '@/components/ui/InlineCode';
+import { CodeBlock } from '@/components/docs/CodeBlock';
+import { InlineCode } from '@/components/docs/InlineCode';
 import {
   TypographyH2,
   TypographyH3,
   TypographyP,
-} from '@/components/ui/typography';
+} from '@/components/docs/typography';
 
 const openDialogCode = `import { openDialog } from '@/lib/dialogs';
 

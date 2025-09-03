@@ -1,11 +1,11 @@
-import { CodeBlock } from '@/components/ui/CodeBlock';
-import { InlineCode } from '@/components/ui/InlineCode';
+import { CodeBlock } from '@/components/docs/CodeBlock';
+import { InlineCode } from '@/components/docs/InlineCode';
 import {
   TypographyH2,
   TypographyH3,
   TypographyP,
   TypographyLead,
-} from '@/components/ui/typography';
+} from '@/components/docs/typography';
 import {
   Card,
   CardContent,

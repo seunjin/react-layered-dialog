@@ -1,10 +1,10 @@
-import { CodeBlock } from '@/components/ui/CodeBlock';
-import { InlineCode } from '@/components/ui/InlineCode';
+import { CodeBlock } from '@/components/docs/CodeBlock';
+import { InlineCode } from '@/components/docs/InlineCode';
 import {
   TypographyH2,
   TypographyH3,
   TypographyP,
-} from '@/components/ui/typography';
+} from '@/components/docs/typography';
 
 // `?raw`를 사용하여 코드 파일의 원본 텍스트를 가져옵니다.
 import dialogsTsCode from '@/code-templates/dialogs.ts.txt?raw';

@@ -1,9 +1,9 @@
-import { CodeBlock } from '@/components/ui/CodeBlock';
-import { InlineCode } from '@/components/ui/InlineCode';
+import { CodeBlock } from '@/components/docs/CodeBlock';
+import { InlineCode } from '@/components/docs/InlineCode';
 import {
   TypographyH2,
   TypographyP,
-} from '@/components/ui/typography';
+} from '@/components/docs/typography';
 
 const rendererCode = `// src/components/dialogs/DialogRenderer.tsx
 import { useDialogs } from '@/lib/dialogs';
