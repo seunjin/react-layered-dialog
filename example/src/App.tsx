@@ -1,18 +1,42 @@
 import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDialogs } from '@/lib/dialogs';
 import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 import { MainLayout } from '@/components/layout/MainLayout';
 
-// 페이지 컴포넌트 임포트 (누락된 부분 추가)
-import { Introduction } from '@/pages/Introduction';
-import { UsageExamples } from '@/pages/examples/UsageExamples';
-import { CustomDialog } from '@/pages/examples/CustomDialog';
-import { CoreSetup } from '@/pages/examples/CoreSetup';
-import { QuickStart } from '@/pages/examples/QuickStart';
+// Getting Started
+import { Introduction } from '@/pages/getting-started/Introduction';
+import { Installation } from '@/pages/getting-started/Installation';
+import { QuickStart } from '@/pages/getting-started/QuickStart';
+
+// Core Concepts
+import { HowItWorks } from '@/pages/core-concepts/HowItWorks';
+import { CreatingADialog } from '@/pages/core-concepts/CreatingADialog';
+
+// Guides
+import { OpeningAndClosing } from '@/pages/guides/OpeningAndClosing';
+import { NestedDialogs } from '@/pages/guides/NestedDialogs';
+import { StateManagement } from '@/pages/guides/StateManagement';
+import { Animations } from '@/pages/guides/Animations';
+
+// Advanced
+import { Accessibility } from '@/pages/advanced/Accessibility';
+import { CustomOverlay } from '@/pages/advanced/CustomOverlay';
+import { TypeScriptRecipes } from '@/pages/advanced/TypeScriptRecipes';
+
+// Examples
+import { AlertDialog } from '@/pages/examples/AlertDialog';
+import { ConfirmDialog } from '@/pages/examples/ConfirmDialog';
+import { Drawer } from '@/pages/examples/Drawer';
+import { ContextMenu } from '@/pages/examples/ContextMenu';
+
+// API Reference
+import { FunctionsAndHooks } from '@/pages/api-reference/FunctionsAndHooks';
+
+// FAQ
+import { Troubleshooting } from '@/pages/faq/Troubleshooting';
 
 function App() {
-  // 1. useDialogs 훅으로부터 완벽한 타입을 가진 dialogs 배열을 가져옵니다.
   const { dialogs } = useDialogs();
 
   useEffect(() => {
@@ -28,15 +52,66 @@ function App() {
     <>
       <MainLayout>
         <Routes>
-          <Route path="/" element={<Introduction />} />
-          <Route path="/examples/quick-start" element={<QuickStart />} />
-          <Route path="/examples/usage" element={<UsageExamples />} />
-          <Route path="/examples/custom" element={<CustomDialog />} />
-          <Route path="/examples/setup" element={<CoreSetup />} />
+          <Route
+            path="/"
+            element={<Navigate to="/getting-started/introduction" />}
+          />
+
+          {/* Getting Started */}
+          <Route
+            path="/getting-started/introduction"
+            element={<Introduction />}
+          />
+          <Route
+            path="/getting-started/installation"
+            element={<Installation />}
+          />
+          <Route path="/getting-started/quick-start" element={<QuickStart />} />
+
+          {/* Core Concepts */}
+          <Route path="/core-concepts/how-it-works" element={<HowItWorks />} />
+          <Route
+            path="/core-concepts/creating-a-dialog"
+            element={<CreatingADialog />}
+          />
+
+          {/* Guides */}
+          <Route
+            path="/guides/opening-and-closing"
+            element={<OpeningAndClosing />}
+          />
+          <Route path="/guides/nested-dialogs" element={<NestedDialogs />} />
+          <Route
+            path="/guides/state-management"
+            element={<StateManagement />}
+          />
+          <Route path="/guides/animations" element={<Animations />} />
+
+          {/* Advanced */}
+          <Route path="/advanced/accessibility" element={<Accessibility />} />
+          <Route path="/advanced/custom-overlay" element={<CustomOverlay />} />
+          <Route
+            path="/advanced/typescript-recipes"
+            element={<TypeScriptRecipes />}
+          />
+
+          {/* Examples */}
+          <Route path="/examples/alert-dialog" element={<AlertDialog />} />
+          <Route path="/examples/confirm-dialog" element={<ConfirmDialog />} />
+          <Route path="/examples/drawer" element={<Drawer />} />
+          <Route path="/examples/context-menu" element={<ContextMenu />} />
+
+          {/* API Reference */}
+          <Route
+            path="/api/functions-and-hooks"
+            element={<FunctionsAndHooks />}
+          />
+
+          {/* FAQ */}
+          <Route path="/faq/troubleshooting" element={<Troubleshooting />} />
         </Routes>
       </MainLayout>
 
-      {/* 2. dialogs 배열을 prop으로 전달합니다. */}
       <DialogRenderer dialogs={dialogs} />
     </>
   );
