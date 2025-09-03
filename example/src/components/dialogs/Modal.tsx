@@ -1,52 +1,56 @@
-import { useEffect } from 'react';
+import { useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { ModalState } from '@/lib/dialogs';
-import type { DialogState } from 'react-layered-dialog';
+import {
+  type DialogState,
+  useLayerBehavior,
+} from 'react-layered-dialog';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 
 type ModalProps = DialogState<ModalState>;
 
-export const Modal = ({
-  children,
-  zIndex,
-  dimmed = true,
-  closeOnOverlayClick = true,
-  dismissable = true,
-}: ModalProps) => {
+export const Modal = (props: ModalProps) => {
+  const {
+    id,
+    children,
+    zIndex,
+    dimmed = true,
+    closeOnOverlayClick = true,
+    dismissable = true,
+  } = props;
+
   const { dialogs, closeDialog } = useDialogs();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const isTopDialog =
-        dialogs.length > 0 &&
-        dialogs[dialogs.length - 1].state.zIndex === zIndex;
-      if (event.key === 'Escape' && dismissable && isTopDialog) {
-        closeDialog();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [dismissable, closeDialog, dialogs, zIndex]);
-
-  const handleOverlayClick = () => {
-    if (closeOnOverlayClick) {
-      closeDialog();
-    }
+  const handleClose = () => {
+    closeDialog(id);
   };
+
+  useLayerBehavior({
+    zIndex,
+    getTopZIndex: () => dialogs.at(-1)?.state?.zIndex,
+    closeOnEscape: dismissable,
+    onEscape: handleClose,
+    autoFocus: true,
+    focusRef: closeButtonRef,
+    closeOnOutsideClick: closeOnOverlayClick,
+    onOutsideClick: handleClose,
+    outsideClickRef: rootRef,
+  });
 
   return (
     <div
+      ref={rootRef}
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex }}
+      role="dialog"
+      aria-modal="true"
     >
       <motion.div
         className={`absolute inset-0 ${dimmed ? 'bg-black/20' : 'bg-transparent'}`}
-        onClick={handleOverlayClick}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -60,7 +64,12 @@ export const Modal = ({
         transition={{ duration: 0.2, ease: 'easeInOut' }}
       >
         <div className="absolute top-2 right-2">
-          <Button variant="ghost" size="icon" onClick={() => closeDialog()}>
+          <Button
+            ref={closeButtonRef}
+            variant="ghost"
+            size="icon"
+            onClick={handleClose}
+          >
             <X className="h-4 w-4" />
           </Button>
         </div>

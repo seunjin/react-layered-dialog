@@ -5,3 +5,5 @@ export type {
   DialogInstance,
   DialogsConfig,
 } from './core/types';
+export { useLayerBehavior } from './hooks/useLayerBehavior';
+export type { UseLayerBehaviorOptions } from './hooks/useLayerBehavior';
