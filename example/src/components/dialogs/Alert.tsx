@@ -1,10 +1,7 @@
 import { useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { AlertState } from '@/lib/dialogs';
-import {
-  type DialogState,
-  useLayerBehavior,
-} from 'react-layered-dialog';
+import { type DialogState, useLayerBehavior } from 'react-layered-dialog';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 
@@ -24,7 +21,7 @@ export const Alert = (props: AlertProps) => {
 
   const { dialogs, closeDialog } = useDialogs();
   const okButtonRef = useRef<HTMLButtonElement>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const handleOk = () => {
     onOk?.();
@@ -40,12 +37,11 @@ export const Alert = (props: AlertProps) => {
     focusRef: okButtonRef,
     closeOnOutsideClick: closeOnOverlayClick,
     onOutsideClick: handleOk,
-    outsideClickRef: rootRef,
+    outsideClickRef: panelRef,
   });
 
   return (
     <div
-      ref={rootRef}
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex }}
       role="alertdialog"
@@ -61,6 +57,7 @@ export const Alert = (props: AlertProps) => {
         transition={{ duration: 0.2, ease: 'easeInOut' }}
       />
       <motion.div
+        ref={panelRef}
         className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

@@ -1,6 +1,6 @@
 export { createDialogManager, createUseDialogs } from './core/factory';
 export type {
-  BaseState,
+  BaseLayerProps,
   DialogState,
   DialogInstance,
   DialogsConfig,

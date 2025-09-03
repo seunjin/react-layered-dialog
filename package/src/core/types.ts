@@ -1,10 +1,38 @@
 import type React from 'react';
 
-export interface BaseState {
+/**
+ * 모든 레이어 컴포넌트의 Public API 역할을 하는 공통 Props 명세입니다.
+ * 이 인터페이스는 `DialogManager`가 레이어를 관리하는 데 필요한 최소한의 상태와,
+ * 레이어의 동작을 선언적으로 설정하는 옵션을 포함합니다.
+ * 이 Props에 선언된 동작 옵션들은 `useLayerBehavior` 훅을 통해 실제 동작으로 구현됩니다.
+ */
+export interface BaseLayerProps {
+  /**
+   * 레이어의 쌓임 순서(z-index)입니다.
+   * 지정하지 않으면 `baseZIndex`(기본값 1000)부터 시작하는 값이 자동으로 할당됩니다.
+   */
   zIndex?: number;
+  /**
+   * 레이어 뒤에 깔리는 어두운 배경(dim)을 표시할지 여부입니다.
+   * @default true
+   */
   dimmed?: boolean;
+  /**
+   * 오버레이(배경) 클릭 시 레이어를 닫을지 여부입니다.
+   * `useLayerBehavior` 훅의 `closeOnOutsideClick` 옵션을 통해 구현됩니다.
+   * @default true
+   */
   closeOnOverlayClick?: boolean;
+  /**
+   * Escape 키를 눌렀을 때 레이어를 닫을지 여부입니다.
+   * `useLayerBehavior` 훅의 `closeOnEscape` 옵션을 통해 구현됩니다.
+   * @default true
+   */
   dismissable?: boolean;
+  /**
+   * 레이어가 열렸을 때 배경 스크롤을 막을지 여부입니다. (향후 구현 예정)
+   * @default true
+   */
   scrollLock?: boolean;
 }
 
@@ -26,6 +54,13 @@ export type DialogInstance<T extends { type: string }> = {
   };
 }[T['type']];
 
+/**
+ * `createDialogManager`에 전달할 수 있는 설정 객체입니다.
+ */
 export interface DialogsConfig {
+  /**
+   * 다이얼로그의 z-index가 시작될 기본 값입니다.
+   * @default 1000
+   */
   baseZIndex?: number;
 }

@@ -22,7 +22,7 @@ export const Modal = (props: ModalProps) => {
   } = props;
 
   const { dialogs, closeDialog } = useDialogs();
-  const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleClose = () => {
@@ -38,12 +38,11 @@ export const Modal = (props: ModalProps) => {
     focusRef: closeButtonRef,
     closeOnOutsideClick: closeOnOverlayClick,
     onOutsideClick: handleClose,
-    outsideClickRef: rootRef,
+    outsideClickRef: panelRef,
   });
 
   return (
     <div
-      ref={rootRef}
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex }}
       role="dialog"
@@ -57,6 +56,7 @@ export const Modal = (props: ModalProps) => {
         transition={{ duration: 0.2, ease: 'easeInOut' }}
       />
       <motion.div
+        ref={panelRef}
         className="relative rounded-lg bg-white p-6 shadow-lg min-w-[400px]"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

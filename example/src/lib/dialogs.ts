@@ -1,7 +1,7 @@
 import {
   createDialogManager,
   createUseDialogs,
-  type BaseState,
+  type BaseLayerProps,
 } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
@@ -9,20 +9,20 @@ import { Modal } from '@/components/dialogs/Modal';
 import type React from 'react';
 
 // 타입 정의
-export interface AlertState extends BaseState {
+export interface AlertState extends BaseLayerProps {
   type: 'alert';
   title: string;
   message: string;
   onOk?: () => void;
 }
-export interface ConfirmState extends BaseState {
+export interface ConfirmState extends BaseLayerProps {
   type: 'confirm';
   title: string;
   message: string;
   onConfirm?: () => void;
   onCancel?: () => void;
 }
-export interface ModalState extends BaseState {
+export interface ModalState extends BaseLayerProps {
   type: 'modal';
   children: React.ReactNode;
 }

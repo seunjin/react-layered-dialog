@@ -25,6 +25,7 @@ import { CustomOverlay } from '@/pages/advanced/CustomOverlay';
 import { TypeScriptRecipes } from '@/pages/advanced/TypeScriptRecipes';
 
 // Examples
+import { LiveDemos } from '@/pages/examples/LiveDemos';
 import { AlertDialog } from '@/pages/examples/AlertDialog';
 import { ConfirmDialog } from '@/pages/examples/ConfirmDialog';
 import { Drawer } from '@/pages/examples/Drawer';
@@ -93,6 +94,7 @@ function App() {
           />
 
           {/* Examples */}
+          <Route path="/examples/live-demos" element={<LiveDemos />} />
           <Route path="/examples/alert-dialog" element={<AlertDialog />} />
           <Route path="/examples/confirm-dialog" element={<ConfirmDialog />} />
           <Route path="/examples/drawer" element={<Drawer />} />

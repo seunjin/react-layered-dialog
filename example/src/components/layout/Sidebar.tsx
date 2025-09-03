@@ -37,6 +37,7 @@ const menuConfig = [
   {
     title: 'Examples',
     items: [
+      { path: '/examples/live-demos', label: 'Live Demos' },
       { path: '/examples/alert-dialog', label: 'Alert Dialog' },
       { path: '/examples/confirm-dialog', label: 'Confirm Dialog' },
       { path: '/examples/drawer', label: 'Drawer / Bottom Sheet' },

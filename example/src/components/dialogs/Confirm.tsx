@@ -25,7 +25,7 @@ export const Confirm = (props: ConfirmProps) => {
 
   const { dialogs, closeDialog } = useDialogs();
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null); // panelRef로 이름 변경 및 위치 이동
 
   const handleCancel = () => {
     onCancel?.();
@@ -46,12 +46,11 @@ export const Confirm = (props: ConfirmProps) => {
     focusRef: confirmButtonRef,
     closeOnOutsideClick: closeOnOverlayClick,
     onOutsideClick: handleCancel,
-    outsideClickRef: rootRef,
+    outsideClickRef: panelRef, // panelRef를 전달
   });
 
   return (
     <div
-      ref={rootRef}
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex }}
       role="dialog"
@@ -67,6 +66,7 @@ export const Confirm = (props: ConfirmProps) => {
         transition={{ duration: 0.2, ease: 'easeInOut' }}
       />
       <motion.div
+        ref={panelRef} // ref를 wrapper가 아닌 panel에 적용
         className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

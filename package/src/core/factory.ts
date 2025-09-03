@@ -2,8 +2,14 @@
 import type React from 'react';
 import { DialogManager } from './manager';
 import { useSyncExternalStore } from 'react';
-import type { BaseState, DialogState, DialogsConfig, DialogInstance } from './types';
+import type { BaseLayerProps, DialogState, DialogsConfig, DialogInstance } from './types';
 
+/**
+ * 다이얼로그 상태를 관리하는 `DialogManager`의 인스턴스를 생성합니다.
+ * 이 함수는 라이브러리 설정의 가장 첫 단계에서 호출되어야 합니다.
+ * @param config 라이브러리의 동작을 설정하는 객체입니다. (e.g., `baseZIndex`)
+ * @returns `DialogManager` 인스턴스를 포함하는 객체입니다.
+ */
 export function createDialogManager<T extends { type: string }>(
   config?: DialogsConfig
 ) {
@@ -15,6 +21,12 @@ type ComponentMap<T extends { type: string }> = {
   [K in T['type']]: React.ComponentType<DialogState<Extract<T, { type: K }>>>;
 };
 
+/**
+ * 다이얼로그 상태를 React 컴포넌트와 연결하는 `useDialogs` 훅을 생성합니다.
+ * @param manager `createDialogManager`를 통해 생성된 `DialogManager` 인스턴스입니다.
+ * @param componentMap 다이얼로그의 `type` 문자열과 실제 렌더링될 React 컴포넌트를 매핑한 객체입니다.
+ * @returns 앱 전체에서 사용할 수 있는 `useDialogs` 훅을 반환합니다.
+ */
 export function createUseDialogs<T extends { type: string }>(
   manager: DialogManager<T>,
   componentMap: ComponentMap<T>
@@ -27,7 +39,7 @@ export function createUseDialogs<T extends { type: string }>(
     const openDialog = <K extends T['type']>(
       type: K,
       payload: Omit<StateForType<K>, 'type' | 'isOpen'> &
-        Pick<BaseState, 'zIndex' | 'dimmed' | 'closeOnOverlayClick' | 'dismissable' | 'scrollLock'> & { id?: string }
+        Pick<BaseLayerProps, 'zIndex' | 'dimmed' | 'closeOnOverlayClick' | 'dismissable' | 'scrollLock'> & { id?: string }
     ) => {
       const finalState = {
         type,
