@@ -7,136 +7,236 @@ import {
   TypographyP,
   TypographyLead,
 } from '@/components/docs/typography';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const propsAndHookExample = `// 👍 상태와 동작이 분리된 방식
+const beforeExample = `// MyPage.tsx
+function MyPage() {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
 
-// 1. "상태"는 openDialog에 전달
-openDialog('alert', {
-  title: '저장 완료',
-  message: '성공적으로 저장되었습니다.',
-});
+  function handleSave() {
+    // ... 저장 로직 ...
+    setAlertTitle('저장 완료');
+    setIsAlertOpen(true);
+  }
 
-// 2. "동작"은 컴포넌트 내부에서 훅으로 정의
-// Alert.tsx 내부
-useLayerBehavior({
-  closeOnEscape: props.dismissable,
-  autoFocus: true,
-  // ...
-});`;
+  return (
+    <div>
+      <button onClick={handleSave}>저장</button>
+      
+      {/* 다이얼로그의 상태와 렌더링이 부모 컴포넌트에 묶여있음 */}
+      <Alert
+        isOpen={isAlertOpen}
+        title={alertTitle}
+        onClose={() => setIsAlertOpen(false)}
+      />
+    </div>
+  );
+}`;
+
+const afterExample = `// MyPage.tsx
+import { useDialogs } from 'react-layered-dialog';
+
+function MyPage() {
+  const { openDialog } = useDialogs();
+
+  function handleSave() {
+    // ... 저장 로직 ...
+
+    // &quot;어떤 다이얼로그를, 어떤 내용으로 열어줘&quot; 라는 &apos;명령&apos;만 전달
+    openDialog('alert', {
+      title: '저장 완료',
+      message: '성공적으로 저장되었습니다.',
+    });
+  }
+
+  return <button onClick={handleSave}>저장</button>;
+}
+
+// DialogRenderer는 앱 최상단에 한 번만 선언하면 됩니다.
+ function App() {
+   return (
+     <>
+       {/* ... other components */}
+       <DialogRenderer />
+     </>
+   )
+ }
+`;
+
+const implementationExample = `// 1. 다이얼로그 열기 (상태와 설정 전달)
+// 사용자는 &apos;어떻게&apos; 동작할지 고민할 필요 없이
+// &apos;무엇을&apos; 보여줄지와 &apos;어떤 정책&apos;으로 동작할지만 전달합니다.
+function handleClick() {
+  openDialog('alert', {
+    title: '저장 완료',
+    message: '성공적으로 저장되었습니다.',
+    // 정책: 이 다이얼로그는 외부 클릭으로 닫히지 않음
+    dismissable: false, 
+  });
+}
+
+// 2. Alert 다이얼로그 컴포넌트 구현 (동작 정의)
+// 내부에선 useLayerBehavior 훅을 사용해 동작을 실제로 구현합니다.
+// props로 전달된 &apos;정책(dismissable)&apos;을 훅에 연결합니다.
+const Alert = (props: AlertProps) => {
+  const { close } = useDialogUtils();
+  
+  useLayerBehavior({
+    // dismissable prop에 따라 ESC 키 동작이 결정됩니다.
+    closeOnEscape: props.dismissable,
+    // 외부 클릭 동작도 여기서 제어됩니다.
+    closeOnOutsideClick: props.dismissable,
+    autoFocus: true,
+  });
+
+  return (
+    <div role="alertdialog">
+      <h1>{props.title}</h1>
+      <p>{props.message}</p>
+      <button onClick={() => close('alert')}>확인</button>
+    </div>
+  );
+};`;
 
 export const StateVsBehavior = () => (
-  <div className="space-y-8">
-    <div>
-      <TypographyH1>State vs. Behavior</TypographyH1>
+  <div className="max-w-4xl mx-auto px-4 py-8">
+    {/* 1. 문제 제기 */}
+    <section className="space-y-4">
+      <TypographyH1>
+        &quot;어디서든 여는 다이얼로그&quot;의 어려움
+      </TypographyH1>
       <TypographyLead>
-        라이브러리의 핵심 설계 원칙: 상태(State)와 동작(Behavior)의 분리
+        다이얼로그 관리는 왜 항상 번거로울까요?
       </TypographyLead>
-      <TypographyP className="mt-4">
-        UI 컴포넌트를 설계할 때 흔히 겪는 어려움은 컴포넌트의 데이터(State)와
-        사용자 인터랙션에 따른 반응(Behavior)이 하나의 코드 덩어리에 섞이는
-        것입니다. <InlineCode>React Layered Dialog</InlineCode>는 이 두 가지를
-        명확하게 분리하여 유연성과 재사용성을 극대화하는 것을 핵심 아키텍처로
-        삼습니다.
+      <TypographyP className="!mt-6">
+        React 애플리케이션에서 다이얼로그를 관리하는 것은 종종 까다로운 일이
+        됩니다. 일반적으로 <InlineCode>useState</InlineCode>를 사용하여
+        다이얼로그의 가시성을 제어하고, 필요한 데이터와 핸들러를{' '}
+        <InlineCode>props</InlineCode>로 전달해야 합니다. 이 방식은 몇 가지 흔한
+        문제점을 야기합니다.
       </TypographyP>
-    </div>
-
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>자동차 대시보드 비유</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <TypographyP>
-            이 개념을 자동차에 비유해볼 수 있습니다.
-          </TypographyP>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>
-              <strong>상태 (Props):</strong> 운전자가 조작하는 대시보드의 버튼이나
-              스위치입니다. &quot;스포츠 모드 켜기&quot;(`sportsMode: true`)나 &quot;비상등
-              켜기&quot;(`emergencyLight: true`)와 같이, 운전자는{' '}
-              <strong>무엇을 원하는지(의도)</strong>만 선언적으로 설정합니다.
-            </li>
-            <li>
-              <strong>동작 (Hook):</strong> &quot;스포츠 모드&quot; 버튼을 눌렀을 때, 엔진의
-              연료 분사량을 조절하고 서스펜션을 제어하는 등, 실제로 복잡한 일을
-              수행하는 내부의 <strong>엔진과 소프트웨어</strong>입니다.
-            </li>
-          </ul>
-          <TypographyP>
-            운전자는 엔진의 내부 동작을 알 필요 없이 버튼만 누르면 됩니다. 우리
-            라이브러리도 마찬가지입니다.
-          </TypographyP>
-        </CardContent>
-      </Card>
-    </div>
-
-    <div>
-      <TypographyH2>라이브러리 아키텍처</TypographyH2>
-      <div className="mt-4 grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <TypographyH3>1. 상태와 설정 (Props)</TypographyH3>
-          </CardHeader>
-          <CardContent>
-            <TypographyP>
-              <InlineCode>BaseLayerProps</InlineCode>와 이를 확장하는 각 다이얼로그의
-              State 인터페이스(`AlertState` 등)는 &quot;대시보드 버튼&quot; 역할을 합니다.
-              이들은 다이얼로그가 어떤 데이터를 표시해야 하는지(`title`, `message`),
-              그리고 어떤 동작을 허용할지(`dismissable`, `closeOnOverlayClick`)를
-              결정하는 <strong>선언적인 설정값</strong>입니다.
-            </TypographyP>
-            <TypographyP className="mt-2">
-              이 설정값들은 <InlineCode>openDialog</InlineCode> 함수를 통해
-              전달됩니다.
-            </TypographyP>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <TypographyH3>2. 동작의 구현 (Hook)</TypographyH3>
-          </CardHeader>
-          <CardContent>
-            <TypographyP>
-              <InlineCode>useLayerBehavior</InlineCode> 훅은 &quot;엔진&quot; 역할을 합니다.
-              이 훅은 <InlineCode>BaseLayerProps</InlineCode>로 전달된 설정값을
-              받아서, <InlineCode>useEffect</InlineCode>를 통해 DOM 이벤트를
-              처리하고 포커스를 관리하는 등, 복잡하고 <strong>명령적인 로직</strong>을 실제로
-              구현합니다.
-            </TypographyP>
-            <TypographyP className="mt-2">
-              이 로직은 각 다이얼로그 컴포넌트 내부에 캡슐화되어, 사용자는 훅의
-              존재를 신경 쓸 필요가 없습니다.
-            </TypographyP>
-          </CardContent>
-        </Card>
+      <div className="!mt-8">
+        <CodeBlock language="typescript" code={beforeExample} />
       </div>
-    </div>
-
-    <div>
-      <TypographyH2>이점</TypographyH2>
-      <TypographyP className="mt-4">
-        이러한 분리 덕분에 다음과 같은 장점을 얻습니다.
-      </TypographyP>
-      <ul className="mt-4 list-disc pl-6 space-y-2">
+      <ul className="!mt-6 list-disc list-inside space-y-2">
         <li>
-          <strong>관심사 분리 (SoC):</strong> 상태는 순수한 데이터 객체로 관리되어
-          디버깅과 예측이 쉬워집니다. 동작 로직은 훅에 캡슐화되어 재사용성이
-          높아집니다.
+          <strong>상태 관리의 복잡성:</strong> 모든 다이얼로그마다{' '}
+          <InlineCode>isOpen</InlineCode> 상태와 관련 데이터(
+          <InlineCode>title</InlineCode>, <InlineCode>message</InlineCode> 등)를
+          부모 컴포넌트에서 관리해야 합니다.
         </li>
         <li>
-          <strong>높은 범용성:</strong> <InlineCode>useLayerBehavior</InlineCode>라는
-          범용 엔진이 있으므로, 우리는 `Modal`, `Alert` 뿐만 아니라 `Toast`,
-          `Drawer`, `ContextMenu` 등 어떤 종류의 레이어 컴포넌트든 동일한 동작
-          규칙을 적용하여 쉽게 만들 수 있습니다.
+          <strong>강한 결합도:</strong> 다이얼로그의 렌더링 로직이 특정
+          컴포넌트에 종속되어, 다른 곳에서 재사용하기 어렵습니다.
         </li>
         <li>
-          <strong>명확한 API:</strong> 라이브러리 사용자는 <InlineCode>openDialog</InlineCode>
-          에 상태와 설정을 전달하는 것만 신경 쓰면 되므로, API가 훨씬 단순하고
-          명확해집니다.
+          <strong>Props Drilling:</strong> 다이얼로그를 여는 트리거가 깊은 곳에
+          있다면, 상태와 핸들러를 여러 계층의 컴포넌트를 통해 전달해야 합니다.
         </li>
       </ul>
-      <CodeBlock language="typescript" code={propsAndHookExample} className="mt-4" />
-    </div>
+    </section>
+
+    {/* 2. 해결책 제시 */}
+    <section className="space-y-4 !mt-16">
+      <TypographyH1>
+        해결책: 명령형 API와 선언적 컴포넌트의 조화
+      </TypographyH1>
+      <TypographyLead>
+        &quot;어디서든, 무엇이든&quot; 열 수 있는 유연한 접근법
+      </TypographyLead>
+      <TypographyP className="!mt-6">
+        <InlineCode>React Layered Dialog</InlineCode>는 이 문제를 해결하기 위해
+        접근 방식을 바꿉니다. 더 이상 부모 컴포넌트가 다이얼로그의 생명주기를
+        일일이 관리할 필요가 없습니다. 대신, 필요한 곳 어디서든{' '}
+        <InlineCode>openDialog</InlineCode> 함수를 호출하여 &quot;어떤 다이얼로그를
+        어떤 내용으로 열어달라&quot;고 명령하기만 하면 됩니다.
+      </TypographyP>
+      <div className="!mt-8">
+        <CodeBlock language="typescript" code={afterExample} />
+      </div>
+      <TypographyP className="!mt-6">
+        이전 예시의 모든 보일러플레이트 코드가 사라지고, 오직 다이얼로그를 여는
+        &apos;의도&apos;만이 코드에 남았습니다. 어떻게 이것이 가능할까요?
+      </TypographyP>
+    </section>
+
+    {/* 3. 핵심 원리 설명 */}
+    <section className="space-y-4 !mt-16">
+      <TypographyH2>
+        핵심 원리: 상태(State)와 동작(Behavior)의 분리
+      </TypographyH2>
+      <TypographyP>
+        이 라이브러리의 마법은 &apos;상태&apos;와 &apos;동작&apos;을 명확히 분리하는 설계에서
+        비롯됩니다.
+      </TypographyP>
+      <div className="!mt-6 grid md:grid-cols-2 gap-6">
+        <div className="rounded-lg border bg-card p-6 space-y-2">
+          <TypographyH3>상태 (State)</TypographyH3>
+          <TypographyP className="text-muted-foreground">
+            <strong>&quot;무엇을&quot;</strong> 보여줄지에 대한 정보입니다. 다이얼로그의{' '}
+            <InlineCode>title</InlineCode>, <InlineCode>message</InlineCode> 와
+            같은 정적인 데이터나, <InlineCode>dismissable: false</InlineCode> 와
+            같이 동작 방식을 결정하는 &apos;설정&apos; 또는 &apos;정책&apos;이 여기에 해당합니다.
+            이들은 모두 <InlineCode>openDialog</InlineCode>를 통해 순수한 객체
+            형태로 전달됩니다.
+          </TypographyP>
+        </div>
+        <div className="rounded-lg border bg-card p-6 space-y-2">
+          <TypographyH3>동작 (Behavior)</TypographyH3>
+          <TypographyP className="text-muted-foreground">
+            <strong>&quot;어떻게&quot;</strong> 상호작용할지에 대한 실제 구현입니다. ESC
+            키를 누르면 닫히거나, 외부를 클릭했을 때의 반응, 포커스 관리 등
+            복잡한 Side Effect과 생명주기 관리를 의미합니다. 이 모든 로직은{' '}
+            <InlineCode>useLayerBehavior</InlineCode> 훅에 캡슐화되어 다이얼로그
+            컴포넌트 내부에서 처리됩니다.
+          </TypographyP>
+        </div>
+      </div>
+    </section>
+
+    {/* 4. 실제 구현과 이점 */}
+    <section className="space-y-4 !mt-16">
+      <TypographyH2>
+        실제 코드와 그로 인한 이점
+      </TypographyH2>
+      <TypographyP>
+        이러한 분리 원칙이 실제 코드에서 어떻게 적용되고, 어떤 이점을
+        가져다주는지 살펴보겠습니다.
+      </TypographyP>
+      <div className="!mt-8 space-y-8">
+        <CodeBlock language="typescript" code={implementationExample} />
+        <div className="!mt-8 grid gap-6 md:grid-cols-3">
+          <div className="rounded-lg border bg-card p-6 space-y-2">
+            <TypographyH3>
+              관심사 분리 (SoC)
+            </TypographyH3>
+            <TypographyP className="text-muted-foreground">
+              컴포넌트는 더 이상 다이얼로그의 열림/닫힘 상태를 알 필요가
+              없습니다. 오직 다이얼로그를 여는 &apos;명령&apos;만 내리면 되므로,
+              컴포넌트의 책임이 명확해지고 코드가 단순해집니다.
+            </TypographyP>
+          </div>
+          <div className="rounded-lg border bg-card p-6 space-y-2">
+            <TypographyH3>높은 범용성</TypographyH3>
+            <TypographyP className="text-muted-foreground">
+              동작 로직이 훅으로 분리되었기 때문에, `Modal`, `Alert` 뿐만 아니라
+              `Toast`, `Drawer`, `ContextMenu` 등 어떤 종류의 레이어 컴포넌트든
+              동일한 동작 규칙을 적용하여 쉽게 만들 수 있습니다.
+            </TypographyP>
+          </div>
+          <div className="rounded-lg border bg-card p-6 space-y-2">
+            <TypographyH3>
+              명확하고 간결한 API
+            </TypographyH3>
+            <TypographyP className="text-muted-foreground">
+              복잡한 로직이 추상화되었기 때문에, 사용자는{' '}
+              <InlineCode>openDialog</InlineCode>에 필요한 상태와 설정을
+              전달하는 것만 신경 쓰면 됩니다. 이는 API를 훨씬 이해하기 쉽고
+              사용하기 쉽게 만듭니다.
+            </TypographyP>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 );
