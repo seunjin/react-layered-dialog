@@ -1,9 +1,6 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
-import {
-  TypographyH2,
-  TypographyP,
-} from '@/components/docs/typography';
+import { DocArticle } from '@/components/docs/DocArticle';
 
 const rendererCode = `// src/components/dialogs/DialogRenderer.tsx
 import { useDialogs } from '@/lib/dialogs';
@@ -56,32 +53,26 @@ export const Alert = ({ title, message, zIndex }: AlertProps) => {
 `;
 
 export const Animations = () => (
-  <div className="space-y-8">
-    <div>
-      <TypographyH2>Animations (with Motion)</TypographyH2>
-      <TypographyP className="mt-2">
-        <InlineCode>motion/react</InlineCode>와 같은 애니메이션 라이브러리와
-        함께 사용하여 다이얼로그에 부드러운 등장/퇴장 효과를 적용할 수 있습니다.
-      </TypographyP>
-    </div>
+  <DocArticle>
+    <h1>Animations (with Motion)</h1>
+    <p>
+      <InlineCode>motion/react</InlineCode>와 같은 애니메이션 라이브러리와
+      함께 사용하여 다이얼로그에 부드러운 등장/퇴장 효과를 적용할 수 있습니다.
+    </p>
 
-    <div>
-      <TypographyP>
-        애니메이션을 적용하는 핵심은 <InlineCode>DialogRenderer</InlineCode>에서{' '}
-        <InlineCode>AnimatePresence</InlineCode> 컴포넌트를 사용하는 것입니다.
-        이를 통해 다이얼로그 컴포넌트가 DOM에서 제거될 때 <InlineCode>exit</InlineCode> 
-        애니메이션을 트리거할 수 있습니다.
-      </TypographyP>
-      <CodeBlock language="tsx" code={rendererCode} />
-    </div>
+    <p>
+      애니메이션을 적용하는 핵심은 <InlineCode>DialogRenderer</InlineCode>에서{' '}
+      <InlineCode>AnimatePresence</InlineCode> 컴포넌트를 사용하는 것입니다.
+      이를 통해 다이얼로그 컴포넌트가 DOM에서 제거될 때 <InlineCode>exit</InlineCode> 
+      애니메이션을 트리거할 수 있습니다.
+    </p>
+    <CodeBlock language="tsx" code={rendererCode} />
 
-    <div>
-      <TypographyP>
-        그 다음, 각 다이얼로그 컴포넌트 내부에서 <InlineCode>motion</InlineCode> 
-        컴포넌트를 사용하여 <InlineCode>initial</InlineCode>, <InlineCode>animate</InlineCode>, 
-        <InlineCode>exit</InlineCode> prop을 정의하여 원하는 애니메이션을 구현합니다.
-      </TypographyP>
-      <CodeBlock language="tsx" code={componentCode} />
-    </div>
-  </div>
+    <p>
+      그 다음, 각 다이얼로그 컴포넌트 내부에서 <InlineCode>motion</InlineCode> 
+      컴포넌트를 사용하여 <InlineCode>initial</InlineCode>, <InlineCode>animate</InlineCode>, 
+      <InlineCode>exit</InlineCode> prop을 정의하여 원하는 애니메이션을 구현합니다.
+    </p>
+    <CodeBlock language="tsx" code={componentCode} />
+  </DocArticle>
 );

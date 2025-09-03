@@ -1,10 +1,6 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
-import {
-  TypographyH2,
-  TypographyH3,
-  TypographyLead,
-} from '@/components/docs/typography';
+import { DocArticle } from '@/components/docs/DocArticle';
 import {
   Card,
   CardContent,
@@ -57,22 +53,18 @@ export const DialogRenderer = () => {
 };`;
 
 export const UseDialogsHook = () => (
-  <div className="space-y-12">
-    <div>
-      <TypographyH2>useDialogs Hook</TypographyH2>
-      <TypographyLead>
-        <InlineCode>createUseDialogs</InlineCode>를 통해 생성된, React
-        컴포넌트에서 다이얼로그를 제어하기 위한 기본 훅입니다.
-      </TypographyLead>
-    </div>
+  <DocArticle>
+    <h1>useDialogs Hook</h1>
+    <p className="lead">
+      <InlineCode>createUseDialogs</InlineCode>를 통해 생성된, React
+      컴포넌트에서 다이얼로그를 제어하기 위한 기본 훅입니다.
+    </p>
 
-    <div>
-      <TypographyH3>Hook Signature</TypographyH3>
-      <CodeBlock language="typescript" code={hookSignature} />
-    </div>
+    <h2>Hook Signature</h2>
+    <CodeBlock language="typescript" code={hookSignature} />
 
-    <div className="space-y-6">
-      <TypographyH3>Return Value</TypographyH3>
+    <h2>Return Value</h2>
+    <div className="space-y-4 my-6">
       <Card>
         <CardHeader>
           <CardTitle>dialogs</CardTitle>
@@ -117,9 +109,7 @@ export const UseDialogsHook = () => (
       </Card>
     </div>
 
-    <div>
-      <TypographyH3>Usage Example</TypographyH3>
-      <CodeBlock language="typescript" code={usageExample} />
-    </div>
-  </div>
+    <h2>Usage Example</h2>
+    <CodeBlock language="typescript" code={usageExample} />
+  </DocArticle>
 );

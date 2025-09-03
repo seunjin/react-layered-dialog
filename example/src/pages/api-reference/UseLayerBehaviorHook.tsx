@@ -1,11 +1,6 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
-import {
-  TypographyH2,
-  TypographyH3,
-  TypographyP,
-  TypographyLead,
-} from '@/components/docs/typography';
+import { DocArticle } from '@/components/docs/DocArticle';
 
 const hookSignature = `function useLayerBehavior(options: UseLayerBehaviorOptions): void;`;
 
@@ -102,59 +97,51 @@ const optionsData = [
 ];
 
 export const UseLayerBehaviorHook = () => (
-  <div className="space-y-12">
-    <div>
-      <TypographyH2>useLayerBehavior Hook</TypographyH2>
-      <TypographyLead>
-        레이어 컴포넌트의 공통 동작(behavior)을 캡슐화하고 주입하는 훅입니다.
-      </TypographyLead>
-      <TypographyP className="mt-4">
-        이 훅은 다이얼로그, 모달, 드로어 등과 같은 레이어 컴포넌트 내부에서
-        사용되어야 합니다. <InlineCode>BaseLayerProps</InlineCode>를 통해 전달된
-        선언적 설정을 받아, 실제 DOM 이벤트를 처리하는 복잡한 로직을 수행합니다.
-        이를 통해 상태와 동작의 관심사를 분리합니다.
-      </TypographyP>
-    </div>
+  <DocArticle>
+    <h1>useLayerBehavior Hook</h1>
+    <p className="lead">
+      레이어 컴포넌트의 공통 동작(behavior)을 캡슐화하고 주입하는 훅입니다.
+    </p>
+    <p>
+      이 훅은 다이얼로그, 모달, 드로어 등과 같은 레이어 컴포넌트 내부에서
+      사용되어야 합니다. <InlineCode>BaseLayerProps</InlineCode>를 통해 전달된
+      선언적 설정을 받아, 실제 DOM 이벤트를 처리하는 복잡한 로직을 수행합니다.
+      이를 통해 상태와 동작의 관심사를 분리합니다.
+    </p>
 
-    <div>
-      <TypographyH3>Hook Signature</TypographyH3>
-      <CodeBlock language="typescript" code={hookSignature} />
-    </div>
+    <h2>Hook Signature</h2>
+    <CodeBlock language="typescript" code={hookSignature} />
 
-    <div className="space-y-4">
-      <TypographyH3>Options (UseLayerBehaviorOptions)</TypographyH3>
-      <div className="flex flex-col gap-6 rounded-lg border p-4">
-        {optionsData.map((opt) => (
-          <div key={opt.name} className="border-b pb-6 last:border-b-0 last:pb-0">
-            <div className="flex items-center gap-4">
-              <h4 className="font-mono font-bold text-lg">{opt.name}</h4>
-              {opt.default === 'Required' ? (
-                <span className="text-xs font-semibold text-destructive border border-destructive px-2 py-1 rounded-full">
-                  Required
-                </span>
-              ) : (
-                <span className="text-xs font-semibold text-muted-foreground">
-                  optional
-                </span>
-              )}
-            </div>
-            <div className="font-mono text-sm text-muted-foreground mt-2 break-all">
-              {opt.type}
-            </div>
-            {opt.default !== 'Required' && (
-              <div className="text-sm mt-2">
-                <strong>Default:</strong> <InlineCode>{opt.default}</InlineCode>
-              </div>
+    <h2>Options (UseLayerBehaviorOptions)</h2>
+    <div className="flex flex-col gap-6 rounded-lg border p-4 my-6">
+      {optionsData.map((opt) => (
+        <div key={opt.name} className="border-b pb-6 last:border-b-0 last:pb-0">
+          <div className="flex items-center gap-4">
+            <h4 className="font-mono font-bold text-lg">{opt.name}</h4>
+            {opt.default === 'Required' ? (
+              <span className="text-xs font-semibold text-destructive border border-destructive px-2 py-1 rounded-full">
+                Required
+              </span>
+            ) : (
+              <span className="text-xs font-semibold text-muted-foreground">
+                optional
+              </span>
             )}
-            <p className="text-sm mt-2">{opt.description}</p>
           </div>
-        ))}
-      </div>
+          <div className="font-mono text-sm text-muted-foreground mt-2 break-all">
+            {opt.type}
+          </div>
+          {opt.default !== 'Required' && (
+            <div className="text-sm mt-2">
+              <strong>Default:</strong> <InlineCode>{opt.default}</InlineCode>
+            </div>
+          )}
+          <p className="text-sm mt-2">{opt.description}</p>
+        </div>
+      ))}
     </div>
 
-    <div>
-      <TypographyH3>Usage Example</TypographyH3>
-      <CodeBlock language="tsx" code={usageExample} />
-    </div>
-  </div>
+    <h2>Usage Example</h2>
+    <CodeBlock language="tsx" code={usageExample} />
+  </DocArticle>
 );

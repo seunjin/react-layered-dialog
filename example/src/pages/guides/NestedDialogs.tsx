@@ -1,9 +1,6 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
-import {
-  TypographyH2,
-  TypographyP,
-} from '@/components/docs/typography';
+import { DocArticle } from '@/components/docs/DocArticle';
 
 const nestedDialogCode = `import { openDialog } from '@/lib/dialogs';
 
@@ -36,26 +33,22 @@ const openNestedDialogs = async () => {
 `;
 
 export const NestedDialogs = () => (
-  <div className="space-y-8">
-    <div>
-      <TypographyH2>Nested Dialogs</TypographyH2>
-      <TypographyP className="mt-2">
-        다이얼로그 내부에서 또 다른 다이얼로그를 여는 중첩 호출(Nesting)은
-        사용자 플로우를 안내하는 데 유용합니다.
-      </TypographyP>
-      <TypographyP className="mt-4">
-        <InlineCode>react-layered-dialog</InlineCode>는{' '}
-        <InlineCode>z-index</InlineCode>를 자동으로 관리하므로, 개발자는 복잡한
-        순서 관리 없이 필요한 시점에 <InlineCode>openDialog</InlineCode>를
-        호출하기만 하면 됩니다. 라이브러리는 내부적으로{' '}
-        <InlineCode>baseZIndex</InlineCode>(기본값 1000)부터 시작하여
-        다이얼로그가 열릴 때마다 z-index를 1씩 증가시킵니다.
-      </TypographyP>
-    </div>
+  <DocArticle>
+    <h1>Nested Dialogs</h1>
+    <p>
+      다이얼로그 내부에서 또 다른 다이얼로그를 여는 중첩 호출(Nesting)은
+      사용자 플로우를 안내하는 데 유용합니다.
+    </p>
+    <p>
+      <InlineCode>react-layered-dialog</InlineCode>는{' '}
+      <InlineCode>z-index</InlineCode>를 자동으로 관리하므로, 개발자는 복잡한
+      순서 관리 없이 필요한 시점에 <InlineCode>openDialog</InlineCode>를
+      호출하기만 하면 됩니다. 라이브러리는 내부적으로{' '}
+      <InlineCode>baseZIndex</InlineCode>(기본값 1000)부터 시작하여
+      다이얼로그가 열릴 때마다 z-index를 1씩 증가시킵니다.
+    </p>
 
-    <div>
-      <CodeBlock language="typescript" code={nestedDialogCode} />
-    </div>
+    <CodeBlock language="typescript" code={nestedDialogCode} />
 
     <div className="my-6 rounded-lg border bg-muted/30 p-4 text-center">
       <p className="text-lg font-semibold">[중첩 다이얼로그 시각화 이미지]</p>
@@ -64,5 +57,5 @@ export const NestedDialogs = () => (
         1001, 1002...)
       </p>
     </div>
-  </div>
+  </DocArticle>
 );

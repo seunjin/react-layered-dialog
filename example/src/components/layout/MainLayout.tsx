@@ -13,9 +13,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <div className="flex flex-1 ">
         <Sidebar />
         <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-          <div className="max-w-4xl mx-auto">
-            {children}
-          </div>
+          <div className="max-w-[var(--prose-max)] mx-auto">{children}</div>
         </main>
       </div>
     </div>

@@ -1,11 +1,6 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
-import {
-  TypographyH2,
-  TypographyH3,
-  TypographyP,
-  TypographyLead,
-} from '@/components/docs/typography';
+import { DocArticle } from '@/components/docs/DocArticle';
 import {
   Card,
   CardContent,
@@ -52,29 +47,25 @@ const componentMap = {
 };`;
 
 export const CreateUseDialogs = () => (
-  <div className="space-y-12">
-    <div>
-      <TypographyH2>createUseDialogs</TypographyH2>
-      <TypographyLead>
-        <InlineCode>DialogManager</InlineCode>의 상태를 React 컴포넌트와
-        연결하는 <InlineCode>useDialogs</InlineCode> 훅을 생성합니다.
-      </TypographyLead>
-      <TypographyP className="mt-4">
-        이 팩토리 함수는 순수 TypeScript로 작성된 <InlineCode>DialogManager</InlineCode>
-        와 React의 렌더링 시스템을 연결하는 다리 역할을 합니다. 여기서 생성된{' '}
-        <InlineCode>useDialogs</InlineCode> 훅을 통해 컴포넌트는 다이얼로그의
-        상태 변화를 구독하고, 다이얼로그를 열거나 닫는 함수를 사용할 수 있게
-        됩니다.
-      </TypographyP>
-    </div>
+  <DocArticle>
+    <h1>createUseDialogs</h1>
+    <p className="lead">
+      <InlineCode>DialogManager</InlineCode>의 상태를 React 컴포넌트와
+      연결하는 <InlineCode>useDialogs</InlineCode> 훅을 생성합니다.
+    </p>
+    <p>
+      이 팩토리 함수는 순수 TypeScript로 작성된 <InlineCode>DialogManager</InlineCode>
+      와 React의 렌더링 시스템을 연결하는 다리 역할을 합니다. 여기서 생성된{' '}
+      <InlineCode>useDialogs</InlineCode> 훅을 통해 컴포넌트는 다이얼로그의
+      상태 변화를 구독하고, 다이얼로그를 열거나 닫는 함수를 사용할 수 있게
+      됩니다.
+    </p>
 
-    <div>
-      <TypographyH3>Function Signature</TypographyH3>
-      <CodeBlock language="typescript" code={functionSignature} />
-    </div>
+    <h2>Function Signature</h2>
+    <CodeBlock language="typescript" code={functionSignature} />
 
-    <div className="space-y-6">
-      <TypographyH3>Parameters</TypographyH3>
+    <h2>Parameters</h2>
+    <div className="space-y-4 my-6">
       <Card>
         <CardHeader>
           <CardTitle>manager</CardTitle>
@@ -112,17 +103,13 @@ export const CreateUseDialogs = () => (
       </Card>
     </div>
 
-    <div className="space-y-4">
-      <TypographyH3>Return Value</TypographyH3>
-      <TypographyP>
-        앱 전체에서 다이얼로그 상태를 구독하고 제어하는 데 사용될{' '}
-        <InlineCode>useDialogs</InlineCode> 훅을 반환합니다.
-      </TypographyP>
-    </div>
+    <h2>Return Value</h2>
+    <p>
+      앱 전체에서 다이얼로그 상태를 구독하고 제어하는 데 사용될{' '}
+      <InlineCode>useDialogs</InlineCode> 훅을 반환합니다.
+    </p>
 
-    <div>
-      <TypographyH3>Usage Example</TypographyH3>
-      <CodeBlock language="typescript" code={usageExample} />
-    </div>
-  </div>
+    <h2>Usage Example</h2>
+    <CodeBlock language="typescript" code={usageExample} />
+  </DocArticle>
 );

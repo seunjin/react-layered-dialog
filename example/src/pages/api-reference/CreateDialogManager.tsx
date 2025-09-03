@@ -1,11 +1,6 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
-import {
-  TypographyH2,
-  TypographyH3,
-  TypographyP,
-  TypographyLead,
-} from '@/components/docs/typography';
+import { DocArticle } from '@/components/docs/DocArticle';
 import {
   Card,
   CardContent,
@@ -38,54 +33,44 @@ const dialogsConfigCode = `export interface DialogsConfig {
 }`;
 
 export const CreateDialogManager = () => (
-  <div className="space-y-12">
-    <div>
-      <TypographyH2>createDialogManager</TypographyH2>
-      <TypographyLead>
-        다이얼로그 상태를 관리하는 핵심 엔진인{' '}
-        <InlineCode>DialogManager</InlineCode> 인스턴스를 생성합니다.
-      </TypographyLead>
-      <TypographyP className="mt-4">
-        이 함수는 라이브러리 설정의 가장 첫 단계에서 호출되어야 합니다. 여기서
-        생성된 <InlineCode>manager</InlineCode>는 앱의 모든 다이얼로그 상태를
-        저장하고 관리하는 중앙 저장소 역할을 합니다.
-      </TypographyP>
-    </div>
+  <DocArticle>
+    <h1>createDialogManager</h1>
+    <p className="lead">
+      다이얼로그 상태를 관리하는 핵심 엔진인{' '}
+      <InlineCode>DialogManager</InlineCode> 인스턴스를 생성합니다.
+    </p>
+    <p>
+      이 함수는 라이브러리 설정의 가장 첫 단계에서 호출되어야 합니다. 여기서
+      생성된 <InlineCode>manager</InlineCode>는 앱의 모든 다이얼로그 상태를
+      저장하고 관리하는 중앙 저장소 역할을 합니다.
+    </p>
 
-    <div>
-      <TypographyH3>Function Signature</TypographyH3>
-      <CodeBlock language="typescript" code={functionSignature} />
-    </div>
+    <h2>Function Signature</h2>
+    <CodeBlock language="typescript" code={functionSignature} />
 
-    <div className="space-y-4">
-      <TypographyH3>Parameters</TypographyH3>
-      <Card>
-        <CardHeader>
-          <CardTitle>config (optional)</CardTitle>
-          <CardDescription>
-            <InlineCode>DialogsConfig</InlineCode> 타입의 객체로, 라이브러리의
-            전역 동작을 설정합니다.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CodeBlock language="typescript" code={dialogsConfigCode} />
-        </CardContent>
-      </Card>
-    </div>
+    <h2>Parameters</h2>
+    <Card className="my-6">
+      <CardHeader>
+        <CardTitle>config (optional)</CardTitle>
+        <CardDescription>
+          <InlineCode>DialogsConfig</InlineCode> 타입의 객체로, 라이브러리의
+          전역 동작을 설정합니다.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <CodeBlock language="typescript" code={dialogsConfigCode} />
+      </CardContent>
+    </Card>
 
-    <div className="space-y-4">
-      <TypographyH3>Return Value</TypographyH3>
-      <TypographyP>
-        <InlineCode>manager</InlineCode> 속성을 포함하는 객체를 반환합니다. 이{' '}
-        <InlineCode>manager</InlineCode> 인스턴스는 이후{' '}
-        <InlineCode>createUseDialogs</InlineCode> 함수에 인자로 전달되어야
-        합니다.
-      </TypographyP>
-    </div>
+    <h2>Return Value</h2>
+    <p>
+      <InlineCode>manager</InlineCode> 속성을 포함하는 객체를 반환합니다. 이{' '}
+      <InlineCode>manager</InlineCode> 인스턴스는 이후{' '}
+      <InlineCode>createUseDialogs</InlineCode> 함수에 인자로 전달되어야
+      합니다.
+    </p>
 
-    <div>
-      <TypographyH3>Usage Example</TypographyH3>
-      <CodeBlock language="typescript" code={usageExample} />
-    </div>
-  </div>
+    <h2>Usage Example</h2>
+    <CodeBlock language="typescript" code={usageExample} />
+  </DocArticle>
 );
