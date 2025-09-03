@@ -1,7 +1,7 @@
+import { Link } from 'react-router-dom';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -12,13 +12,15 @@ import {
   TypographyLead,
 } from '@/components/ui/typography';
 import { CodeBlock } from '@/components/ui/CodeBlock';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const Introduction = () => (
   <div className="space-y-8">
     <div>
       <TypographyH1>React Layered Dialog</TypographyH1>
       <TypographyLead>
-        React 다이얼로그 관리를 위한 선언적이고 타입-안전한 솔루션
+        <code className="font-mono">useSyncExternalStore</code>를 활용한, 외부
+        상태 관리 라이브러리가 필요 없는 React 다이얼로그 솔루션
       </TypographyLead>
 
       <div className="my-6 rounded-lg border bg-muted/30 p-4 text-center">
@@ -31,10 +33,11 @@ export const Introduction = () => (
       </div>
 
       <TypographyP>
-        React 애플리케이션에서 다이얼로그를 관리하는 것은 흔히 복잡한 상태
-        관리와 z-index 충돌을 야기합니다.{' '}
-        <InlineCode>React Layered Dialog</InlineCode>는 이러한 문제를 해결하고자
-        탄생했으며, 중앙 집중식 API를 통해 다이얼로그 관리를 단순화합니다.
+        <InlineCode>React Layered Dialog</InlineCode>는 React 18의{' '}
+        <InlineCode>useSyncExternalStore</InlineCode> 훅을 기반으로 설계되어,
+        Zustand나 Redux와 같은 외부 전역 상태 관리 라이브러리 없이 다이얼로그
+        상태를 효율적으로 관리합니다. 이를 통해 설정의 복잡함을 줄이고 React의
+        렌더링 메커니즘과 완벽하게 통합되어 최적의 성능을 제공합니다.
       </TypographyP>
     </div>
 
@@ -42,26 +45,49 @@ export const Introduction = () => (
       <Card>
         <CardHeader>
           <CardTitle>3분만에 시작하기</CardTitle>
-          <CardDescription>
-            라이브러리를 설치하고 핵심 파일을 설정하여 바로 사용해보세요.
-          </CardDescription>
         </CardHeader>
         <CardContent>
-          <CodeBlock
-            language="bash"
-            code={`# 1. 라이브러리 설치
-pnpm add react-layered-dialog
-
-# 2. (선택) 애니메이션을 위한 framer-motion 설치
-pnpm add framer-motion`}
-          />
+          <Tabs defaultValue="pnpm">
+            <TabsList>
+              <TabsTrigger value="npm">npm</TabsTrigger>
+              <TabsTrigger value="yarn">yarn</TabsTrigger>
+              <TabsTrigger value="pnpm">pnpm</TabsTrigger>
+            </TabsList>
+            <TabsContent value="npm">
+              <CodeBlock
+                language="bash"
+                code={`npm install react-layered-dialog
+# Optional for animations
+npm install motion`}
+              />
+            </TabsContent>
+            <TabsContent value="yarn">
+              <CodeBlock
+                language="bash"
+                code={`yarn add react-layered-dialog
+# Optional for animations
+yarn add motion`}
+              />
+            </TabsContent>
+            <TabsContent value="pnpm">
+              <CodeBlock
+                language="bash"
+                code={`pnpm add react-layered-dialog
+# Optional for animations
+pnpm add motion`}
+              />
+            </TabsContent>
+          </Tabs>
           <div className="mt-4">
             <TypographyP>
-              자세한 설정 방법은{' '}
-              <a href="/getting-started/quick-start" className="font-medium text-primary underline">
+              라이브러리 설치 후,{' '}
+              <Link
+                to="/getting-started/quick-start"
+                className="font-medium text-primary underline"
+              >
                 Quick Start
-              </a>{' '}
-              페이지를 참고하세요.
+              </Link>{' '}
+              페이지를 따라 핵심 파일을 설정해보세요.
             </TypographyP>
           </div>
         </CardContent>
@@ -71,18 +97,19 @@ pnpm add framer-motion`}
     <div className="grid md:grid-cols-3 gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>가벼움과 유연성</CardTitle>
+          <CardTitle>최적화된 렌더링</CardTitle>
         </CardHeader>
         <CardContent>
           <TypographyP>
-            React에만 의존하는 가벼운 코어. 어떤 UI 컴포넌트 라이브러리와도 쉽게
-            통합하여 사용할 수 있습니다.
+            <InlineCode>useSyncExternalStore</InlineCode>를 사용하여 상태가
+            변경될 때 오직 필요한 컴포넌트만 리렌더링합니다. 이를 통해 불필요한
+            렌더링을 방지하고 최적의 성능을 보장합니다.
           </TypographyP>
         </CardContent>
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>타입 안전성</CardTitle>
+          <CardTitle>Type-Safe API</CardTitle>
         </CardHeader>
         <CardContent>
           <TypographyP>
@@ -93,12 +120,12 @@ pnpm add framer-motion`}
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>접근성</CardTitle>
+          <CardTitle>Flexible & Extensible</CardTitle>
         </CardHeader>
         <CardContent>
           <TypographyP>
-            자동 포커스 관리 및 키보드 상호작용(ESC)을 지원하여 웹 접근성을
-            준수합니다. (상세 기능은 추가될 예정입니다)
+            어떤 UI 컴포넌트 라이브러리와도 쉽게 통합하여 사용할 수 있으며,
+            자유롭게 커스터마이징이 가능합니다.
           </TypographyP>
         </CardContent>
       </Card>

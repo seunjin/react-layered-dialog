@@ -7,7 +7,6 @@ const menuConfig = [
     title: 'Getting Started',
     items: [
       { path: '/getting-started/introduction', label: 'Introduction' },
-      { path: '/getting-started/installation', label: 'Installation' },
       { path: '/getting-started/quick-start', label: 'Quick Start' },
     ],
   },

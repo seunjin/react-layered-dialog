@@ -6,7 +6,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 
 // Getting Started
 import { Introduction } from '@/pages/getting-started/Introduction';
-import { Installation } from '@/pages/getting-started/Installation';
+
 import { QuickStart } from '@/pages/getting-started/QuickStart';
 
 // Core Concepts
@@ -62,10 +62,7 @@ function App() {
             path="/getting-started/introduction"
             element={<Introduction />}
           />
-          <Route
-            path="/getting-started/installation"
-            element={<Installation />}
-          />
+          
           <Route path="/getting-started/quick-start" element={<QuickStart />} />
 
           {/* Core Concepts */}

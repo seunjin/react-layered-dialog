@@ -7,7 +7,7 @@ import {
 
 const rendererCode = `// src/components/dialogs/DialogRenderer.tsx
 import { useDialogs } from '@/lib/dialogs';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 
 export const DialogRenderer = () => {
   const { dialogs } = useDialogs();
@@ -25,7 +25,7 @@ export const DialogRenderer = () => {
 `;
 
 const componentCode = `// src/components/dialogs/Alert.tsx
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 // ... other imports
 
 export const Alert = ({ title, message, zIndex }: AlertProps) => {
@@ -58,9 +58,9 @@ export const Alert = ({ title, message, zIndex }: AlertProps) => {
 export const Animations = () => (
   <div className="space-y-8">
     <div>
-      <TypographyH2>Animations (with Framer Motion)</TypographyH2>
+      <TypographyH2>Animations (with Motion)</TypographyH2>
       <TypographyP className="mt-2">
-        <InlineCode>framer-motion</InlineCode>과 같은 애니메이션 라이브러리와
+        <InlineCode>motion/react</InlineCode>와 같은 애니메이션 라이브러리와
         함께 사용하여 다이얼로그에 부드러운 등장/퇴장 효과를 적용할 수 있습니다.
       </TypographyP>
     </div>
