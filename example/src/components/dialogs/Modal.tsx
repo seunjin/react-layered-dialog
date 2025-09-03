@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { ModalState } from '@/lib/dialogs';
 import {
@@ -25,13 +25,21 @@ export const Modal = (props: ModalProps) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     closeDialog(id);
-  };
+  }, [id, closeDialog]);
+
+  const getTopZIndex = useCallback(() => {
+    if (dialogs.length === 0) return undefined;
+    return dialogs.reduce(
+      (maxZ, d) => Math.max(maxZ, d.state.zIndex ?? 0),
+      0
+    );
+  }, [dialogs]);
 
   useLayerBehavior({
     zIndex,
-    getTopZIndex: () => dialogs.at(-1)?.state?.zIndex,
+    getTopZIndex,
     closeOnEscape: dismissable,
     onEscape: handleClose,
     autoFocus: true,

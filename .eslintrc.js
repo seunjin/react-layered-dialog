@@ -24,5 +24,8 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
+  rules: {
+    'react/prop-types': 'off',
+  },
   ignorePatterns: ['dist', 'node_modules', 'coverage', '.eslintrc.js'],
 };

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { ConfirmState } from '@/lib/dialogs';
 import {
@@ -25,28 +25,36 @@ export const Confirm = (props: ConfirmProps) => {
 
   const { dialogs, closeDialog } = useDialogs();
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null); // panelRef로 이름 변경 및 위치 이동
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     onCancel?.();
     closeDialog(id);
-  };
+  }, [id, onCancel, closeDialog]);
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     onConfirm?.();
     closeDialog(id);
-  };
+  }, [id, onConfirm, closeDialog]);
+
+  const getTopZIndex = useCallback(() => {
+    if (dialogs.length === 0) return undefined;
+    return dialogs.reduce(
+      (maxZ, d) => Math.max(maxZ, d.state.zIndex ?? 0),
+      0
+    );
+  }, [dialogs]);
 
   useLayerBehavior({
     zIndex,
-    getTopZIndex: () => dialogs.at(-1)?.state?.zIndex,
+    getTopZIndex,
     closeOnEscape: dismissable,
     onEscape: handleCancel,
     autoFocus: true,
     focusRef: confirmButtonRef,
     closeOnOutsideClick: closeOnOverlayClick,
     onOutsideClick: handleCancel,
-    outsideClickRef: panelRef, // panelRef를 전달
+    outsideClickRef: panelRef,
   });
 
   return (
@@ -66,7 +74,7 @@ export const Confirm = (props: ConfirmProps) => {
         transition={{ duration: 0.2, ease: 'easeInOut' }}
       />
       <motion.div
-        ref={panelRef} // ref를 wrapper가 아닌 panel에 적용
+        ref={panelRef}
         className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

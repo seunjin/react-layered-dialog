@@ -5,13 +5,19 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button } from '@/components/ui/button';
 import { Check, Clipboard } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CodeBlockProps {
   code: string;
   language: string;
+  className?: string;
 }
 
-export const CodeBlock: FC<CodeBlockProps> = ({ code, language }) => {
+export const CodeBlock: FC<CodeBlockProps> = ({
+  code,
+  language,
+  className,
+}) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -25,7 +31,7 @@ export const CodeBlock: FC<CodeBlockProps> = ({ code, language }) => {
   };
 
   return (
-    <div className="relative rounded-md bg-[#1e1e1e]">
+    <div className={cn('relative rounded-md bg-[#1e1e1e]', className)}>
       <Button
         variant="ghost"
         size="icon"

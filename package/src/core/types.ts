@@ -9,6 +9,8 @@ import type React from 'react';
 export interface BaseLayerProps {
   /**
    * 레이어의 쌓임 순서(z-index)입니다.
+   * 일반적으로 자동 관리에 맡기는 것을 권장합니다.
+   * 다른 라이브러리와의 z-index 충돌 등 특수한 경우에만 직접 지정하세요.
    * 지정하지 않으면 `baseZIndex`(기본값 1000)부터 시작하는 값이 자동으로 할당됩니다.
    */
   zIndex?: number;

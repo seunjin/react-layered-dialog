@@ -1,7 +1,10 @@
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { AlertState } from '@/lib/dialogs';
-import { type DialogState, useLayerBehavior } from 'react-layered-dialog';
+import {
+  type DialogState,
+  useLayerBehavior,
+} from 'react-layered-dialog';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 
@@ -23,14 +26,22 @@ export const Alert = (props: AlertProps) => {
   const okButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const handleOk = () => {
+  const handleOk = useCallback(() => {
     onOk?.();
     closeDialog(id);
-  };
+  }, [id, onOk, closeDialog]);
+
+  const getTopZIndex = useCallback(() => {
+    if (dialogs.length === 0) return undefined;
+    return dialogs.reduce(
+      (maxZ, d) => Math.max(maxZ, d.state.zIndex ?? 0),
+      0
+    );
+  }, [dialogs]);
 
   useLayerBehavior({
     zIndex,
-    getTopZIndex: () => dialogs.at(-1)?.state?.zIndex,
+    getTopZIndex,
     closeOnEscape: dismissable,
     onEscape: handleOk,
     autoFocus: true,
