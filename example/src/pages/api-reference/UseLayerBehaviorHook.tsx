@@ -6,14 +6,6 @@ import {
   TypographyP,
   TypographyLead,
 } from '@/components/ui/typography';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 
 const hookSignature = `function useLayerBehavior(options: UseLayerBehaviorOptions): void;`;
 
@@ -30,8 +22,8 @@ export const Confirm = (props: ConfirmProps) => {
 
   useLayerBehavior({
     // 현재 레이어 정보
+    dialogs: dialogs,
     zIndex: props.zIndex,
-    getTopZIndex: () => dialogs.at(-1)?.state?.zIndex,
 
     // 동작 활성화 및 콜백 연결
     closeOnEscape: props.dismissable,
@@ -51,6 +43,63 @@ export const Confirm = (props: ConfirmProps) => {
     </div>
   );
 };`;
+
+const optionsData = [
+  {
+    name: 'dialogs',
+    default: 'Required',
+    type: "readonly { state: { zIndex?: number } }[]",
+    description: '훅이 최상단 레이어를 식별하기 위해 z-index를 계산하는 데 사용하는 다이얼로그 상태 배열입니다.',
+  },
+  {
+    name: 'zIndex',
+    default: 'undefined',
+    type: 'number',
+    description: '현재 동작을 적용할 레이어의 z-index입니다. 훅은 이 값을 `dialogs` 배열로부터 계산된 최상단 z-index와 비교합니다.',
+  },
+  {
+    name: 'closeOnEscape',
+    default: 'false',
+    type: 'boolean',
+    description: 'Escape 키로 레이어를 닫는 동작을 활성화합니다.',
+  },
+  {
+    name: 'onEscape',
+    default: 'undefined',
+    type: '() => void',
+    description: '`closeOnEscape`가 true일 때, Escape 키를 누르면 실행될 콜백 함수입니다.',
+  },
+  {
+    name: 'autoFocus',
+    default: 'false',
+    type: 'boolean',
+    description: '레이어 마운트 시 자동 포커스 동작을 활성화합니다.',
+  },
+  {
+    name: 'focusRef',
+    default: 'undefined',
+    type: 'React.RefObject<HTMLElement | null>',
+    description: '`autoFocus`가 true일 때, 포커스를 받을 요소의 ref 객체입니다.',
+  },
+  {
+    name: 'closeOnOutsideClick',
+    default: 'false',
+    type: 'boolean',
+    description: '레이어 외부 클릭 시 닫는 동작을 활성화합니다.',
+  },
+  {
+    name: 'onOutsideClick',
+    default: 'undefined',
+    type: '() => void',
+    description: '`closeOnOutsideClick`가 true일 때, 외부를 클릭하면 실행될 콜백 함수입니다.',
+  },
+  {
+    name: 'outsideClickRef',
+    default: 'undefined',
+    type: 'React.RefObject<Element | null>',
+    description: '외부 클릭을 감지할 기준 요소의 ref 객체입니다.',
+  },
+];
 
 export const UseLayerBehaviorHook = () => (
   <div className="space-y-12">
@@ -74,112 +123,33 @@ export const UseLayerBehaviorHook = () => (
 
     <div className="space-y-4">
       <TypographyH3>Options (UseLayerBehaviorOptions)</TypographyH3>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Option</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Default</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow>
-            <TableCell className="font-mono">zIndex</TableCell>
-            <TableCell className="font-mono">number</TableCell>
-            <TableCell>
-              동작을 적용할 레이어의 z-index. 최상단 여부 판단에 사용됩니다.
-            </TableCell>
-            <TableCell>
-              <InlineCode>undefined</InlineCode>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-mono">getTopZIndex</TableCell>
-            <TableCell className="font-mono">
-              () ={'>'} number | undefined
-            </TableCell>
-            <TableCell>
-              가장 높은 z-index 값을 반환하는 콜백 함수입니다.
-            </TableCell>
-            <TableCell className="font-mono text-destructive">Required</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-mono">closeOnEscape</TableCell>
-            <TableCell className="font-mono">boolean</TableCell>
-            <TableCell>
-              Escape 키로 레이어를 닫는 동작을 활성화합니다.
-            </TableCell>
-            <TableCell>
-              <InlineCode>false</InlineCode>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-mono">onEscape</TableCell>
-            <TableCell className="font-mono">() ={'>'} void</TableCell>
-            <TableCell>
-              <InlineCode>closeOnEscape</InlineCode>가 true일 때, Escape 키를
-              누르면 실행될 콜백 함수입니다.
-            </TableCell>
-            <TableCell>
-              <InlineCode>undefined</InlineCode>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-mono">autoFocus</TableCell>
-            <TableCell className="font-mono">boolean</TableCell>
-            <TableCell>
-              레이어 마운트 시 자동 포커스 동작을 활성화합니다.
-            </TableCell>
-            <TableCell>
-              <InlineCode>false</InlineCode>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-mono">focusRef</TableCell>
-            <TableCell className="font-mono">RefObject</TableCell>
-            <TableCell>
-              <InlineCode>autoFocus</InlineCode>가 true일 때, 포커스를 받을
-              요소의 ref 객체입니다.
-            </TableCell>
-            <TableCell>
-              <InlineCode>undefined</InlineCode>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-mono">closeOnOutsideClick</TableCell>
-            <TableCell className="font-mono">boolean</TableCell>
-            <TableCell>
-              레이어 외부 클릭 시 닫는 동작을 활성화합니다.
-            </TableCell>
-            <TableCell>
-              <InlineCode>false</InlineCode>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-mono">onOutsideClick</TableCell>
-            <TableCell className="font-mono">() ={'>'} void</TableCell>
-            <TableCell>
-              <InlineCode>closeOnOutsideClick</InlineCode>가 true일 때, 외부를
-              클릭하면 실행될 콜백 함수입니다.
-            </TableCell>
-            <TableCell>
-              <InlineCode>undefined</InlineCode>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="font-mono">outsideClickRef</TableCell>
-            <TableCell className="font-mono">RefObject</TableCell>
-            <TableCell>
-              외부 클릭을 감지할 기준 요소의 ref 객체입니다.
-            </TableCell>
-            <TableCell>
-              <InlineCode>undefined</InlineCode>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+      <div className="flex flex-col gap-6 rounded-lg border p-4">
+        {optionsData.map((opt) => (
+          <div key={opt.name} className="border-b pb-6 last:border-b-0 last:pb-0">
+            <div className="flex items-center gap-4">
+              <h4 className="font-mono font-bold text-lg">{opt.name}</h4>
+              {opt.default === 'Required' ? (
+                <span className="text-xs font-semibold text-destructive border border-destructive px-2 py-1 rounded-full">
+                  Required
+                </span>
+              ) : (
+                <span className="text-xs font-semibold text-muted-foreground">
+                  optional
+                </span>
+              )}
+            </div>
+            <div className="font-mono text-sm text-muted-foreground mt-2 break-all">
+              {opt.type}
+            </div>
+            {opt.default !== 'Required' && (
+              <div className="text-sm mt-2">
+                <strong>Default:</strong> <InlineCode>{opt.default}</InlineCode>
+              </div>
+            )}
+            <p className="text-sm mt-2">{opt.description}</p>
+          </div>
+        ))}
+      </div>
     </div>
 
     <div>

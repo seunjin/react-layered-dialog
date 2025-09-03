@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 /**
  * `useLayerBehavior` 훅에 전달할 옵션 타입입니다.
@@ -9,16 +9,15 @@ export type UseLayerBehaviorOptions = {
    */
   id?: string;
   /**
+   * 현재 열려있는 모든 다이얼로그의 상태 배열입니다.
+   * 이 배열을 기반으로 훅이 스스로 최상단 z-index를 계산합니다.
+   */
+  dialogs: readonly { state: { zIndex?: number } }[];
+  /**
    * 동작을 적용할 레이어의 z-index 값입니다.
    * 최상단 레이어 여부를 판단하는 데 사용됩니다.
    */
   zIndex?: number;
-  /**
-   * 현재 열려있는 모든 레이어 중 가장 높은 z-index 값을 반환하는 콜백 함수입니다.
-   * 이 함수를 통해 훅은 자신이 최상단 레이어인지 판단할 수 있습니다.
-   */
-  getTopZIndex: () => number | undefined;
-
   /**
    * Escape 키로 레이어를 닫는 동작을 활성화할지 여부입니다.
    * @default false
@@ -57,22 +56,11 @@ export type UseLayerBehaviorOptions = {
 
 /**
  * 레이어 컴포넌트의 공통 동작(behavior)을 캡슐화하는 훅입니다.
- * 이 훅은 `BaseLayerProps`에 선언된 동작 관련 설정을 인자로 받아,
- * 실제 DOM 이벤트 처리와 같은 명령형 구현 로직을 수행합니다.
- *
- * @example
- * useLayerBehavior({
- *   zIndex: props.zIndex,
- *   getTopZIndex: () => dialogs.at(-1)?.state?.zIndex,
- *   closeOnEscape: props.dismissable,
- *   onEscape: handleClose,
- *   // ... other options
- * });
  */
 export function useLayerBehavior(opts: UseLayerBehaviorOptions) {
   const {
+    dialogs,
     zIndex,
-    getTopZIndex,
     closeOnEscape = false,
     onEscape,
     autoFocus = false,
@@ -82,6 +70,12 @@ export function useLayerBehavior(opts: UseLayerBehaviorOptions) {
     outsideClickRef,
   } = opts;
 
+  // dialogs 배열이 변경될 때만 최상단 z-index를 다시 계산합니다.
+  const topZIndex = useMemo(() => {
+    if (dialogs.length === 0) return undefined;
+    return dialogs.reduce((maxZ, d) => Math.max(maxZ, d.state.zIndex ?? 0), 0);
+  }, [dialogs]);
+
   // ESC 처리
   useEffect(() => {
     if (!closeOnEscape || zIndex === undefined) return;
@@ -89,14 +83,13 @@ export function useLayerBehavior(opts: UseLayerBehaviorOptions) {
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      const top = getTopZIndex();
-      if (top == null) return;
-      if (top === zIndex) onEscape?.();
+      if (topZIndex == null) return;
+      if (topZIndex === zIndex) onEscape?.();
     };
 
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [closeOnEscape, onEscape, zIndex, getTopZIndex]);
+  }, [closeOnEscape, onEscape, zIndex, topZIndex]);
 
   // 마운트 시 포커스
   useEffect(() => {
@@ -106,13 +99,18 @@ export function useLayerBehavior(opts: UseLayerBehaviorOptions) {
 
   // 바깥 클릭 닫기
   useEffect(() => {
-    if (!closeOnOutsideClick || typeof document === 'undefined' || !outsideClickRef?.current || zIndex === undefined) return;
+    if (
+      !closeOnOutsideClick ||
+      typeof document === 'undefined' ||
+      !outsideClickRef?.current ||
+      zIndex === undefined
+    )
+      return;
 
     const onMouseDown = (e: MouseEvent) => {
       const root = outsideClickRef.current;
       if (!root) return;
-      const top = getTopZIndex();
-      if (top !== zIndex) return;
+      if (topZIndex !== zIndex) return;
       if (!root.contains(e.target as Node)) {
         onOutsideClick?.();
       }
@@ -120,5 +118,5 @@ export function useLayerBehavior(opts: UseLayerBehaviorOptions) {
 
     document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [closeOnOutsideClick, onOutsideClick, outsideClickRef, zIndex, getTopZIndex]);
+  }, [closeOnOutsideClick, onOutsideClick, outsideClickRef, zIndex, topZIndex]);
 }

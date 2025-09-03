@@ -29,17 +29,9 @@ export const Modal = (props: ModalProps) => {
     closeDialog(id);
   }, [id, closeDialog]);
 
-  const getTopZIndex = useCallback(() => {
-    if (dialogs.length === 0) return undefined;
-    return dialogs.reduce(
-      (maxZ, d) => Math.max(maxZ, d.state.zIndex ?? 0),
-      0
-    );
-  }, [dialogs]);
-
   useLayerBehavior({
     zIndex,
-    getTopZIndex,
+    dialogs,
     closeOnEscape: dismissable,
     onEscape: handleClose,
     autoFocus: true,

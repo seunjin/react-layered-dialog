@@ -37,17 +37,9 @@ export const Confirm = (props: ConfirmProps) => {
     closeDialog(id);
   }, [id, onConfirm, closeDialog]);
 
-  const getTopZIndex = useCallback(() => {
-    if (dialogs.length === 0) return undefined;
-    return dialogs.reduce(
-      (maxZ, d) => Math.max(maxZ, d.state.zIndex ?? 0),
-      0
-    );
-  }, [dialogs]);
-
   useLayerBehavior({
     zIndex,
-    getTopZIndex,
+    dialogs,
     closeOnEscape: dismissable,
     onEscape: handleCancel,
     autoFocus: true,
