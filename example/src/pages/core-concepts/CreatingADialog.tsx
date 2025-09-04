@@ -1,6 +1,7 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { DocArticle } from '@/components/docs/DocArticle';
+import { Section } from '@/components/docs/Section';
 
 const dialogsTsCode = `// src/lib/dialogs.ts
 import {
@@ -57,51 +58,57 @@ export const updateDialog = manager.updateDialog;
 `;
 
 export const CreatingADialog = () => (
-  <DocArticle>
-    <h1>Creating a Dialog</h1>
-    <p>
+  <DocArticle title="Creating a Dialog">
+    <p className="lead">
       <InlineCode>react-layered-dialog</InlineCode>의 핵심은{' '}
       <InlineCode>src/lib/dialogs.ts</InlineCode> 파일에 있습니다. 이
       파일에서 5단계에 걸쳐 애플리케이션의 다이얼로그 시스템을 정의합니다.
     </p>
 
-    <h2>1. 다이얼로그 타입 정의</h2>
-    <p>
-      앱에서 사용할 각 다이얼로그의 상태(<InlineCode>props</InlineCode>)를
-      TypeScript 인터페이스로 정의합니다. 모든 인터페이스는 라이브러리의{' '}
-      <InlineCode>BaseState</InlineCode>를 확장해야 하며, 고유한{' '}
-      <InlineCode>type</InlineCode> 문자열 리터럴을 가져야 합니다.
-    </p>
+    <Section as="h2" id="type-definition" title="1. 다이얼로그 타입 정의">
+      <p>
+        앱에서 사용할 각 다이얼로그의 상태(<InlineCode>props</InlineCode>)를
+        TypeScript 인터페이스로 정의합니다. 모든 인터페이스는 라이브러리의{' '}
+        <InlineCode>BaseState</InlineCode>를 확장해야 하며, 고유한{' '}
+        <InlineCode>type</InlineCode> 문자열 리터럴을 가져야 합니다.
+      </p>
+    </Section>
 
-    <h2>2. 상태 유니온 생성</h2>
-    <p>
-      정의한 모든 상태 인터페이스를 TypeScript의 유니온 타입으로 결합합니다.
-      이 &quot;Discriminated Union&quot; 패턴을 통해 <InlineCode>type</InlineCode> 속성을
-      기준으로 타입 추론이 가능해져 타입 안정성이 극대화됩니다.
-    </p>
+    <Section as="h2" id="state-union" title="2. 상태 유니온 생성">
+      <p>
+        정의한 모든 상태 인터페이스를 TypeScript의 유니온 타입으로 결합합니다.
+        이 &quot;Discriminated Union&quot; 패턴을 통해{' '}
+        <InlineCode>type</InlineCode> 속성을 기준으로 타입 추론이 가능해져 타입
+        안정성이 극대화됩니다.
+      </p>
+    </Section>
 
-    <h2>3. 매니저 생성</h2>
-    <p>
-      <InlineCode>createDialogManager</InlineCode> 팩토리 함수에 상태 유니온
-      타입을 제네릭으로 전달하여 다이얼로그 매니저를 생성합니다.
-    </p>
+    <Section as="h2" id="manager-creation" title="3. 매니저 생성">
+      <p>
+        <InlineCode>createDialogManager</InlineCode> 팩토리 함수에 상태 유니온
+        타입을 제네릭으로 전달하여 다이얼로그 매니저를 생성합니다.
+      </p>
+    </Section>
 
-    <h2>4. 컴포넌트 매핑</h2>
-    <p>
-      <InlineCode>type</InlineCode> 문자열을 키로, 실제 렌더링할 React
-      컴포넌트를 값으로 하는 객체를 생성합니다.
-    </p>
+    <Section as="h2" id="component-mapping" title="4. 컴포넌트 매핑">
+      <p>
+        <InlineCode>type</InlineCode> 문자열을 키로, 실제 렌더링할 React
+        컴포넌트를 값으로 하는 객체를 생성합니다.
+      </p>
+    </Section>
 
-    <h2>5. 훅과 함수 생성 및 내보내기</h2>
-    <p>
-      <InlineCode>createUseDialogs</InlineCode>에 매니저와 컴포넌트 맵을
-      전달하여 최종 <InlineCode>useDialogs</InlineCode> 훅을 생성합니다. 앱
-      전체에서 다이얼로그를 쉽게 제어할 수 있도록{' '}
-      <InlineCode>openDialog</InlineCode>, <InlineCode>closeDialog</InlineCode>{' '}
-      등의 함수도 함께 내보냅니다.
-    </p>
+    <Section as="h2" id="hook-creation" title="5. 훅과 함수 생성 및 내보내기">
+      <p>
+        <InlineCode>createUseDialogs</InlineCode>에 매니저와 컴포넌트 맵을
+        전달하여 최종 <InlineCode>useDialogs</InlineCode> 훅을 생성합니다. 앱
+        전체에서 다이얼로그를 쉽게 제어할 수 있도록{' '}
+        <InlineCode>openDialog</InlineCode>,{' '}
+        <InlineCode>closeDialog</InlineCode> 등의 함수도 함께 내보냅니다.
+      </p>
+    </Section>
 
-    <h2>전체 코드 예시</h2>
-    <CodeBlock language="typescript" code={dialogsTsCode} />
+    <Section as="h2" id="full-code" title="전체 코드 예시">
+      <CodeBlock language="typescript" code={dialogsTsCode} />
+    </Section>
   </DocArticle>
 );

@@ -6,7 +6,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-
 const faqItems = [
   {
     question: '다이얼로그가 열릴 때 왜 배경 스크롤이 그대로인가요?',
@@ -24,25 +23,35 @@ const faqItems = [
       '아니요, 권장하지 않습니다. `DialogRenderer`는 앱의 최상단 (일반적으로 `App.tsx`나 메인 레이아웃)에 **한 번만** 렌더링되어야 합니다. 이 컴포넌트는 모든 다이얼로그가 렌더링되는 중앙 포털 역할을 하므로, 여러 개가 존재하면 예기치 않은 동작이 발생할 수 있습니다.',
   },
   {
-    question: '애니메이션 라이브러리로 `framer-motion` 대신 `motion/react`를 사용하는 이유가 있나요?',
+    question:
+      '애니메이션 라이브러리로 `framer-motion` 대신 `motion/react`를 사용하는 이유가 있나요?',
     answer:
       '예제에서는 번들 크기가 더 작은 `motion/react`를 사용했지만, 이 라이브러리는 특정 애니메이션 라이브러리에 종속되지 않습니다. `framer-motion`, `react-spring`, 또는 다른 어떤 라이브러리의 `AnimatePresence` (또는 유사 기능)와도 함께 사용할 수 있습니다. 핵심은 `DialogRenderer` 내부에서 `dialogs` 배열을 매핑할 때 애니메이션 존재(presence) 컴포넌트로 감싸주는 것입니다.',
   },
 ];
 
 export const Troubleshooting = () => (
-  <DocArticle>
-    <h1>FAQ / Troubleshooting</h1>
+  <DocArticle title="FAQ / Troubleshooting">
     <p className="lead">자주 묻는 질문과 일반적인 문제 해결 방법입니다.</p>
-    <Accordion type="single" collapsible className="w-full">
-      {faqItems.map((item, index) => (
-        <AccordionItem value={`item-${index + 1}`} key={index}>
-          <AccordionTrigger>{item.question}</AccordionTrigger>
-          <AccordionContent>
-            <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: item.answer.replace(/`([^`]+)`/g, '<code class="font-mono text-sm rounded bg-muted px-1 py-0.5">$&</code>') }} />
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
+    <div className="not-prose">
+      <Accordion type="single" collapsible className="w-full">
+        {faqItems.map((item, index) => (
+          <AccordionItem value={`item-${index + 1}`} key={index}>
+            <AccordionTrigger>{item.question}</AccordionTrigger>
+            <AccordionContent>
+              <div
+                className="prose dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{
+                  __html: item.answer.replace(
+                    /`([^`]+)`/g,
+                    '<code class="font-mono text-sm rounded bg-muted px-1 py-0.5">$&</code>'
+                  ),
+                }}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
   </DocArticle>
 );

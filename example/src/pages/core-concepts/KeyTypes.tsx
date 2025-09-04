@@ -1,6 +1,7 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { DocArticle } from '@/components/docs/DocArticle';
+import { Section } from '@/components/docs/Section';
 
 const baseLayerPropsCode = `export interface BaseLayerProps {
   /**
@@ -66,42 +67,44 @@ const dialogStateCode = `export type DialogState<T> = T & {
 // }`;
 
 export const KeyTypes = () => (
-  <DocArticle>
-    <h1>Key Types</h1>
+  <DocArticle title="Key Types">
     <p className="lead">
       라이브러리를 타입스크립트와 함께 안전하게 사용하기 위해 알아야 할 핵심
       타입들입니다.
     </p>
 
-    <h2>BaseLayerProps</h2>
-    <p>
-      <InlineCode>BaseLayerProps</InlineCode>는 모든 레이어 컴포넌트가 공통적으로
-      가지는 표준 설정(props)을 정의하는 인터페이스입니다. 다이얼로그의 동작
-      방식(<InlineCode>dismissable</InlineCode> 등)을 제어하는 옵션들을 포함합니다. 새로운 다이얼로그
-      타입을 정의할 때는 반드시 이 인터페이스를 확장해야 합니다.
-    </p>
-    <CodeBlock language="typescript" code={baseLayerPropsCode} />
+    <Section as="h2" id="base-layer-props" title="BaseLayerProps">
+      <p>
+        <InlineCode>BaseLayerProps</InlineCode>는 모든 레이어 컴포넌트가
+        공통적으로 가지는 표준 설정(props)을 정의하는 인터페이스입니다.
+        다이얼로그의 동작 방식(<InlineCode>dismissable</InlineCode> 등)을
+        제어하는 옵션들을 포함합니다. 새로운 다이얼로그 타입을 정의할 때는
+        반드시 이 인터페이스를 확장해야 합니다.
+      </p>
+      <CodeBlock language="typescript" code={baseLayerPropsCode} />
+    </Section>
 
-    <h2>CustomDialogState (유니온 타입)</h2>
-    <p>
-      이 타입은 사용자가 직접 정의하는 타입입니다. 앱에서 사용될 모든
-      다이얼로그의 상태 인터페이스(<InlineCode>AlertState</InlineCode>,
-      <InlineCode>ConfirmState</InlineCode> 등)를 TypeScript의 유니온(|)으로
-      결합한 형태입니다. 이 타입을 통해 라이브러리는 앱의 전체 다이얼로그
-      상태를 이해하고, <InlineCode>type</InlineCode> 속성을 기준으로 타입을
-      정확하게 추론할 수 있습니다 (Discriminated Union).
-    </p>
-    <CodeBlock language="typescript" code={customDialogStateCode} />
+    <Section as="h2" id="custom-dialog-state" title="CustomDialogState (유니온 타입)">
+      <p>
+        이 타입은 사용자가 직접 정의하는 타입입니다. 앱에서 사용될 모든
+        다이얼로그의 상태 인터페이스(<InlineCode>AlertState</InlineCode>,
+        <InlineCode>ConfirmState</InlineCode> 등)를 TypeScript의 유니온(|)으로
+        결합한 형태입니다. 이 타입을 통해 라이브러리는 앱의 전체 다이얼로그
+        상태를 이해하고, <InlineCode>type</InlineCode> 속성을 기준으로 타입을
+        정확하게 추론할 수 있습니다 (Discriminated Union).
+      </p>
+      <CodeBlock language="typescript" code={customDialogStateCode} />
+    </Section>
 
-    <h2>DialogState&lt;T&gt;</h2>
-    <p>
-      <InlineCode>DialogState</InlineCode>는 라이브러리가 내부적으로 사용하는
-      제네릭 유틸리티 타입입니다. 사용자가 정의한 상태 타입(<InlineCode>T</InlineCode>)에 라이브러리
-      관리에 필요한 <InlineCode>id</InlineCode>와
-      <InlineCode>isOpen</InlineCode> 속성을 추가합니다. 실제 다이얼로그
-      컴포넌트가 최종적으로 받는 props의 타입은 바로
-      <InlineCode>DialogState&lt;YourStateType&gt;</InlineCode> 입니다.
-    </p>
-    <CodeBlock language="typescript" code={dialogStateCode} />
+    <Section as="h2" id="dialog-state" title="DialogState<T>">
+      <p>
+        <InlineCode>DialogState</InlineCode>는 라이브러리가 내부적으로
+        사용하는 제네릭 유틸리티 타입입니다. 사용자가 정의한 상태 타입(
+        <InlineCode>T</InlineCode>)에 라이브러리 관리에 필요한        <InlineCode>id</InlineCode>와 <InlineCode>isOpen</InlineCode> 속성을
+        추가합니다. 실제 다이얼로그 컴포넌트가 최종적으로 받는 props의 타입은
+        바로 <InlineCode>DialogState&lt;YourStateType&gt;</InlineCode> 입니다.
+      </p>
+      <CodeBlock language="typescript" code={dialogStateCode} />
+    </Section>
   </DocArticle>
 );

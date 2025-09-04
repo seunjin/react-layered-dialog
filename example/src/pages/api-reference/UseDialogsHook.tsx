@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Section } from '@/components/docs/Section';
 
 const hookSignature = `function useDialogs(): {
   dialogs: DialogInstance<CustomDialogState>[];
@@ -53,63 +54,66 @@ export const DialogRenderer = () => {
 };`;
 
 export const UseDialogsHook = () => (
-  <DocArticle>
-    <h1>useDialogs Hook</h1>
+  <DocArticle title="useDialogs Hook">
     <p className="lead">
       <InlineCode>createUseDialogs</InlineCode>를 통해 생성된, React
       컴포넌트에서 다이얼로그를 제어하기 위한 기본 훅입니다.
     </p>
 
-    <h2>Hook Signature</h2>
-    <CodeBlock language="typescript" code={hookSignature} />
+    <Section as="h2" id="signature" title="Hook Signature">
+      <CodeBlock language="typescript" code={hookSignature} />
+    </Section>
 
-    <h2>Return Value</h2>
-    <div className="space-y-4 my-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>dialogs</CardTitle>
-          <CardDescription>
-            현재 열려있는 모든 다이얼로그의 상태 배열입니다. 각 요소는 렌더링할{' '}
-            <InlineCode>Component</InlineCode>와 해당 컴포넌트에 전달될{' '}
-            <InlineCode>state</InlineCode>(props)를 포함합니다. 이 배열은 주로{' '}
-            <InlineCode>DialogRenderer</InlineCode>에서 사용됩니다.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CodeBlock language="tsx" code={dialogsPropCode} />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>openDialog</CardTitle>
-          <CardDescription>
-            새로운 다이얼로그를 엽니다. 첫 번째 인자로 다이얼로그의{' '}
-            <InlineCode>type</InlineCode>을, 두 번째 인자로 해당 다이얼로그
-            컴포넌트가 필요로 하는 props를 전달합니다.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>closeDialog</CardTitle>
-          <CardDescription>
-            다이얼로그를 닫습니다. 인자로 <InlineCode>id</InlineCode>를 전달하면
-            특정 다이얼로그를 닫고, 전달하지 않으면 가장 위에 있는 다이얼로그를
-            닫습니다.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>closeAllDialogs</CardTitle>
-          <CardDescription>
-            현재 열려있는 모든 다이얼로그를 한 번에 닫습니다.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    </div>
+    <Section as="h2" id="return-value" title="Return Value">
+      <div className="not-prose my-6 space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>dialogs</CardTitle>
+            <CardDescription>
+              현재 열려있는 모든 다이얼로그의 상태 배열입니다. 각 요소는
+              렌더링할 <InlineCode>Component</InlineCode>와 해당 컴포넌트에
+              전달될 <InlineCode>state</InlineCode>(props)를 포함합니다. 이
+              배열은 주로 <InlineCode>DialogRenderer</InlineCode>에서
+              사용됩니다.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CodeBlock language="tsx" code={dialogsPropCode} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>openDialog</CardTitle>
+            <CardDescription>
+              새로운 다이얼로그를 엽니다. 첫 번째 인자로 다이얼로그의{' '}
+              <InlineCode>type</InlineCode>을, 두 번째 인자로 해당 다이얼로그
+              컴포넌트가 필요로 하는 props를 전달합니다.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>closeDialog</CardTitle>
+            <CardDescription>
+              다이얼로그를 닫습니다. 인자로 <InlineCode>id</InlineCode>를
+              전달하면 특정 다이얼로그를 닫고, 전달하지 않으면 가장 위에 있는
+              다이얼로그를 닫습니다.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>closeAllDialogs</CardTitle>
+            <CardDescription>
+              현재 열려있는 모든 다이얼로그를 한 번에 닫습니다.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    </Section>
 
-    <h2>Usage Example</h2>
-    <CodeBlock language="typescript" code={usageExample} />
+    <Section as="h2" id="usage" title="Usage Example">
+      <CodeBlock language="typescript" code={usageExample} />
+    </Section>
   </DocArticle>
 );

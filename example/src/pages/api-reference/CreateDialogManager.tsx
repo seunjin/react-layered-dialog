@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Section } from '@/components/docs/Section';
 
 const functionSignature = `function createDialogManager<T>(config?: DialogsConfig): { manager: DialogManager<T> };`;
 
@@ -33,8 +34,7 @@ const dialogsConfigCode = `export interface DialogsConfig {
 }`;
 
 export const CreateDialogManager = () => (
-  <DocArticle>
-    <h1>createDialogManager</h1>
+  <DocArticle title="createDialogManager">
     <p className="lead">
       다이얼로그 상태를 관리하는 핵심 엔진인{' '}
       <InlineCode>DialogManager</InlineCode> 인스턴스를 생성합니다.
@@ -45,32 +45,36 @@ export const CreateDialogManager = () => (
       저장하고 관리하는 중앙 저장소 역할을 합니다.
     </p>
 
-    <h2>Function Signature</h2>
-    <CodeBlock language="typescript" code={functionSignature} />
+    <Section as="h2" id="signature" title="Function Signature">
+      <CodeBlock language="typescript" code={functionSignature} />
+    </Section>
 
-    <h2>Parameters</h2>
-    <Card className="my-6">
-      <CardHeader>
-        <CardTitle>config (optional)</CardTitle>
-        <CardDescription>
-          <InlineCode>DialogsConfig</InlineCode> 타입의 객체로, 라이브러리의
-          전역 동작을 설정합니다.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <CodeBlock language="typescript" code={dialogsConfigCode} />
-      </CardContent>
-    </Card>
+    <Section as="h2" id="parameters" title="Parameters">
+      <Card className="not-prose">
+        <CardHeader>
+          <CardTitle>config (optional)</CardTitle>
+          <CardDescription>
+            <InlineCode>DialogsConfig</InlineCode> 타입의 객체로, 라이브러리의
+            전역 동작을 설정합니다.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CodeBlock language="typescript" code={dialogsConfigCode} />
+        </CardContent>
+      </Card>
+    </Section>
 
-    <h2>Return Value</h2>
-    <p>
-      <InlineCode>manager</InlineCode> 속성을 포함하는 객체를 반환합니다. 이{' '}
-      <InlineCode>manager</InlineCode> 인스턴스는 이후{' '}
-      <InlineCode>createUseDialogs</InlineCode> 함수에 인자로 전달되어야
-      합니다.
-    </p>
+    <Section as="h2" id="return-value" title="Return Value">
+      <p>
+        <InlineCode>manager</InlineCode> 속성을 포함하는 객체를 반환합니다. 이{' '}
+        <InlineCode>manager</InlineCode> 인스턴스는 이후{' '}
+        <InlineCode>createUseDialogs</InlineCode> 함수에 인자로 전달되어야
+        합니다.
+      </p>
+    </Section>
 
-    <h2>Usage Example</h2>
-    <CodeBlock language="typescript" code={usageExample} />
+    <Section as="h2" id="usage" title="Usage Example">
+      <CodeBlock language="typescript" code={usageExample} />
+    </Section>
   </DocArticle>
 );

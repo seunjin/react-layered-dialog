@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { Section } from '@/components/docs/Section';
 
 const functionSignature = `function createUseDialogs<T>(
   manager: DialogManager<T>,
@@ -47,69 +47,75 @@ const componentMap = {
 };`;
 
 export const CreateUseDialogs = () => (
-  <DocArticle>
-    <h1>createUseDialogs</h1>
+  <DocArticle title="createUseDialogs">
     <p className="lead">
       <InlineCode>DialogManager</InlineCode>의 상태를 React 컴포넌트와
       연결하는 <InlineCode>useDialogs</InlineCode> 훅을 생성합니다.
     </p>
     <p>
-      이 팩토리 함수는 순수 TypeScript로 작성된 <InlineCode>DialogManager</InlineCode>
+      이 팩토리 함수는 순수 TypeScript로 작성된{' '}
+      <InlineCode>DialogManager</InlineCode>
       와 React의 렌더링 시스템을 연결하는 다리 역할을 합니다. 여기서 생성된{' '}
       <InlineCode>useDialogs</InlineCode> 훅을 통해 컴포넌트는 다이얼로그의
       상태 변화를 구독하고, 다이얼로그를 열거나 닫는 함수를 사용할 수 있게
       됩니다.
     </p>
 
-    <h2>Function Signature</h2>
-    <CodeBlock language="typescript" code={functionSignature} />
+    <Section as="h2" id="signature" title="Function Signature">
+      <CodeBlock language="typescript" code={functionSignature} />
+    </Section>
 
-    <h2>Parameters</h2>
-    <div className="space-y-4 my-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>manager</CardTitle>
-          <CardDescription>
-            <InlineCode>createDialogManager</InlineCode>를 통해 생성된{' '}
-            <InlineCode>DialogManager</InlineCode> 인스턴스입니다.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>componentMap</CardTitle>
-          <CardDescription>
-            다이얼로그의 <InlineCode>type</InlineCode> 문자열을 실제 렌더링될
-            React 컴포넌트와 매핑하는 객체입니다.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Alert>
-            <Terminal className="h-4 w-4" />
-            <AlertTitle>Type Safety</AlertTitle>
-            <AlertDescription>
-              TypeScript는 이 <InlineCode>componentMap</InlineCode>을 분석하여{' '}
-              <InlineCode>openDialog(&apos;alert&apos;, ...)</InlineCode> 호출 시{' '}
-              <InlineCode>Alert</InlineCode> 컴포넌트에 필요한 props 타입을
-              정확하게 추론합니다.
-            </AlertDescription>
-          </Alert>
-          <CodeBlock
-            language="typescript"
-            code={componentMapCode}
-            className="mt-4"
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <Section as="h2" id="parameters" title="Parameters">
+      <div className="not-prose my-6 space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>manager</CardTitle>
+            <CardDescription>
+              <InlineCode>createDialogManager</InlineCode>를 통해 생성된{' '}
+              <InlineCode>DialogManager</InlineCode> 인스턴스입니다.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>componentMap</CardTitle>
+            <CardDescription>
+              다이얼로그의 <InlineCode>type</InlineCode> 문자열을 실제
+              렌더링될 React 컴포넌트와 매핑하는 객체입니다.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Alert>
+              <div>
+                <AlertTitle>Type Safety</AlertTitle>
+                <AlertDescription>
+                  TypeScript는 이 <InlineCode>componentMap</InlineCode>을
+                  분석하여{' '}
+                  <InlineCode>openDialog(&apos;alert&apos;, ...)</InlineCode> 호출 시{' '}
+                  <InlineCode>Alert</InlineCode> 컴포넌트에 필요한 props 타입을
+                  정확하게 추론합니다.
+                </AlertDescription>
+              </div>
+            </Alert>
+            <CodeBlock
+              language="typescript"
+              code={componentMapCode}
+              className="mt-4"
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </Section>
 
-    <h2>Return Value</h2>
-    <p>
-      앱 전체에서 다이얼로그 상태를 구독하고 제어하는 데 사용될{' '}
-      <InlineCode>useDialogs</InlineCode> 훅을 반환합니다.
-    </p>
+    <Section as="h2" id="return-value" title="Return Value">
+      <p>
+        앱 전체에서 다이얼로그 상태를 구독하고 제어하는 데 사용될{' '}
+        <InlineCode>useDialogs</InlineCode> 훅을 반환합니다.
+      </p>
+    </Section>
 
-    <h2>Usage Example</h2>
-    <CodeBlock language="typescript" code={usageExample} />
+    <Section as="h2" id="usage" title="Usage Example">
+      <CodeBlock language="typescript" code={usageExample} />
+    </Section>
   </DocArticle>
 );

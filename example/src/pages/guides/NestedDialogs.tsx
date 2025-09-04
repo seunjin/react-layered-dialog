@@ -33,9 +33,8 @@ const openNestedDialogs = async () => {
 `;
 
 export const NestedDialogs = () => (
-  <DocArticle>
-    <h1>Nested Dialogs</h1>
-    <p>
+  <DocArticle title="Nested Dialogs">
+    <p className="lead">
       다이얼로그 내부에서 또 다른 다이얼로그를 여는 중첩 호출(Nesting)은
       사용자 플로우를 안내하는 데 유용합니다.
     </p>
@@ -50,7 +49,7 @@ export const NestedDialogs = () => (
 
     <CodeBlock language="typescript" code={nestedDialogCode} />
 
-    <div className="my-6 rounded-lg border bg-muted/30 p-4 text-center">
+    <div className="not-prose my-6 rounded-lg border bg-muted/30 p-4 text-center">
       <p className="text-lg font-semibold">[중첩 다이얼로그 시각화 이미지]</p>
       <p className="mt-2 text-sm text-muted-foreground">
         다이얼로그가 순서대로 쌓여있는 모습을 보여주는 이미지 (z-index: 1000,

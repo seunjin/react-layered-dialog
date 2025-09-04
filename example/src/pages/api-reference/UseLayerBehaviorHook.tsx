@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Section } from '@/components/docs/Section';
 
 const hookSignature = `function useLayerBehavior(options: UseLayerBehaviorOptions): void;`;
 
@@ -51,14 +52,16 @@ const optionsData = [
   {
     name: 'dialogs',
     default: 'Required',
-    type: "readonly { state: { zIndex?: number } }[]",
-    description: '훅이 최상단 레이어를 식별하기 위해 z-index를 계산하는 데 사용하는 다이얼로그 상태 배열입니다.',
+    type: 'readonly { state: { zIndex?: number } }[]',
+    description:
+      '훅이 최상단 레이어를 식별하기 위해 z-index를 계산하는 데 사용하는 다이얼로그 상태 배열입니다.',
   },
   {
     name: 'zIndex',
     default: 'undefined',
     type: 'number',
-    description: '현재 동작을 적용할 레이어의 z-index입니다. 훅은 이 값을 `dialogs` 배열로부터 계산된 최상단 z-index와 비교합니다.',
+    description:
+      '현재 동작을 적용할 레이어의 z-index입니다. 훅은 이 값을 `dialogs` 배열로부터 계산된 최상단 z-index와 비교합니다.',
   },
   {
     name: 'closeOnEscape',
@@ -70,7 +73,8 @@ const optionsData = [
     name: 'onEscape',
     default: 'undefined',
     type: '() => void',
-    description: '`closeOnEscape`가 true일 때, Escape 키를 누르면 실행될 콜백 함수입니다.',
+    description:
+      '`closeOnEscape`가 true일 때, Escape 키를 누르면 실행될 콜백 함수입니다.',
   },
   {
     name: 'autoFocus',
@@ -82,7 +86,8 @@ const optionsData = [
     name: 'focusRef',
     default: 'undefined',
     type: 'React.RefObject<HTMLElement | null>',
-    description: '`autoFocus`가 true일 때, 포커스를 받을 요소의 ref 객체입니다.',
+    description:
+      '`autoFocus`가 true일 때, 포커스를 받을 요소의 ref 객체입니다.',
   },
   {
     name: 'closeOnOutsideClick',
@@ -94,7 +99,8 @@ const optionsData = [
     name: 'onOutsideClick',
     default: 'undefined',
     type: '() => void',
-    description: '`closeOnOutsideClick`가 true일 때, 외부를 클릭하면 실행될 콜백 함수입니다.',
+    description:
+      '`closeOnOutsideClick`가 true일 때, 외부를 클릭하면 실행될 콜백 함수입니다.',
   },
   {
     name: 'outsideClickRef',
@@ -105,8 +111,7 @@ const optionsData = [
 ];
 
 export const UseLayerBehaviorHook = () => (
-  <DocArticle>
-    <h1>useLayerBehavior Hook</h1>
+  <DocArticle title="useLayerBehavior Hook">
     <p className="lead">
       레이어 컴포넌트의 공통 동작(behavior)을 캡슐화하고 주입하는 훅입니다.
     </p>
@@ -117,40 +122,49 @@ export const UseLayerBehaviorHook = () => (
       이를 통해 상태와 동작의 관심사를 분리합니다.
     </p>
 
-    <h2>Hook Signature</h2>
-    <CodeBlock language="typescript" code={hookSignature} />
+    <Section as="h2" id="signature" title="Hook Signature">
+      <CodeBlock language="typescript" code={hookSignature} />
+    </Section>
 
-    <h2>Options (UseLayerBehaviorOptions)</h2>
-    <div className="my-6 overflow-hidden rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Prop</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Default</TableHead>
-            <TableHead>Description</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {optionsData.map((opt) => (
-            <TableRow key={opt.name}>
-              <TableCell className="font-mono font-bold">{opt.name}</TableCell>
-              <TableCell className="font-mono text-sm break-all">{opt.type}</TableCell>
-              <TableCell>
-                {opt.default === 'Required' ? (
-                  <span className="text-xs font-semibold text-destructive">Required</span>
-                ) : (
-                  <InlineCode>{opt.default}</InlineCode>
-                )}
-              </TableCell>
-              <TableCell className="text-sm">{opt.description}</TableCell>
+    <Section as="h2" id="options" title="Options (UseLayerBehaviorOptions)">
+      <div className="not-prose my-6 overflow-hidden rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Prop</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Default</TableHead>
+              <TableHead>Description</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHeader>
+          <TableBody>
+            {optionsData.map((opt) => (
+              <TableRow key={opt.name}>
+                <TableCell className="font-mono font-bold">
+                  {opt.name}
+                </TableCell>
+                <TableCell className="font-mono break-all text-sm">
+                  {opt.type}
+                </TableCell>
+                <TableCell>
+                  {opt.default === 'Required' ? (
+                    <span className="text-xs font-semibold text-destructive">
+                      Required
+                    </span>
+                  ) : (
+                    <InlineCode>{opt.default}</InlineCode>
+                  )}
+                </TableCell>
+                <TableCell className="text-sm">{opt.description}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </Section>
 
-    <h2>Usage Example</h2>
-    <CodeBlock language="tsx" code={usageExample} />
+    <Section as="h2" id="usage" title="Usage Example">
+      <CodeBlock language="tsx" code={usageExample} />
+    </Section>
   </DocArticle>
 );
