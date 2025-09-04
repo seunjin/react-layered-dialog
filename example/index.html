@@ -10,10 +10,14 @@
     <title>React Layered Dialog</title>
     <script>
       (function() {
-        const redirect = sessionStorage.getItem('redirect');
-        sessionStorage.removeItem('redirect');
-        if (redirect && redirect !== location.pathname) {
-          history.replaceState(null, null, redirect);
+        // URL에서 'p' 쿼리 파라미터를 찾습니다.
+        const params = new URLSearchParams(location.search);
+        const path = params.get('p');
+
+        if (path) {
+          // 쿼리 파라미터가 있다면, 해당 경로로 URL을 변경합니다.
+          // 쿼리 파라미터는 URL에서 제거합니다.
+          history.replaceState(null, null, path);
         }
       })();
     </script>
