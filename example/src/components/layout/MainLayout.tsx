@@ -15,10 +15,12 @@ export function MainLayout() {
         <div className="flex flex-1">
           <Sidebar />
           <SidebarInset className="flex flex-1 flex-col">
-            <div className="flex flex-1 flex-col  ">
-              <Outlet />
-              <PageNavigation />
-            </div>
+            <main className="flex-1 p-4 sm:p-6">
+              <div className="mx-auto w-[min(calc(100%-32px),var(--prose-max))]">
+                <Outlet />
+                <PageNavigation />
+              </div>
+            </main>
             <Footer />
           </SidebarInset>
         </div>

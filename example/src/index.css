@@ -148,11 +148,31 @@
   body {
     @apply bg-background text-foreground font-sans;
   }
+  ::selection {
+    background: color-mix(in oklch, var(--accent) 30%, transparent);
+  }
+  .kbd {
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    background: var(--muted);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.5rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      monospace;
+    font-size: 0.85em;
+  }
 }
 
 /* Prose Spec */
 .prose {
   line-height: var(--lh);
+}
+
+.prose :where(h1, h2, h3, h4, h5, h6, strong) {
+  color: var(--foreground);
+}
+.prose :where(p, li, blockquote, figcaption) {
+  color: var(--muted-foreground);
 }
 
 .prose h1,
@@ -174,7 +194,7 @@
 .prose h2 {
   font-size: var(--fz-6);
   margin: var(--space-7) 0 var(--space-4);
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
   padding-bottom: 0.5rem;
   @apply font-semibold tracking-tight;
 }
@@ -191,10 +211,17 @@
 .prose h5 {
   font-size: var(--fz-3);
   margin: var(--space-4) 0 var(--space-2);
+  color: var(--muted-foreground);
 }
 .prose h6 {
   font-size: var(--fz-2);
   margin: var(--space-3) 0 var(--space-2);
+  color: var(--muted-foreground);
+}
+
+/* Alert 컴포넌트 내부의 h5 마진을 리셋합니다. */
+.prose [role='alert'] h5 {
+  margin: 0;
 }
 
 .prose p {
@@ -205,23 +232,25 @@
 
 .prose .lead {
   font-size: var(--fz-3);
-  color: hsl(var(--muted-foreground));
+  color: var(--muted-foreground);
   margin: var(--space-4) 0;
+  font-weight: 500;
 }
 
 .prose ul,
 .prose ol {
   margin: var(--space-3) 0;
   padding-left: 1.25rem;
-  @apply list-disc;
 }
 .prose li {
   margin: var(--space-1) 0;
-  @apply mt-2;
 }
 .prose li > ul,
 .prose li > ol {
   margin-top: var(--space-1);
+}
+.prose ul > li::marker {
+  color: var(--muted-foreground);
 }
 
 .prose pre {
@@ -229,36 +258,53 @@
   padding: var(--space-4);
   border-radius: 12px;
   overflow: auto;
+  background: oklch(0.22 0.02 265);
+  color: oklch(0.94 0.02 265);
+  border: 1px solid color-mix(in oklch, var(--ring) 25%, transparent);
 }
 
 .prose code:not(pre code) {
   font-size: 0.9em;
   padding: 0.15em 0.35em;
   border-radius: 0.375rem;
-  background-color: hsl(var(--muted));
-  @apply font-mono font-semibold;
+  color: var(--foreground);
+  background-color: var(--muted);
+  font-weight: 500;
+  @apply font-mono;
 }
 
 .prose table {
   width: 100%;
   border-collapse: collapse;
   margin: var(--space-4) 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
 }
 .prose thead th {
   text-align: left;
   font-weight: 600;
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
   padding: 0.625rem 0.5rem;
+  background: var(--muted);
 }
 .prose td {
   padding: 0.525rem 0.5rem;
-  border-bottom: 1px solid hsl(var(--border));
+  border-bottom: 1px solid var(--border);
+}
+.prose caption {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  caption-side: top;
+  text-align: left;
+  margin-bottom: 0.5rem;
 }
 
 .prose blockquote {
   margin: var(--space-4) 0;
   padding: var(--space-3) var(--space-4);
-  border-left: 4px solid hsl(var(--border));
+  border-left: 4px solid var(--accent);
   border-radius: 8px;
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--accent) 8%, transparent);
+  font-style: italic;
 }
-
