@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>React Layered Dialog - Redirecting...</title>
+    <script>
+      // 현재 경로(예: /react-layered-dialog/getting-started/introduction)를 sessionStorage에 저장합니다.
+      // 'pathname'만 사용하면 도메인과 쿼리 파라미터는 제외됩니다.
+      sessionStorage.setItem('redirect', location.pathname);
+
+      // GitHub Pages 프로젝트의 루트 경로로 리디렉션합니다.
+      // vite.config.ts의 base 경로와 일치해야 합니다.
+      location.href = '/react-layered-dialog/'; 
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
