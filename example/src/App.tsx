@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
+import { RouterProvider } from 'react-router-dom';
 import { useDialogs } from '@/lib/dialogs';
 import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
-import { MainLayout } from './components/layout/MainLayout';
-import { SidebarProvider } from './components/ui/sidebar';
+import { router } from './router';
 
 function App() {
   const { dialogs } = useDialogs();
@@ -17,10 +17,10 @@ function App() {
   }, [dialogs]);
 
   return (
-    <SidebarProvider>
-      <MainLayout />
+    <>
+      <RouterProvider router={router} />
       <DialogRenderer dialogs={dialogs} />
-    </SidebarProvider>
+    </>
   );
 }
 

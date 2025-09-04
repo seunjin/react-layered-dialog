@@ -150,160 +150,115 @@
   }
 }
 
-/* Docs Prose Spec */
-.docs-prose {
-  width: min(calc(100% - 2rem), var(--prose-max));
+/* Prose Spec */
+.prose {
   line-height: var(--lh);
-  margin-inline: auto;
 }
 
-.docs-prose h1,
-.docs-prose h2,
-.docs-prose h3,
-.docs-prose h4,
-.docs-prose h5,
-.docs-prose h6 {
-  scroll-margin-top: 96px; /* 앵커 시 헤더 높이 고려 */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  scroll-margin-top: 96px;
   line-height: 1.25;
   font-weight: 700;
 }
 
-.docs-prose h1 {
+.prose h1 {
   font-size: var(--fz-7);
   margin: var(--space-8) 0 var(--space-5);
+  @apply font-extrabold tracking-tight;
 }
-.docs-prose h2 {
+.prose h2 {
   font-size: var(--fz-6);
   margin: var(--space-7) 0 var(--space-4);
+  border-bottom: 1px solid hsl(var(--border));
+  padding-bottom: 0.5rem;
+  @apply font-semibold tracking-tight;
 }
-.docs-prose h3 {
+.prose h3 {
   font-size: var(--fz-5);
   margin: var(--space-6) 0 var(--space-3);
+  @apply font-semibold tracking-tight;
 }
-.docs-prose h4 {
+.prose h4 {
   font-size: var(--fz-4);
   margin: var(--space-5) 0 var(--space-3);
+  @apply font-semibold tracking-tight;
 }
-.docs-prose h5 {
+.prose h5 {
   font-size: var(--fz-3);
   margin: var(--space-4) 0 var(--space-2);
 }
-.docs-prose h6 {
+.prose h6 {
   font-size: var(--fz-2);
   margin: var(--space-3) 0 var(--space-2);
 }
 
-.docs-prose p {
+.prose p {
   font-size: var(--fz-1);
   margin: var(--space-3) 0;
-}
-.docs-prose > p + h2,
-.docs-prose > ul + h2,
-.docs-prose > ol + h2,
-.docs-prose > pre + h2,
-.docs-prose > table + h2,
-.docs-prose > blockquote + h2 {
-  margin-top: var(--space-8);
+  @apply leading-7;
 }
 
-.docs-prose p + p {
-  margin-top: var(--space-2);
-} /* 문단끼리는 가까이 */
-.docs-prose p + ul,
-.docs-prose p + ol {
-  margin-top: var(--space-3);
-}
-.docs-prose p + pre,
-.docs-prose p + table,
-.docs-prose p + blockquote {
-  margin-top: var(--space-4);
-} /* 블록 요소는 더 멀리 */
-
-.docs-prose .lead {
+.prose .lead {
   font-size: var(--fz-3);
-  color: rgb(var(--muted-foreground));
+  color: hsl(var(--muted-foreground));
   margin: var(--space-4) 0;
 }
 
-.docs-prose ul,
-.docs-prose ol {
+.prose ul,
+.prose ol {
   margin: var(--space-3) 0;
   padding-left: 1.25rem;
+  @apply list-disc;
 }
-.docs-prose li {
+.prose li {
   margin: var(--space-1) 0;
+  @apply mt-2;
 }
-.docs-prose li > ul,
-.docs-prose li > ol {
+.prose li > ul,
+.prose li > ol {
   margin-top: var(--space-1);
 }
 
-.docs-prose pre {
+.prose pre {
   margin: var(--space-4) 0;
   padding: var(--space-4);
   border-radius: 12px;
-  background: #0b1220;
-  color: #d5d8e2;
   overflow: auto;
 }
 
-.docs-prose code:not(pre code) {
+.prose code:not(pre code) {
   font-size: 0.9em;
   padding: 0.15em 0.35em;
   border-radius: 0.375rem;
-  background: rgba(127, 127, 127, 0.12);
+  background-color: hsl(var(--muted));
+  @apply font-mono font-semibold;
 }
 
-.docs-prose table {
+.prose table {
   width: 100%;
   border-collapse: collapse;
   margin: var(--space-4) 0;
 }
-.docs-prose thead th {
+.prose thead th {
   text-align: left;
   font-weight: 600;
-  border-bottom: 1px solid rgb(var(--border, 229 231 255));
+  border-bottom: 1px solid hsl(var(--border));
   padding: 0.625rem 0.5rem;
 }
-.docs-prose td {
+.prose td {
   padding: 0.525rem 0.5rem;
-  border-bottom: 1px solid rgb(var(--border, 229 231 255));
-}
-.docs-prose caption {
-  caption-side: top;
-  text-align: left;
-  color: rgb(var(--muted-foreground));
-  font-size: 0.8rem;
-  margin-bottom: 0.5rem;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
-.docs-prose blockquote {
+.prose blockquote {
   margin: var(--space-4) 0;
   padding: var(--space-3) var(--space-4);
-  border-left: 4px solid rgb(var(--accent, 99 102 241));
-  background: rgba(99, 102, 241, 0.06);
+  border-left: 4px solid hsl(var(--border));
   border-radius: 8px;
 }
 
-.docs-prose figure {
-  margin: var(--space-4) 0;
-}
-.docs-prose figcaption {
-  text-align: center;
-  color: rgb(var(--muted-foreground));
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-}
-
-.docs-prose .wide {
-  max-width: var(--prose-wide);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
