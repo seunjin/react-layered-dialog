@@ -1,6 +1,14 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { DocArticle } from '@/components/docs/DocArticle';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 const hookSignature = `function useLayerBehavior(options: UseLayerBehaviorOptions): void;`;
 
@@ -113,32 +121,33 @@ export const UseLayerBehaviorHook = () => (
     <CodeBlock language="typescript" code={hookSignature} />
 
     <h2>Options (UseLayerBehaviorOptions)</h2>
-    <div className="flex flex-col gap-6 rounded-lg border p-4 my-6">
-      {optionsData.map((opt) => (
-        <div key={opt.name} className="border-b pb-6 last:border-b-0 last:pb-0">
-          <div className="flex items-center gap-4">
-            <h4 className="font-mono font-bold text-lg">{opt.name}</h4>
-            {opt.default === 'Required' ? (
-              <span className="text-xs font-semibold text-destructive border border-destructive px-2 py-1 rounded-full">
-                Required
-              </span>
-            ) : (
-              <span className="text-xs font-semibold text-muted-foreground">
-                optional
-              </span>
-            )}
-          </div>
-          <div className="font-mono text-sm text-muted-foreground mt-2 break-all">
-            {opt.type}
-          </div>
-          {opt.default !== 'Required' && (
-            <div className="text-sm mt-2">
-              <strong>Default:</strong> <InlineCode>{opt.default}</InlineCode>
-            </div>
-          )}
-          <p className="text-sm mt-2">{opt.description}</p>
-        </div>
-      ))}
+    <div className="my-6 overflow-hidden rounded-lg border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Prop</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Default</TableHead>
+            <TableHead>Description</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {optionsData.map((opt) => (
+            <TableRow key={opt.name}>
+              <TableCell className="font-mono font-bold">{opt.name}</TableCell>
+              <TableCell className="font-mono text-sm break-all">{opt.type}</TableCell>
+              <TableCell>
+                {opt.default === 'Required' ? (
+                  <span className="text-xs font-semibold text-destructive">Required</span>
+                ) : (
+                  <InlineCode>{opt.default}</InlineCode>
+                )}
+              </TableCell>
+              <TableCell className="text-sm">{opt.description}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
 
     <h2>Usage Example</h2>

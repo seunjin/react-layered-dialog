@@ -76,6 +76,9 @@
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
 
+  /* sidebar-width */
+  --sidebar-width: 240px;
+
   /* spacing scale (문서 전용) */
   --space-0: 0rem;
   --space-1: 0.25rem; /* 4px */
@@ -149,8 +152,9 @@
 
 /* Docs Prose Spec */
 .docs-prose {
-  max-width: var(--prose-max);
+  width: min(calc(100% - 2rem), var(--prose-max));
   line-height: var(--lh);
+  margin-inline: auto;
 }
 
 .docs-prose h1,
@@ -293,4 +297,13 @@
 
 .docs-prose .wide {
   max-width: var(--prose-wide);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

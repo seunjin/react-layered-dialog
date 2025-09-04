@@ -1,21 +1,33 @@
-import React from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
+import { PageNavigation } from './PageNavigation';
+import { Footer } from './Footer';
+import { SidebarInset, SidebarProvider } from '../ui/sidebar';
 
-type MainLayoutProps = {
-  children: React.ReactNode;
-};
+export function MainLayout() {
+  const location = useLocation();
 
-export function MainLayout({ children }: MainLayoutProps) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
-    <div className="flex min-h-[100dvh] w-full flex-col">
-      <Header />
-      <div className="flex flex-1 ">
-        <Sidebar />
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-          <div className="max-w-[var(--prose-max)] mx-auto">{children}</div>
-        </main>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full flex-col">
+        <Header />
+        <div className="flex flex-1">
+          <Sidebar />
+          <SidebarInset className="flex flex-1 flex-col">
+            <div className="flex flex-1 flex-col  ">
+              <Outlet />
+              <PageNavigation />
+            </div>
+            <Footer />
+          </SidebarInset>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

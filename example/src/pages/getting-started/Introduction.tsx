@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom';
-import {
-  Card,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DocArticle } from '@/components/docs/DocArticle';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Rocket, ShieldCheck, ToyBrick } from 'lucide-react';
 
 export const Introduction = () => (
   <DocArticle>
@@ -83,27 +82,32 @@ pnpm add motion`}
     </Card>
 
     <h2>주요 특징</h2>
-    <blockquote>
-      <p><strong>최적화된 렌더링</strong></p>
-      <p>
-        <InlineCode>useSyncExternalStore</InlineCode>를 사용하여 상태가
-        변경될 때 오직 필요한 컴포넌트만 리렌더링합니다. 이를 통해 불필요한
-        렌더링을 방지하고 최적의 성능을 보장합니다.
-      </p>
-    </blockquote>
-    <blockquote>
-      <p><strong>Type-Safe API</strong></p>
-      <p>
-        TypeScript 기반으로 설계되어, 다이얼로그를 열 때 필요한 `props`를
-        자동으로 추론하고 잘못된 사용을 방지합니다.
-      </p>
-    </blockquote>
-    <blockquote>
-      <p><strong>Flexible & Extensible</strong></p>
-      <p>
-        어떤 UI 컴포넌트 라이브러리와도 쉽게 통합하여 사용할 수 있으며,
-        자유롭게 커스터마이징이 가능합니다.
-      </p>
-    </blockquote>
+    <div className="space-y-4">
+      <Alert>
+        <Rocket className="h-4 w-4" />
+        <AlertTitle>최적화된 렌더링</AlertTitle>
+        <AlertDescription>
+          <InlineCode>useSyncExternalStore</InlineCode>를 사용하여 상태가
+          변경될 때 오직 필요한 컴포넌트만 리렌더링합니다. 이를 통해 불필요한
+          렌더링을 방지하고 최적의 성능을 보장합니다.
+        </AlertDescription>
+      </Alert>
+      <Alert>
+        <ShieldCheck className="h-4 w-4" />
+        <AlertTitle>Type-Safe API</AlertTitle>
+        <AlertDescription>
+          TypeScript 기반으로 설계되어, 다이얼로그를 열 때 필요한 `props`를
+          자동으로 추론하고 잘못된 사용을 방지합니다.
+        </AlertDescription>
+      </Alert>
+      <Alert>
+        <ToyBrick className="h-4 w-4" />
+        <AlertTitle>Flexible & Extensible</AlertTitle>
+        <AlertDescription>
+          어떤 UI 컴포넌트 라이브러리와도 쉽게 통합하여 사용할 수 있으며,
+          자유롭게 커스터마이징이 가능합니다.
+        </AlertDescription>
+      </Alert>
+    </div>
   </DocArticle>
 );
