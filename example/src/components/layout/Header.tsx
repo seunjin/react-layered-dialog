@@ -2,8 +2,9 @@ import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Github from '@/assets/github.svg';
+import GithubIcon from '@/assets/github.svg?react';
 import { ThemeToggle } from '../ThemeToggle';
+
 export const Header = () => (
   <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background px-4">
     <div className="flex items-center gap-2">
@@ -25,7 +26,7 @@ export const Header = () => (
         rel="noopener noreferrer"
       >
         <Button variant="ghost" size="icon">
-          <img className="h-5 w-5" src={Github} alt="" />
+          <GithubIcon className="h-5 w-5 fill-current" />
         </Button>
       </a>
       <ThemeToggle />
