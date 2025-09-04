@@ -1,7 +1,6 @@
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { DocArticle } from '@/components/docs/DocArticle';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const beforeExample = `// MyPage.tsx
 function MyPage() {
@@ -144,37 +143,27 @@ export const StateVsBehavior = () => (
       이 라이브러리의 마법은 &apos;상태&apos;와 &apos;동작&apos;을 명확히 분리하는 설계에서
       비롯됩니다.
     </p>
-    <div className="grid md:grid-cols-2 gap-6 my-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>상태 (State)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            <strong>&quot;무엇을&quot;</strong> 보여줄지에 대한 정보입니다. 다이얼로그의{' '}
-            <InlineCode>title</InlineCode>, <InlineCode>message</InlineCode> 와
-            같은 정적인 데이터나, <InlineCode>dismissable: false</InlineCode> 와
-            같이 동작 방식을 결정하는 &apos;설정&apos; 또는 &apos;정책&apos;이 여기에 해당합니다.
-            이들은 모두 <InlineCode>openDialog</InlineCode>를 통해 순수한 객체
-            형태로 전달됩니다.
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>동작 (Behavior)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            <strong>&quot;어떻게&quot;</strong> 상호작용할지에 대한 실제 구현입니다. ESC
-            키를 누르면 닫히거나, 외부를 클릭했을 때의 반응, 포커스 관리 등
-            복잡한 Side Effect과 생명주기 관리를 의미합니다. 이 모든 로직은{' '}
-            <InlineCode>useLayerBehavior</InlineCode> 훅에 캡슐화되어 다이얼로그
-            컴포넌트 내부에서 처리됩니다.
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+    <blockquote>
+      <p><strong>상태 (State)</strong></p>
+      <p>
+        <strong>&quot;무엇을&quot;</strong> 보여줄지에 대한 정보입니다. 다이얼로그의{' '}
+        <InlineCode>title</InlineCode>, <InlineCode>message</InlineCode> 와
+        같은 정적인 데이터나, <InlineCode>dismissable: false</InlineCode> 와
+        같이 동작 방식을 결정하는 &apos;설정&apos; 또는 &apos;정책&apos;이 여기에 해당합니다.
+        이들은 모두 <InlineCode>openDialog</InlineCode>를 통해 순수한 객체
+        형태로 전달됩니다.
+      </p>
+    </blockquote>
+    <blockquote>
+      <p><strong>동작 (Behavior)</strong></p>
+      <p>
+        <strong>&quot;어떻게&quot;</strong> 상호작용할지에 대한 실제 구현입니다. ESC
+        키를 누르면 닫히거나, 외부를 클릭했을 때의 반응, 포커스 관리 등
+        복잡한 Side Effect과 생명주기 관리를 의미합니다. 이 모든 로직은{' '}
+        <InlineCode>useLayerBehavior</InlineCode> 훅에 캡슐화되어 다이얼로그
+        컴포넌트 내부에서 처리됩니다.
+      </p>
+    </blockquote>
 
     <h2>실제 코드와 그로 인한 이점</h2>
     <p>
@@ -182,44 +171,30 @@ export const StateVsBehavior = () => (
       가져다주는지 살펴보겠습니다.
     </p>
     <CodeBlock language="typescript" code={implementationExample} />
-    <div className="grid gap-6 md:grid-cols-3 my-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>관심사 분리 (SoC)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            컴포넌트는 더 이상 다이얼로그의 열림/닫힘 상태를 알 필요가
-            없습니다. 오직 다이얼로그를 여는 &apos;명령&apos;만 내리면 되므로,
-            컴포넌트의 책임이 명확해지고 코드가 단순해집니다.
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>높은 범용성</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            동작 로직이 훅으로 분리되었기 때문에, `Modal`, `Alert` 뿐만 아니라
-            `Toast`, `Drawer`, `ContextMenu` 등 어떤 종류의 레이어 컴포넌트든
-            동일한 동작 규칙을 적용하여 쉽게 만들 수 있습니다.
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>명확하고 간결한 API</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            복잡한 로직이 추상화되었기 때문에, 사용자는{' '}
-            <InlineCode>openDialog</InlineCode>에 필요한 상태와 설정을
-            전달하는 것만 신경 쓰면 됩니다. 이는 API를 훨씬 이해하기 쉽고
-            사용하기 쉽게 만듭니다.
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+    <blockquote>
+      <p><strong>관심사 분리 (SoC)</strong></p>
+      <p>
+        컴포넌트는 더 이상 다이얼로그의 열림/닫힘 상태를 알 필요가
+        없습니다. 오직 다이얼로그를 여는 &apos;명령&apos;만 내리면 되므로,
+        컴포넌트의 책임이 명확해지고 코드가 단순해집니다.
+      </p>
+    </blockquote>
+    <blockquote>
+      <p><strong>높은 범용성</strong></p>
+      <p>
+        동작 로직이 훅으로 분리되었기 때문에, `Modal`, `Alert` 뿐만 아니라
+        `Toast`, `Drawer`, `ContextMenu` 등 어떤 종류의 레이어 컴포넌트든
+        동일한 동작 규칙을 적용하여 쉽게 만들 수 있습니다.
+      </p>
+    </blockquote>
+    <blockquote>
+      <p><strong>명확하고 간결한 API</strong></p>
+      <p>
+        복잡한 로직이 추상화되었기 때문에, 사용자는{' '}
+        <InlineCode>openDialog</InlineCode>에 필요한 상태와 설정을
+        전달하는 것만 신경 쓰면 됩니다. 이는 API를 훨씬 이해하기 쉽고
+        사용하기 쉽게 만듭니다.
+      </p>
+    </blockquote>
   </DocArticle>
 );

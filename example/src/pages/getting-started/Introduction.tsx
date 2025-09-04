@@ -2,8 +2,6 @@ import { Link } from 'react-router-dom';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
@@ -85,41 +83,27 @@ pnpm add motion`}
     </Card>
 
     <h2>주요 특징</h2>
-    <div className="grid md:grid-cols-3 gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>최적화된 렌더링</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>
-            <InlineCode>useSyncExternalStore</InlineCode>를 사용하여 상태가
-            변경될 때 오직 필요한 컴포넌트만 리렌더링합니다. 이를 통해 불필요한
-            렌더링을 방지하고 최적의 성능을 보장합니다.
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Type-Safe API</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>
-            TypeScript 기반으로 설계되어, 다이얼로그를 열 때 필요한 `props`를
-            자동으로 추론하고 잘못된 사용을 방지합니다.
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Flexible & Extensible</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>
-            어떤 UI 컴포넌트 라이브러리와도 쉽게 통합하여 사용할 수 있으며,
-            자유롭게 커스터마이징이 가능합니다.
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+    <blockquote>
+      <p><strong>최적화된 렌더링</strong></p>
+      <p>
+        <InlineCode>useSyncExternalStore</InlineCode>를 사용하여 상태가
+        변경될 때 오직 필요한 컴포넌트만 리렌더링합니다. 이를 통해 불필요한
+        렌더링을 방지하고 최적의 성능을 보장합니다.
+      </p>
+    </blockquote>
+    <blockquote>
+      <p><strong>Type-Safe API</strong></p>
+      <p>
+        TypeScript 기반으로 설계되어, 다이얼로그를 열 때 필요한 `props`를
+        자동으로 추론하고 잘못된 사용을 방지합니다.
+      </p>
+    </blockquote>
+    <blockquote>
+      <p><strong>Flexible & Extensible</strong></p>
+      <p>
+        어떤 UI 컴포넌트 라이브러리와도 쉽게 통합하여 사용할 수 있으며,
+        자유롭게 커스터마이징이 가능합니다.
+      </p>
+    </blockquote>
   </DocArticle>
 );
