@@ -1,48 +1,60 @@
 # 3. 버전 관리 및 배포
 
-이 문서는 [Changesets](https://github.com/changesets/changesets)를 사용하여 라이브러리의 새 버전을 만들고 npm에 배포하는 과정을 설명합니다.
+이 문서는 `react-layered-dialog`의 새 버전을 npm에 배포하는 전체 과정을 안내합니다.
+이 프로젝트는 `pnpm` 워크스페이스와 `changesets`를 사용하여 버전 관리 및 배포를 자동화합니다.
 
-## 배포 절차
+## 표준 배포 절차
 
-### 1. 변경 사항 기록 (Adding a Changeset)
+아래의 5단계를 순서대로 진행하세요.
 
-라이브러리 코드를 수정한 후 (예: 버그 수정, 기능 추가), 다음 명령어를 실행하여 변경점을 기록해야 합니다.
+### 1. 변경사항 기록하기
+
+기능 추가, 버그 수정 등 의미 있는 변경 작업을 완료한 후, 다음 명령어를 실행하여 변경사항을 기록합니다.
 
 ```bash
 pnpm changeset
 ```
 
-이 명령어를 실행하면, 어떤 패키지가 변경되었는지, 버전(Major, Minor, Patch)을 어떻게 올릴지, 그리고 변경 내용에 대한 요약을 작성하라는 안내가 나옵니다.
+이 명령어는 대화형 인터페이스를 제공합니다.
 
-- **Patch**: 버그 수정 등 하위 호환성을 해치지 않는 작은 변경
-- **Minor**: 하위 호환성을 해치지 않는 새로운 기능 추가
-- **Major**: 하위 호환성을 해치는 큰 변경 (breaking change)
+-   **패키지 선택**: 변경된 패키지(`react-layered-dialog`)를 스페이스바로 선택하고 Enter를 누릅니다.
+-   **버전 결정**: 변경사항의 종류에 따라 `Major`, `Minor`, `Patch` 중 하나를 선택합니다.
+-   **요약 작성**: `CHANGELOG.md`에 기록될 변경사항 요약을 작성합니다.
 
-안내에 따라 내용을 입력하면 `.changeset` 폴더 안에 고유한 이름의 마크다운 파일이 생성됩니다. 이 파일을 Git에 커밋해야 합니다.
+완료되면 `.changeset` 폴더 안에 마크다운 파일이 생성됩니다. 이 파일을 Git에 커밋해야 합니다.
 
-### 2. 버전 적용 및 Changelog 생성
+### 2. 버전 파일 생성하기
 
-라이브러리를 배포할 준비가 되면, 다음 명령어를 실행합니다.
-
-```bash
-pnpm release:version
-```
-
-이 명령어는 `.changeset` 폴더 안의 모든 마크다운 파일들을 소모하여 다음 두 가지 작업을 자동으로 수행합니다.
-
-- `package/package.json`의 `version` 필드를 적절하게 업데이트합니다.
-- `package/CHANGELOG.md` 파일을 생성하거나 업데이트합니다.
-
-이 명령어를 실행한 후, 변경된 `package.json`과 `CHANGELOG.md` 파일을 Git에 커밋합니다.
-
-### 3. npm에 배포
-
-마지막으로, 다음 명령어를 실행하여 npm 레지스트리에 패키지를 배포합니다.
+기록된 변경사항(`changeset` 파일)을 바탕으로 실제 패키지 버전과 `CHANGELOG.md` 파일을 업데이트합니다.
 
 ```bash
-pnpm release:publish
+pnpm changeset version
 ```
 
-이 명령어는 먼저 라이브러리를 빌드한 후, `changeset publish` 명령을 통해 npm에 배포를 시도합니다.
+### 3. 버전 업데이트 커밋 및 푸시하기
 
-**주의:** npm에 배포하기 위해서는 [npm 계정에 로그인](https://docs.npmjs.com/cli/v10/commands/npm-login)이 되어 있어야 합니다.
+`changeset version` 명령어로 변경된 파일들(`package.json`, `CHANGELOG.md` 등)을 Git에 커밋하고 원격 저장소에 푸시합니다.
+
+```bash
+git add .
+git commit -m "chore: version packages for release"
+git push
+```
+
+### 4. NPM에 배포하고 Git 태그 생성하기
+
+준비된 패키지를 NPM 레지스트리에 배포합니다. 이 명령어는 배포 성공 후 자동으로 Git 태그(예: `react-layered-dialog@0.1.1`)를 생성합니다.
+
+**주의**: 이 명령어를 실행하기 전에 `npm login`을 통해 npm 계정에 로그인되어 있어야 합니다.
+
+```bash
+pnpm run release:publish
+```
+
+### 5. 생성된 태그 푸시하기
+
+마지막으로, 로컬에 생성된 Git 태그를 원격 저장소(GitHub)에 푸시하여 릴리즈를 완료합니다.
+
+```bash
+git push --tags
+```
