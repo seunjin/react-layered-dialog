@@ -2,9 +2,11 @@
 import { useDialogs } from '@/lib/dialogs';
 import { AnimatePresence } from 'motion/react';
 
-export const DialogRenderer = () => {
-  const { dialogs } = useDialogs();
-
+export const DialogRenderer = <T extends { type: string }>({
+  dialogs,
+}: {
+  dialogs: readonly DialogInstance<T>[];
+}) => {
   return (
     <AnimatePresence>
       {dialogs.map(({ Component, state }) => (
@@ -13,3 +15,4 @@ export const DialogRenderer = () => {
     </AnimatePresence>
   );
 };
+
