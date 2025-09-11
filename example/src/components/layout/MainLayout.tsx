@@ -22,7 +22,7 @@ export function MainLayout() {
           <Sidebar />
           <SidebarInset className="flex flex-1 flex-col">
             <main id="main-content" className="flex-1 p-4 sm:p-6">
-              <div className="h-full mx-auto w-[min(calc(100%-32px),var(--prose-max))]">
+              <div className="grid grid-rows-[1fr_auto] h-full mx-auto w-[min(calc(100%-32px),var(--prose-max))]">
                 <Outlet />
                 <PageNavigation />
               </div>
