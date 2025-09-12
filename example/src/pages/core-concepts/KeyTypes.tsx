@@ -2,6 +2,7 @@ import { CodeBlock } from '@/components/docs/CodeBlock';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
+import { Link } from 'react-router-dom';
 
 const baseLayerPropsCode = `export interface BaseLayerProps {
   /**
@@ -26,6 +27,12 @@ const baseLayerPropsCode = `export interface BaseLayerProps {
    * @default true
    */
   dismissable?: boolean;
+  /**
+   * 다이얼로그가 열려있는 동안 페이지 스크롤을 잠글지 여부를 나타내는 신호입니다.
+   * 라이브러리가 직접 스크롤을 잠그지는 않으며, 사용자가 이 값을 기반으로 직접 구현해야 합니다.
+   * @default false
+   */
+  scrollLock?: boolean;
 }`;
 
 const customDialogStateCode = `// 1. 각 다이얼로그의 고유한 상태와 설정을 정의합니다.
@@ -81,10 +88,26 @@ export const KeyTypes = () => (
         제어하는 옵션들을 포함합니다. 새로운 다이얼로그 타입을 정의할 때는
         반드시 이 인터페이스를 확장해야 합니다.
       </p>
+      <p className="mt-2">
+        <InlineCode>scrollLock</InlineCode>과 같은 일부 속성은 라이브러리가
+        직접 처리하지 않고 사용자에게 구현을 위임하는 &quot;신호&quot; 역할을
+        합니다. 자세한 내용은{' '}
+        <Link
+          to="/guides/implementing-custom-behavior"
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
+          커스텀 동작 구현하기 가이드
+        </Link>
+        를 참고하세요.
+      </p>
       <CodeBlock language="typescript" code={baseLayerPropsCode} />
     </Section>
 
-    <Section as="h2" id="custom-dialog-state" title="CustomDialogState (유니온 타입)">
+    <Section
+      as="h2"
+      id="custom-dialog-state"
+      title="CustomDialogState (유니온 타입)"
+    >
       <p>
         이 타입은 사용자가 직접 정의하는 타입입니다. 앱에서 사용될 모든
         다이얼로그의 상태 인터페이스(<InlineCode>AlertState</InlineCode>,
@@ -100,7 +123,8 @@ export const KeyTypes = () => (
       <p>
         <InlineCode>DialogState</InlineCode>는 라이브러리가 내부적으로
         사용하는 제네릭 유틸리티 타입입니다. 사용자가 정의한 상태 타입(
-        <InlineCode>T</InlineCode>)에 라이브러리 관리에 필요한        <InlineCode>id</InlineCode>와 <InlineCode>isOpen</InlineCode> 속성을
+        <InlineCode>T</InlineCode>)에 라이브러리 관리에 필요한{' '}
+        <InlineCode>id</InlineCode>와 <InlineCode>isOpen</InlineCode> 속성을
         추가합니다. 실제 다이얼로그 컴포넌트가 최종적으로 받는 props의 타입은
         바로 <InlineCode>DialogState&lt;YourStateType&gt;</InlineCode> 입니다.
       </p>

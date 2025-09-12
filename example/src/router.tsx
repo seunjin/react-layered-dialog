@@ -25,6 +25,7 @@ import { UseLayerBehaviorHook } from '@/pages/api-reference/UseLayerBehaviorHook
 import { Accessibility } from '@/pages/advanced/Accessibility';
 import { CustomOverlay } from '@/pages/advanced/CustomOverlay';
 import { TypeScriptRecipes } from '@/pages/advanced/TypeScriptRecipes';
+import { ImplementingCustomBehavior } from '@/pages/guides/ImplementingCustomBehavior';
 import { Troubleshooting } from '@/pages/faq/Troubleshooting';
 
 export const routeConfig = [
@@ -39,19 +40,48 @@ export const routeConfig = [
     path: 'core-concepts',
     children: [
       { path: 'how-it-works', element: <HowItWorks />, name: 'How it Works' },
-      { path: 'creating-a-dialog', element: <CreatingADialog />, name: 'Creating a Dialog' },
-      { path: 'state-vs-behavior', element: <StateVsBehavior />, name: 'State vs. Behavior' },
+      {
+        path: 'creating-a-dialog',
+        element: <CreatingADialog />,
+        name: 'Creating a Dialog',
+      },
+      {
+        path: 'state-vs-behavior',
+        element: <StateVsBehavior />,
+        name: 'State vs. Behavior',
+      },
       { path: 'key-types', element: <KeyTypes />, name: 'Key Types' },
     ],
   },
   {
     path: 'guides',
     children: [
-      { path: 'opening-and-closing', element: <OpeningAndClosing />, name: 'Opening & Closing' },
-      { path: 'state-management', element: <StateManagement />, name: 'State Management' },
-      { path: 'nested-dialogs', element: <NestedDialogs />, name: 'Nested Dialogs' },
+      {
+        path: 'opening-and-closing',
+        element: <OpeningAndClosing />,
+        name: 'Opening & Closing',
+      },
+      {
+        path: 'state-management',
+        element: <StateManagement />,
+        name: 'State Management',
+      },
+      {
+        path: 'nested-dialogs',
+        element: <NestedDialogs />,
+        name: 'Nested Dialogs',
+      },
       { path: 'animations', element: <Animations />, name: 'Animations' },
-      { path: 'building-a-custom-component', element: <BuildingACustomComponent />, name: 'Building a Custom Component' },
+      {
+        path: 'building-a-custom-component',
+        element: <BuildingACustomComponent />,
+        name: 'Building a Custom Component',
+      },
+      {
+        path: 'implementing-custom-behavior',
+        element: <ImplementingCustomBehavior />,
+        name: 'Custom Behavior',
+      },
     ],
   },
   {
