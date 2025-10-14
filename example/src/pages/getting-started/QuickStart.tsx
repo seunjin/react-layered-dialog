@@ -1,9 +1,8 @@
-import { CodeBlock } from '@/components/docs/CodeBlock';
-import { InlineCode } from '@/components/docs/InlineCode';
 import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
+import { InlineCode } from '@/components/docs/InlineCode';
+import { CodeBlock } from '@/components/docs/CodeBlock';
 
-// `?raw`를 사용하여 코드 파일의 원본 텍스트를 가져옵니다.
 import dialogsTsCode from '@/code-templates/dialogs.ts.txt?raw';
 import alertComponentCode from '@/code-templates/AlertBasic.tsx.txt?raw';
 import dialogRendererCode from '@/code-templates/DialogRenderer.tsx.txt?raw';
@@ -13,43 +12,42 @@ import usageCode from '@/code-templates/usage.tsx.txt?raw';
 export const QuickStart = () => (
   <DocArticle title="Quick Start">
     <p className="lead">
-      라이브러리 설치 후, 4단계에 따라 핵심 파일을 설정하여 첫 번째
-      다이얼로그를 실행해보세요.
+      세 파일만으로 다이얼로그 스택을 구성해봅니다. 코어는 상태만 관리하고 UI는 전적으로 개발자가 구성합니다.
     </p>
 
-    <Section as="h2" id="step-1" title="1단계: 다이얼로그 시스템 정의">
+    <Section as="h2" id="define" title="1. 다이얼로그 시스템 정의">
       <p>
-        <InlineCode>src/lib/dialogs.ts</InlineCode> 파일을 생성하여 앱에서
-        사용할 다이얼로그의 종류와 동작을 정의합니다.
+        <InlineCode>src/lib/dialogs.ts</InlineCode> 파일에서 다이얼로그 유니온, 매니저, 훅을 한 번에 정의합니다.
+        이 파일은 애플리케이션 어디에서든 재사용됩니다.
       </p>
-      <CodeBlock language="typescript" code={dialogsTsCode} />
+      <CodeBlock language="ts" code={dialogsTsCode} />
     </Section>
 
-    <Section as="h2" id="step-2" title="2단계: 다이얼로그 컴포넌트 생성">
+    <Section as="h2" id="component" title="2. 다이얼로그 컴포넌트 작성">
       <p>
-        <InlineCode>dialogs.ts</InlineCode>에 정의한{' '}
-        <InlineCode>alert</InlineCode> 타입을 위한{' '}
-        <InlineCode>Alert.tsx</InlineCode> 컴포넌트를 생성합니다.
+        상태 유니온에 맞춰 실제 UI를 구현합니다. 여기서는 간단한 알림 창 예제를 사용합니다.
       </p>
       <CodeBlock language="tsx" code={alertComponentCode} />
     </Section>
 
-    <Section as="h2" id="step-3" title="3단계: 렌더링 레이어 설정">
+    <Section as="h2" id="renderer" title="3. 렌더러와 진입점 구성">
       <p>
-        <InlineCode>DialogRenderer</InlineCode> 컴포넌트는 다이얼로그 상태를
-        실제 UI로 렌더링하는 역할을 합니다. 이 컴포넌트를 생성하고 앱의 최상위
-        레벨에 추가하세요.
+        <InlineCode>DialogRenderer</InlineCode>는 열린 다이얼로그 배열을 순회하며 컴포넌트를 렌더링하는 얇은 프리미티브입니다.
+        앱 최상단에 배치해 다이얼로그를 어디서든 표시할 수 있습니다.
       </p>
       <CodeBlock language="tsx" code={dialogRendererCode} />
       <CodeBlock language="tsx" code={appTsxCode} />
     </Section>
 
-    <Section as="h2" id="step-4" title="4단계: 다이얼로그 열기">
+    <Section as="h2" id="open" title="4. 다이얼로그 열기">
       <p>
-        이제 어떤 컴포넌트에서든 <InlineCode>openDialog</InlineCode> 함수를
-        호출하여 다이얼로그를 열 수 있습니다.
+        훅이 반환하는 <InlineCode>openDialog</InlineCode> 함수를 사용하거나, 매니저 메서드를 직접 호출해 어느 곳에서든 다이얼로그를 열 수 있습니다.
       </p>
       <CodeBlock language="tsx" code={usageCode} />
+      <p className="mt-2 text-sm text-muted-foreground">
+        더 많은 패턴은 <InlineCode>Guides</InlineCode> 섹션에서 확인하세요. ESC, 포커스 트랩 등을 원한다면{' '}
+        <InlineCode>useLayerBehavior</InlineCode> 애드온을 조합할 수 있습니다.
+      </p>
     </Section>
   </DocArticle>
 );

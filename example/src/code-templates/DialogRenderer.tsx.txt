@@ -1,18 +1,16 @@
-// src/components/dialogs/DialogRenderer.tsx
-import { useDialogs } from '@/lib/dialogs';
+import type { DialogInstance } from 'react-layered-dialog';
 import { AnimatePresence } from 'motion/react';
+
+type DialogRendererProps<T extends { type: string }> = {
+  dialogs: readonly DialogInstance<T>[];
+};
 
 export const DialogRenderer = <T extends { type: string }>({
   dialogs,
-}: {
-  dialogs: readonly DialogInstance<T>[];
-}) => {
-  return (
-    <AnimatePresence>
-      {dialogs.map(({ Component, state }) => (
-        <Component key={state.id} {...state} />
-      ))}
-    </AnimatePresence>
-  );
-};
-
+}: DialogRendererProps<T>) => (
+  <AnimatePresence>
+    {dialogs.map(({ Component, state }) => (
+      <Component key={state.id} {...state} />
+    ))}
+  </AnimatePresence>
+);

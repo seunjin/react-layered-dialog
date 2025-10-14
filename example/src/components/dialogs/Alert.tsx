@@ -1,45 +1,33 @@
-import { useRef, useCallback } from 'react';
-import { useDialogs } from '@/lib/dialogs';
-import type { AlertState } from '@/lib/dialogs';
-import {
-  type DialogState,
-  useLayerBehavior,
-} from 'react-layered-dialog';
+import { useCallback, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
+import { useDialogs } from '@/lib/dialogs';
+import type { AlertDialogState } from '@/lib/dialogs';
+import type { DialogState } from 'react-layered-dialog';
+import { useLayerBehavior } from 'react-layered-dialog';
 
-type AlertProps = DialogState<AlertState>;
+type AlertProps = DialogState<AlertDialogState>;
 
-export const Alert = (props: AlertProps) => {
-  const {
-    id,
-    title,
-    message,
-    onOk,
-    zIndex,
-    dimmed = true,
-    closeOnOverlayClick = true,
-    dismissable = true,
-  } = props;
-
+export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const okButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const handleOk = useCallback(() => {
+  const handleClose = useCallback(() => {
     onOk?.();
     closeDialog(id);
-  }, [id, onOk, closeDialog]);
+  }, [closeDialog, id, onOk]);
 
   useLayerBehavior({
-    zIndex,
+    id,
     dialogs,
-    closeOnEscape: dismissable,
-    onEscape: handleOk,
+    zIndex,
     autoFocus: true,
     focusRef: okButtonRef,
-    closeOnOutsideClick: closeOnOverlayClick,
-    onOutsideClick: handleOk,
+    closeOnEscape: true,
+    onEscape: handleClose,
+    closeOnOutsideClick: true,
+    onOutsideClick: handleClose,
     outsideClickRef: panelRef,
   });
 
@@ -49,32 +37,30 @@ export const Alert = (props: AlertProps) => {
       style={{ zIndex }}
       role="alertdialog"
       aria-modal="true"
-      aria-labelledby="alert-title"
-      aria-describedby="alert-message"
+      aria-labelledby={`alert-${id}-title`}
+      aria-describedby={`alert-${id}-message`}
     >
       <motion.div
-        className={`absolute inset-0 ${dimmed ? 'bg-black/20' : 'bg-transparent'}`}
+        className="absolute inset-0 bg-black/40"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
       />
       <motion.div
         ref={panelRef}
-        className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]"
-        initial={{ scale: 0.95, opacity: 0 }}
+        className="relative min-w-[280px] rounded-lg bg-white p-6 shadow-xl"
+        initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        exit={{ scale: 0.92, opacity: 0 }}
       >
-        <h3 id="alert-title" className="text-lg font-bold">
+        <h3 id={`alert-${id}-title`} className="text-lg font-semibold">
           {title}
         </h3>
-        <p id="alert-message" className="mt-2 text-sm text-gray-500">
+        <p id={`alert-${id}-message`} className="mt-2 text-sm text-muted-foreground">
           {message}
         </p>
         <div className="mt-4 flex justify-end">
-          <Button ref={okButtonRef} onClick={handleOk}>
+          <Button ref={okButtonRef} onClick={handleClose}>
             확인
           </Button>
         </div>

@@ -1,28 +1,21 @@
-import { useRef, useCallback } from 'react';
-import { useDialogs } from '@/lib/dialogs';
-import type { ConfirmState } from '@/lib/dialogs';
-import {
-  type DialogState,
-  useLayerBehavior,
-} from 'react-layered-dialog';
+import { useCallback, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
+import { useDialogs } from '@/lib/dialogs';
+import type { ConfirmDialogState } from '@/lib/dialogs';
+import type { DialogState } from 'react-layered-dialog';
+import { useLayerBehavior } from 'react-layered-dialog';
 
-type ConfirmProps = DialogState<ConfirmState>;
+type ConfirmProps = DialogState<ConfirmDialogState>;
 
-export const Confirm = (props: ConfirmProps) => {
-  const {
-    id,
-    title,
-    message,
-    onConfirm,
-    onCancel,
-    zIndex,
-    dimmed = true,
-    closeOnOverlayClick = true,
-    dismissable = true,
-  } = props;
-
+export const Confirm = ({
+  id,
+  title,
+  message,
+  onConfirm,
+  onCancel,
+  zIndex,
+}: ConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -30,21 +23,22 @@ export const Confirm = (props: ConfirmProps) => {
   const handleCancel = useCallback(() => {
     onCancel?.();
     closeDialog(id);
-  }, [id, onCancel, closeDialog]);
+  }, [closeDialog, id, onCancel]);
 
   const handleConfirm = useCallback(() => {
     onConfirm?.();
     closeDialog(id);
-  }, [id, onConfirm, closeDialog]);
+  }, [closeDialog, id, onConfirm]);
 
   useLayerBehavior({
-    zIndex,
+    id,
     dialogs,
-    closeOnEscape: dismissable,
-    onEscape: handleCancel,
+    zIndex,
     autoFocus: true,
     focusRef: confirmButtonRef,
-    closeOnOutsideClick: closeOnOverlayClick,
+    closeOnEscape: true,
+    onEscape: handleCancel,
+    closeOnOutsideClick: true,
     onOutsideClick: handleCancel,
     outsideClickRef: panelRef,
   });
@@ -55,28 +49,26 @@ export const Confirm = (props: ConfirmProps) => {
       style={{ zIndex }}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="confirm-title"
-      aria-describedby="confirm-message"
+      aria-labelledby={`confirm-${id}-title`}
+      aria-describedby={`confirm-${id}-message`}
     >
       <motion.div
-        className={`absolute inset-0 ${dimmed ? 'bg-black/20' : 'bg-transparent'}`}
+        className="absolute inset-0 bg-black/40"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
       />
       <motion.div
         ref={panelRef}
-        className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]"
-        initial={{ scale: 0.95, opacity: 0 }}
+        className="relative min-w-[320px] rounded-lg bg-white p-6 shadow-xl"
+        initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        exit={{ scale: 0.92, opacity: 0 }}
       >
-        <h3 id="confirm-title" className="text-lg font-bold">
+        <h3 id={`confirm-${id}-title`} className="text-lg font-semibold">
           {title}
         </h3>
-        <p id="confirm-message" className="mt-2 text-sm text-gray-500">
+        <p id={`confirm-${id}-message`} className="mt-2 text-sm text-muted-foreground">
           {message}
         </p>
         <div className="mt-4 flex justify-end gap-2">

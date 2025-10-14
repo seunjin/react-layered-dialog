@@ -1,117 +1,57 @@
-import { Link } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
+import { DocArticle } from '@/components/docs/DocArticle';
+import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DocArticle } from '@/components/docs/DocArticle';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Section } from '@/components/docs/Section';
+import { Link } from 'react-router-dom';
+
+const installSnippet = `pnpm add react-layered-dialog`;
 
 export const Introduction = () => (
-  <DocArticle title="React Layered Dialog">
+  <DocArticle title="React Layered Dialog 소개">
     <p className="lead">
-      <code className="font-mono">useSyncExternalStore</code>를 활용한, 외부
-      상태 관리 라이브러리가 필요 없는 React 다이얼로그 솔루션
+      이 라이브러리는 “얇은 스토어 + 타입 안전한 훅” 조합으로 다이얼로그 스택을 관리합니다.
+      복잡한 상태 관리 라이브러리를 도입하지 않고도 선언적으로 다이얼로그를 구성할 수 있습니다.
     </p>
 
-    <div className="not-prose my-6 rounded-lg border bg-muted/30 p-4 text-center">
-      <p className="text-lg font-semibold">
-        [라이브러리 동작 GIF/스크린샷 영역]
-      </p>
-      <p className="mt-2 text-sm text-muted-foreground">
-        여러 다이얼로그가 중첩되고 순서에 맞게 관리되는 모습을 보여주는 이미지
-      </p>
-    </div>
-
-    <p>
-      <InlineCode>React Layered Dialog</InlineCode>는 React 18의{' '}
-      <InlineCode>useSyncExternalStore</InlineCode> 훅을 기반으로 설계되어,
-      Zustand나 Redux와 같은 외부 전역 상태 관리 라이브러리 없이 다이얼로그
-      상태를 효율적으로 관리합니다. 이를 통해 설정의 복잡함을 줄이고 React의
-      렌더링 메커니즘과 완벽하게 통합되어 최적의 성능을 제공합니다.
-    </p>
-
-    <Section as="h2" id="getting-started" title="3분만에 시작하기">
-      <Card className="not-prose">
-        <CardContent className="pt-6">
-          <Tabs defaultValue="pnpm">
-            <TabsList>
-              <TabsTrigger value="npm">npm</TabsTrigger>
-              <TabsTrigger value="yarn">yarn</TabsTrigger>
-              <TabsTrigger value="pnpm">pnpm</TabsTrigger>
-            </TabsList>
-            <TabsContent value="npm">
-              <CodeBlock
-                language="bash"
-                code={`npm install react-layered-dialog
-# Optional for animations
-npm install motion`}
-              />
-            </TabsContent>
-            <TabsContent value="yarn">
-              <CodeBlock
-                language="bash"
-                code={`yarn add react-layered-dialog
-# Optional for animations
-yarn add motion`}
-              />
-            </TabsContent>
-            <TabsContent value="pnpm">
-              <CodeBlock
-                language="bash"
-                code={`pnpm add react-layered-dialog
-# Optional for animations
-pnpm add motion`}
-              />
-            </TabsContent>
-          </Tabs>
-          <div className="mt-4">
-            <p>
-              라이브러리 설치 후,{' '}
-              <Link
-                to="/getting-started/quick-start"
-                className="font-medium text-primary underline"
-              >
-                Quick Start
-              </Link>{' '}
-              페이지를 따라 핵심 파일을 설정해보세요.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+    <Section as="h2" id="philosophy" title="핵심 철학">
+      <ul className="ml-6 list-disc space-y-2">
+        <li>
+          <b>최소 코어</b>: 매니저는 배열을 관리하고, 어떤 UI를 렌더링할지 결정하지 않습니다.
+        </li>
+        <li>
+          <b>선언적 매핑</b>: <InlineCode>type</InlineCode>과 컴포넌트를 직접 연결해 타입 안전성을 확보합니다.
+        </li>
+        <li>
+          <b>선택적 확장</b>: ESC, 포커스 트랩 같은 동작은 애드온이나 사용자 코드로 구현합니다.
+        </li>
+      </ul>
     </Section>
 
-    <Section as="h2" id="features" title="주요 특징">
-      <div className="not-prose space-y-4">
-        <Alert>
-          <div>
-            <AlertTitle>최적화된 렌더링</AlertTitle>
-            <AlertDescription>
-              <InlineCode>useSyncExternalStore</InlineCode>를 사용하여 상태가
-              변경될 때 오직 필요한 컴포넌트만 리렌더링합니다. 이를 통해 불필요한
-              렌더링을 방지하고 최적의 성능을 보장합니다.
-            </AlertDescription>
-          </div>
-        </Alert>
-        <Alert>
-          <div>
-            <AlertTitle>Type-Safe API</AlertTitle>
-            <AlertDescription>
-              TypeScript 기반으로 설계되어, 다이얼로그를 열 때 필요한 `props`를
-              자동으로 추론하고 잘못된 사용을 방지합니다.
-            </AlertDescription>
-          </div>
-        </Alert>
-        <Alert>
-          <div>
-            <AlertTitle>Flexible & Extensible</AlertTitle>
-            <AlertDescription>
-              어떤 UI 컴포넌트 라이브러리와도 쉽게 통합하여 사용할 수 있으며,
-              자유롭게 커스터마이징이 가능합니다.
-            </AlertDescription>
-          </div>
-        </Alert>
-      </div>
+    <Section as="h2" id="install" title="설치">
+      <CodeBlock language="bash" code={installSnippet} />
+      <p className="mt-2 text-sm text-muted-foreground">
+        애니메이션이나 포커스 트랩 등은 선호하는 라이브러리를 자유롭게 선택하여 조합하세요.
+      </p>
+    </Section>
+
+    <Section as="h2" id="next" title="다음 단계">
+      <ol className="ml-6 list-decimal space-y-2">
+        <li>
+          <Link to="/getting-started/quick-start" className="text-primary underline">
+            Quick Start
+          </Link>
+          에서 필수 파일을 설정합니다.
+        </li>
+        <li>
+          <Link to="/core/architecture" className="text-primary underline">
+            코어 아키텍처
+          </Link>
+          를 읽고 매니저/훅/렌더러의 역할을 이해합니다.
+        </li>
+        <li>
+          프로젝트에 필요한 동작만 선택적으로 추가하여 자신만의 다이얼로그 시스템을 구축하세요.
+        </li>
+      </ol>
     </Section>
   </DocArticle>
 );

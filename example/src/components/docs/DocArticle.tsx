@@ -11,7 +11,7 @@ export function DocArticle({
   return (
     <article
       aria-labelledby="page-title"
-      className="prose prose-pre:bg-transparent prose-pre:p-0 dark:prose-invert flex-1"
+      className="prose prose-pre:bg-transparent prose-pre:p-0 dark:prose-invert  w-[min(calc(100%-32px),var(--prose-max))] mx-auto"
     >
       <h1 id="page-title">{title}</h1>
       {children}

@@ -25,7 +25,7 @@ export const MobileNav = () => {
         {routeConfig.map((section) => (
           <div key={section.path}>
             <h4 className="mb-2 text-sm font-semibold text-muted-foreground">
-              {section.path.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              {section.title}
             </h4>
             <div className="flex flex-col gap-1">
               {section.children.map((item) => (

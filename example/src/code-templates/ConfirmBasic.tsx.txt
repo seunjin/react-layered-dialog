@@ -1,78 +1,70 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
-import type { ConfirmState } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
+import type { ConfirmDialogState } from '@/lib/dialogs';
 import { Button } from '@/components/ui/button';
 
-type ConfirmProps = DialogState<ConfirmState>;
+type ConfirmProps = DialogState<ConfirmDialogState>;
 
 export const Confirm = ({
+  id,
   title,
   message,
   onConfirm,
   onCancel,
   zIndex,
-  dimmed = true,
-  closeOnOverlayClick = false,
-  dismissable = false,
 }: ConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
-  // '취소' 버튼 클릭 또는 Escape 키 입력 시 실행될 콜백 함수
   const handleCancel = useCallback(() => {
-    // onCancel prop이 있으면 실행, 없으면 기본 closeDialog 호출
-    if (onCancel) {
-      onCancel();
-    } else {
-      closeDialog();
-    }
-  }, [onCancel, closeDialog]);
+    onCancel?.();
+    closeDialog(id);
+  }, [closeDialog, id, onCancel]);
 
-  // '확인' 버튼 클릭 시 실행될 콜백 함수
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     onConfirm?.();
-  };
+    closeDialog(id);
+  }, [closeDialog, id, onConfirm]);
 
-  // 키보드 이벤트(Escape) 처리
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const isTopDialog =
         dialogs.length > 0 &&
-        dialogs[dialogs.length - 1].state.zIndex === zIndex;
-      if (event.key === 'Escape' && dismissable && isTopDialog) {
+        dialogs[dialogs.length - 1].state.id === id;
+      if (event.key === 'Escape' && isTopDialog) {
         handleCancel();
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [dismissable, handleCancel, dialogs, zIndex]);
+  }, [dialogs, handleCancel, id]);
 
-  // 다이얼로그가 열렸을 때 확인 버튼에 자동으로 포커스
   useEffect(() => {
     confirmButtonRef.current?.focus();
   }, []);
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center"
+      className="fixed inset-0 flex items-center justify-center bg-black/40"
       style={{ zIndex }}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="confirm-title"
-      aria-describedby="confirm-message"
+      aria-labelledby={`confirm-${id}-title`}
+      aria-describedby={`confirm-${id}-message`}
+      onClick={handleCancel}
     >
-      {/* 오버레이(배경) */}
       <div
-        className={`absolute inset-0 ${dimmed ? 'bg-black/20' : 'bg-transparent'}`}
-        onClick={() => closeOnOverlayClick && handleCancel()}
-      />
-      {/* 다이얼로그 본문 */}
-      <div className="relative rounded-lg bg-white p-6 shadow-lg min-w-[300px]">
-        <h3 id="confirm-title" className="text-lg font-bold">
+        className="min-w-[300px] rounded-lg bg-white p-6 shadow-lg"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h3 id={`confirm-${id}-title`} className="text-lg font-semibold">
           {title}
         </h3>
-        <p id="confirm-message" className="mt-2 text-sm text-gray-500">
+        <p
+          id={`confirm-${id}-message`}
+          className="mt-2 text-sm text-muted-foreground"
+        >
           {message}
         </p>
         <div className="mt-4 flex justify-end gap-2">

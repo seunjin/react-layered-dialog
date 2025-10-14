@@ -1,22 +1,27 @@
 // manager.ts
-import type { DialogState, Listener } from './types';
+import type { DialogPatch, DialogState, Listener } from './types';
 
 let dialogIdCounter = 0;
 
 /**
- * 다이얼로그 상태를 관리하는 핵심 클래스.
- * 다이얼로그의 열기, 닫기, 상태 변경 감지 기능을 제공합니다.
+ * 다이얼로그 상태를 전역으로 관리하는 핵심 매니저입니다.
+ * - `useSyncExternalStore` 기반으로 상태 변경을 구독할 수 있습니다.
+ * - 필요 최소한의 스택 관리 기능만 제공하고, 나머지 정책은 호출자에게 위임합니다.
  */
 export class DialogManager<T extends { type: string }> {
   private dialogs: DialogState<T>[] = [];
   private listeners: Set<Listener> = new Set();
   private baseZIndex: number;
+  private nextZIndex: number;
 
   constructor(baseZIndex = 1000) {
     this.baseZIndex = baseZIndex;
+    this.nextZIndex = baseZIndex;
   }
 
-  // 외부 스토어 구독 (useSyncExternalStore 용)
+  /**
+   * 외부 스토어 구독 (React `useSyncExternalStore`에서 사용)
+   */
   subscribe = (listener: Listener): (() => void) => {
     this.listeners.add(listener);
     return () => {
@@ -24,8 +29,17 @@ export class DialogManager<T extends { type: string }> {
     };
   };
 
-  // 현재 상태 스냅샷 반환 (useSyncExternalStore 용)
+  /**
+   * 현재 상태 스냅샷 반환 (클라이언트 전용)
+   */
   getSnapshot = (): DialogState<T>[] => {
+    return this.dialogs;
+  };
+
+  /**
+   * SSR 환경에서 사용할 서버 스냅샷 반환
+   */
+  getServerSnapshot = (): DialogState<T>[] => {
     return this.dialogs;
   };
 
@@ -47,12 +61,20 @@ export class DialogManager<T extends { type: string }> {
       );
     }
 
+    const providedZIndex = (state as unknown as Partial<DialogState<T>>).zIndex;
+    const hasCustomZIndex = typeof providedZIndex === 'number';
+    const zIndex = hasCustomZIndex ? providedZIndex : this.nextZIndex++;
+
+    if (hasCustomZIndex) {
+      this.nextZIndex = Math.max(this.nextZIndex, (providedZIndex as number) + 1);
+    }
+
     const newDialog: DialogState<T> = {
       ...state,
       id,
       isOpen: true,
-      zIndex: this.baseZIndex + this.dialogs.length,
-    };
+      zIndex,
+    } as DialogState<T>;
 
     this.dialogs = [...this.dialogs, newDialog];
     this.emitChange();
@@ -67,7 +89,12 @@ export class DialogManager<T extends { type: string }> {
     if (this.dialogs.length === 0) return;
 
     if (id) {
-      this.dialogs = this.dialogs.filter((d) => d.id !== id);
+      this.dialogs = this.dialogs.filter((d) => {
+        if (d.id === id) {
+          return false;
+        }
+        return true;
+      });
     } else {
       this.dialogs = this.dialogs.slice(0, -1);
     }
@@ -80,6 +107,37 @@ export class DialogManager<T extends { type: string }> {
   closeAllDialogs = () => {
     if (this.dialogs.length === 0) return;
     this.dialogs = [];
+    this.nextZIndex = this.baseZIndex;
     this.emitChange();
+  };
+
+  updateDialog = (
+    id: string,
+    nextState:
+      | DialogPatch<T>
+      | ((prev: DialogState<T>) => DialogPatch<T> | null | undefined)
+  ): DialogState<T> | null => {
+    const index = this.dialogs.findIndex((dialog) => dialog.id === id);
+    if (index === -1) return null;
+
+    const prevDialog = this.dialogs[index];
+    if (!nextState) return prevDialog;
+
+    const computed = typeof nextState === 'function' ? nextState(prevDialog) : nextState;
+    if (!computed) return prevDialog;
+
+    const patch = computed as Partial<DialogState<T>>;
+
+    const updatedDialog: DialogState<T> = {
+      ...prevDialog,
+      ...patch,
+      id: prevDialog.id,
+      type: prevDialog.type,
+    };
+
+    this.dialogs = this.dialogs.map((dialog, i) => (i === index ? updatedDialog : dialog));
+
+    this.emitChange();
+    return updatedDialog;
   };
 }

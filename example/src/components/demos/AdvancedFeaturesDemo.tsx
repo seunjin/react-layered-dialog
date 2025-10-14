@@ -3,47 +3,46 @@ import { useDialogs } from '@/lib/dialogs';
 
 export const AdvancedFeaturesDemo = () => {
   const { openDialog, closeAllDialogs, closeDialog } = useDialogs();
-  const NestedDialogContent = () => {
-    const handleOpenNested = () =>
-      openDialog('modal', { children: <NestedDialogContent /> });
-    return (
-      <div>
-        <h3 className="text-lg font-bold">중첩된 다이얼로그</h3>
-        <p className="mt-2 text-sm text-gray-500">
-          이 다이얼로그는 제어판 위로 열렸습니다.
-        </p>
-        <div className="mt-4 flex flex-col gap-2">
-          <Button onClick={handleOpenNested}>중첩 모달 열기</Button>
+
+  const openNestedModal = () =>
+    openDialog('modal', {
+      title: '중첩된 다이얼로그',
+      description: '이 다이얼로그는 제어판 위로 열린 예시입니다.',
+      body: (
+        <div className="space-y-3 text-sm text-muted-foreground">
+          <p>여기에서 또 다른 다이얼로그를 열어 스택 동작을 확인할 수 있습니다.</p>
+        </div>
+      ),
+      footer: (
+        <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => closeDialog()}>
-            이 다이얼로그만 닫기
+            이 다이얼로그 닫기
           </Button>
           <Button variant="outline" onClick={closeAllDialogs}>
             모든 다이얼로그 닫기
           </Button>
         </div>
-      </div>
-    );
-  };
-  const AdvancedControlDialog = () => {
-    const handleOpenNested = () =>
-      openDialog('modal', { children: <NestedDialogContent /> });
-    return (
-      <div>
-        <h3 className="text-lg font-bold">고급 제어판</h3>
-        <p className="mt-2 text-sm text-gray-500">
-          여기서 다른 다이얼로그를 열어 중첩시킬 수 있습니다.
-        </p>
-        <div className="mt-4 flex flex-col gap-2">
-          <Button onClick={handleOpenNested}>중첩 모달 열기</Button>
+      ),
+    });
+
+  const handleOpenControlPanel = () =>
+    openDialog('modal', {
+      title: '고급 제어판',
+      description: '다른 다이얼로그를 열어 중첩시키는 컨트롤 패널입니다.',
+      body: (
+        <div className="space-y-3 text-sm text-muted-foreground">
+          <p>필요한 만큼 중첩해서 열어도 각 다이얼로그가 독립적으로 관리됩니다.</p>
+        </div>
+      ),
+      footer: (
+        <div className="flex justify-end gap-2">
+          <Button onClick={openNestedModal}>중첩 모달 열기</Button>
           <Button variant="outline" onClick={() => closeDialog()}>
             제어판 닫기
           </Button>
         </div>
-      </div>
-    );
-  };
-  const handleLayeredOpen = () =>
-    openDialog('modal', { children: <AdvancedControlDialog /> });
+      ),
+    });
 
-  return <Button onClick={handleLayeredOpen}>고급 제어판 열기</Button>;
+  return <Button onClick={handleOpenControlPanel}>고급 제어판 열기</Button>;
 };

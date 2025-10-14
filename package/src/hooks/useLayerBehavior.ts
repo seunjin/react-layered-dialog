@@ -55,7 +55,9 @@ export type UseLayerBehaviorOptions = {
 };
 
 /**
- * 레이어 컴포넌트의 공통 동작(behavior)을 캡슐화하는 훅입니다.
+ * 레이어 컴포넌트에서 공통으로 필요한 포커스, 키보드, 외부 클릭 동작을 처리합니다.
+ * @param opts 레이어 ID, z-index, 콜백 등 동작 제어 옵션
+ * @returns 별도의 값을 반환하지 않으며, 사이드 이펙트로 DOM 이벤트를 관리합니다.
  */
 export function useLayerBehavior(opts: UseLayerBehaviorOptions) {
   const {

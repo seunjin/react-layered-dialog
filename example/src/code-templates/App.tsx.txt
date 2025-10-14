@@ -1,17 +1,16 @@
-// src/App.tsx
 import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
-// ... other imports
+import { useDialogs } from '@/lib/dialogs';
 
 function App() {
+  const { dialogs } = useDialogs();
+
   return (
     <>
-      {/* 앱의 메인 콘텐츠 */}
-      <MainLayout>
-        {/* ... 라우트 ... */}
-      </MainLayout>
-      
-      {/* DialogRenderer를 앱 최상단에 추가 */}
-      <DialogRenderer />
+      {/* 애플리케이션의 나머지 UI */}
+      <MainLayout>{/* ... */}</MainLayout>
+
+      {/* 다이얼로그를 실제 DOM에 렌더링 */}
+      <DialogRenderer dialogs={dialogs} />
     </>
   );
 }

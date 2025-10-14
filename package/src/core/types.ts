@@ -38,9 +38,27 @@ export interface BaseLayerProps {
   scrollLock?: boolean;
 }
 
+/**
+ * 다이얼로그 상태 정의 시 공통으로 확장하는 기본 타입입니다.
+ * `id`와 `isOpen`은 매니저에서 자동으로 채워지므로 선택적으로만 선언합니다.
+ */
+export interface BaseState extends BaseLayerProps {
+  id?: string;
+  isOpen?: boolean;
+}
+
+/**
+ * 다이얼로그 상태 업데이트 시 사용할 수 있는 부분 상태 타입입니다.
+ * 각 다이얼로그 타입별로 고유한 필드만 선택적으로 포함합니다.
+ */
+export type DialogPatch<T extends { type: string }> = Partial<
+  Omit<DialogState<T>, 'id' | 'type' | 'isOpen'>
+>;
+
 export type DialogState<T> = T & {
   id: string;
   isOpen: boolean;
+  zIndex?: number;
 };
 
 export type Listener = () => void;
