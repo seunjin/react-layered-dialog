@@ -49,7 +49,8 @@ type AppDialogState =
       body: ReactNode;
       footer?: ReactNode;
       canDismiss?: boolean;
-    };
+    }
+  ;
 
 export type AlertDialogState = Extract<AppDialogState, { type: 'alert' }>;
 export type ConfirmDialogState = Extract<AppDialogState, { type: 'confirm' }>;
@@ -57,7 +58,6 @@ export type ModalDialogState = Extract<AppDialogState, { type: 'modal' }>;
 export type PlainAlertDialogState = Extract<AppDialogState, { type: 'plain-alert' }>;
 export type PlainConfirmDialogState = Extract<AppDialogState, { type: 'plain-confirm' }>;
 export type PlainModalDialogState = Extract<AppDialogState, { type: 'plain-modal' }>;
-
 const { manager } = createDialogManager<AppDialogState>();
 
 export const useDialogs = createUseDialogs(manager, {
