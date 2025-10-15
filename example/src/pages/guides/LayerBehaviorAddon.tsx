@@ -2,6 +2,8 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DemoCard } from '@/components/docs/DemoCard';
+import { AdvancedFeaturesDemo } from '@/components/demos/AdvancedFeaturesDemo';
 
 const usageSnippet = `import { useLayerBehavior } from 'react-layered-dialog';
 import type { DialogInstance } from 'react-layered-dialog';
@@ -69,6 +71,15 @@ export const LayerBehaviorAddon = () => (
         프로젝트 요구사항이 다르다면 ESC/포커스/오버레이 로직을 직접 작성해도 됩니다. 코어는 특정 구현에 얽매이지 않도록
         설계되어 있으며, <InlineCode>useLayerBehavior</InlineCode>는 단지 빠른 출발을 돕는 레퍼런스일 뿐입니다.
       </p>
+    </Section>
+
+    <Section as="h2" id="demo" title="실시간 예제">
+      <p>
+        ESC, 바깥 클릭, 중첩 다이얼로그를 모두 체험해볼 수 있는 작은 제어판입니다. 모달을 열고 다양한 동작을 확인해 보세요.
+      </p>
+      <DemoCard title="Layer Behavior 데모">
+        <AdvancedFeaturesDemo />
+      </DemoCard>
     </Section>
   </DocArticle>
 );

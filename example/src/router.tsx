@@ -12,6 +12,7 @@ import { CreateDialogManager } from '@/pages/api/CreateDialogManager';
 import { CreateUseDialogs } from '@/pages/api/CreateUseDialogs';
 import { DialogManagerApi } from '@/pages/api/DialogManagerApi';
 import { UseLayerBehavior } from '@/pages/api/UseLayerBehavior';
+import { LiveShowcase } from '@/pages/examples/LiveShowcase';
 
 export const routeConfig = [
   {
@@ -47,6 +48,13 @@ export const routeConfig = [
       { path: 'create-use-dialogs', element: <CreateUseDialogs />, name: 'createUseDialogs' },
       { path: 'dialog-manager', element: <DialogManagerApi />, name: 'DialogManager' },
       { path: 'use-layer-behavior', element: <UseLayerBehavior />, name: 'useLayerBehavior' },
+    ],
+  },
+  {
+    path: 'examples',
+    title: 'Examples',
+    children: [
+      { path: 'live-showcase', element: <LiveShowcase />, name: 'Live Showcase' },
     ],
   },
 ];

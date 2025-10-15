@@ -2,7 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
-
+import { UsageToggleContainer } from '@/components/demos/UsageToggleContainer';
 import dialogsTsCode from '@/code-templates/dialogs.ts.txt?raw';
 import alertComponentCode from '@/code-templates/AlertBasic.tsx.txt?raw';
 import dialogRendererCode from '@/code-templates/DialogRenderer.tsx.txt?raw';
@@ -47,6 +47,19 @@ export const QuickStart = () => (
       <p className="mt-2 text-sm text-muted-foreground">
         더 많은 패턴은 <InlineCode>Guides</InlineCode> 섹션에서 확인하세요. ESC, 포커스 트랩 등을 원한다면{' '}
         <InlineCode>useLayerBehavior</InlineCode> 애드온을 조합할 수 있습니다.
+      </p>
+    </Section>
+
+    <Section as="h2" id="live-demo" title="실시간 데모">
+      <p>
+        아래 버튼을 눌러 방금 작성한 설정이 어떻게 작동하는지 바로 확인해 보세요. 코드는 그대로 복사하여 프로젝트에 붙여 넣을 수 있습니다.
+      </p>
+      <UsageToggleContainer
+        title="기본 다이얼로그 흐름"
+        description="스위치를 사용해 애니메이션 유무를 비교하면서 Alert, Confirm, Modal을 실행해 볼 수 있습니다."
+      />
+      <p className="mt-4 text-sm text-muted-foreground">
+        기본값은 예제 앱에 포함된 Plain 다이얼로그 타입(<InlineCode>plain-alert</InlineCode> 등)을 사용합니다. Quick Start 코드와 동일한 Motion 구현이 필요하면 토글을 켜서 확인하세요. 더 많은 변형 예제는 <InlineCode>Examples → Live Showcase</InlineCode> 페이지에서 보실 수 있습니다.
       </p>
     </Section>
   </DocArticle>

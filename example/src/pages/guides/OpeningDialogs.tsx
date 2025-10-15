@@ -2,6 +2,8 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DemoCard } from '@/components/docs/DemoCard';
+import { BasicUsageDemo } from '@/components/demos/BasicUsageDemo';
 
 const openFromComponent = `import { useDialogs } from '@/lib/dialogs';
 
@@ -79,6 +81,15 @@ export const OpeningDialogs = () => (
         ID는 <InlineCode>openDialog</InlineCode>가 반환합니다. 자체 ID를 부여하려면 payload에{' '}
         <InlineCode>id</InlineCode> 필드를 명시하세요.
       </p>
+    </Section>
+
+    <Section as="h2" id="live-demo" title="실시간 예제">
+      <p>
+        아래 데모는 이 페이지에서 설명한 흐름을 그대로 구현합니다. 버튼을 눌러 실제 동작을 확인하고, 필요하면 코드 블록을 복사해 프로젝트에 활용하세요.
+      </p>
+      <DemoCard title="다이얼로그 열기/닫기 데모">
+        <BasicUsageDemo />
+      </DemoCard>
     </Section>
   </DocArticle>
 );

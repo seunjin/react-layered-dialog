@@ -2,6 +2,8 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DemoCard } from '@/components/docs/DemoCard';
+import { AsyncHandlingDemo } from '@/components/demos/AsyncHandlingDemo';
 
 const updateSnippet = `import { useDialogs } from '@/lib/dialogs';
 
@@ -67,6 +69,15 @@ export const UpdatingDialogs = () => (
         매니저는 타입 정보를 알지 못하므로, 필요하다면 <InlineCode>updateDialog</InlineCode> 호출 전에
         값 검증/정규화를 수행하세요.
       </p>
+    </Section>
+
+    <Section as="h2" id="demo" title="실시간 예제">
+      <p>
+        비동기 작업과 함께 다이얼로그를 업데이트하는 패턴을 바로 체험해 보세요. 버튼을 눌러 삭제 과정을 시작하면 상태가 순차적으로 갱신됩니다.
+      </p>
+      <DemoCard title="Async Confirm 데모">
+        <AsyncHandlingDemo />
+      </DemoCard>
     </Section>
   </DocArticle>
 );

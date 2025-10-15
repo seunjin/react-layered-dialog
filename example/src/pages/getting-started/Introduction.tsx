@@ -49,7 +49,10 @@ export const Introduction = () => (
           를 읽고 매니저/훅/렌더러의 역할을 이해합니다.
         </li>
         <li>
-          프로젝트에 필요한 동작만 선택적으로 추가하여 자신만의 다이얼로그 시스템을 구축하세요.
+          <Link to="/examples/live-showcase" className="text-primary underline">
+            Live Showcase
+          </Link>
+          에서 다양한 옵션을 실험하며 자신만의 다이얼로그 시스템을 구축하세요.
         </li>
       </ol>
     </Section>
