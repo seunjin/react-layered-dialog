@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { useDialogs } from '@/lib/dialogs';
@@ -8,14 +8,7 @@ import { useLayerBehavior } from 'react-layered-dialog';
 
 type ConfirmProps = DialogState<ConfirmDialogState>;
 
-export const Confirm = ({
-  id,
-  title,
-  message,
-  onConfirm,
-  onCancel,
-  zIndex,
-}: ConfirmProps) => {
+export const Confirm = ({ id, title, message, onConfirm, onCancel, zIndex }: ConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -30,12 +23,14 @@ export const Confirm = ({
     closeDialog(id);
   }, [closeDialog, id, onConfirm]);
 
+  useEffect(() => {
+    confirmButtonRef.current?.focus();
+  }, []);
+
   useLayerBehavior({
     id,
     dialogs,
     zIndex,
-    autoFocus: true,
-    focusRef: confirmButtonRef,
     closeOnEscape: true,
     onEscape: handleCancel,
     closeOnOutsideClick: true,
@@ -61,7 +56,7 @@ export const Confirm = ({
       />
       <motion.div
         ref={panelRef}
-        className="relative min-w-[320px] rounded-lg bg-white p-6 shadow-lg"
+        className="relative min-w-[320px] rounded-lg bg-white p-6 shadow-xl"
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}
@@ -70,10 +65,7 @@ export const Confirm = ({
         <h3 id={`confirm-${id}-title`} className="text-lg font-semibold">
           {title}
         </h3>
-        <p
-          id={`confirm-${id}-message`}
-          className="mt-2 text-sm text-muted-foreground"
-        >
+        <p id={`confirm-${id}-message`} className="mt-2 text-sm text-muted-foreground">
           {message}
         </p>
         <div className="mt-4 flex justify-end gap-2">

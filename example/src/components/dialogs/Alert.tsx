@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { useDialogs } from '@/lib/dialogs';
@@ -18,12 +18,14 @@ export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
     closeDialog(id);
   }, [closeDialog, id, onOk]);
 
+  useEffect(() => {
+    okButtonRef.current?.focus();
+  }, []);
+
   useLayerBehavior({
     id,
     dialogs,
     zIndex,
-    autoFocus: true,
-    focusRef: okButtonRef,
     closeOnEscape: true,
     onEscape: handleClose,
     closeOnOutsideClick: true,
@@ -56,7 +58,10 @@ export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
         <h3 id={`alert-${id}-title`} className="text-lg font-semibold">
           {title}
         </h3>
-        <p id={`alert-${id}-message`} className="mt-2 text-sm text-muted-foreground">
+        <p
+          id={`alert-${id}-message`}
+          className="mt-2 text-sm text-muted-foreground"
+        >
           {message}
         </p>
         <div className="mt-4 flex justify-end">

@@ -54,6 +54,43 @@ function App() {
 
 ---
 
+## Focus & Accessibility
+
+`react-layered-dialog`는 포커스 이동을 자동으로 처리하지 않습니다. 각 다이얼로그 컴포넌트 안에서 `ref.current?.focus()` 또는 선호하는 방식으로 초점을 직접 관리해 주세요.
+필요하다면 `useLayerBehavior` 훅을 사용해 ESC, 외부 클릭 처리 등을 보조적으로 적용할 수 있습니다.
+
+```tsx
+function AlertDialog({ id, title, message }: DialogState<AlertState>) {
+  const okButtonRef = useRef<HTMLButtonElement>(null);
+  const { dialogs, closeDialog } = useDialogs();
+
+  useEffect(() => {
+    okButtonRef.current?.focus();
+  }, []);
+
+  useLayerBehavior({
+    id,
+    dialogs,
+    closeOnEscape: true,
+    onEscape: () => closeDialog(id),
+  });
+
+  return (
+    <div role="alertdialog" aria-modal="true">
+      <h3>{title}</h3>
+      <p>{message}</p>
+      <button ref={okButtonRef} onClick={() => closeDialog(id)}>
+        확인
+      </button>
+    </div>
+  );
+}
+```
+
+위와 같이 필요한 포커스 전략이나 접근성 속성은 다이얼로그 컴포넌트를 구현하는 애플리케이션 측에서 제어하면 됩니다.
+
+---
+
 ## Why React Layered Dialog?
 
 | Feature | React Layered Dialog | 기존 Modal 라이브러리 |

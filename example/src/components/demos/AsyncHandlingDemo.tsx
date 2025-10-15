@@ -18,7 +18,11 @@ const AsyncConfirmBody = ({
       <Button variant="outline" onClick={onCancel} disabled={isPending}>
         취소
       </Button>
-      <Button onClick={onConfirm} disabled={isPending}>
+      <Button
+        ref={(ref) => ref?.focus()}
+        onClick={onConfirm}
+        disabled={isPending}
+      >
         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {isPending ? '삭제 중...' : '확인'}
       </Button>

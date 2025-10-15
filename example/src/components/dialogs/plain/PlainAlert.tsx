@@ -21,8 +21,6 @@ export const PlainAlert = ({ id, title, message, onOk, zIndex }: PlainAlertProps
     id,
     dialogs,
     zIndex,
-    autoFocus: true,
-    focusRef: okButtonRef,
     closeOnEscape: true,
     onEscape: handleClose,
     closeOnOutsideClick: true,

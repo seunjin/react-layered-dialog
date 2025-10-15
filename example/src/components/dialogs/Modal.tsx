@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
@@ -15,7 +15,7 @@ export const Modal = ({
   description,
   body,
   footer,
-  canDismiss = true,
+  canDismiss = false,
   zIndex,
 }: ModalProps) => {
   const { dialogs, closeDialog } = useDialogs();
@@ -26,12 +26,16 @@ export const Modal = ({
     closeDialog(id);
   }, [closeDialog, id]);
 
+  useEffect(() => {
+    if (canDismiss) {
+      closeButtonRef.current?.focus();
+    }
+  }, [canDismiss]);
+
   useLayerBehavior({
     id,
     dialogs,
     zIndex,
-    autoFocus: canDismiss,
-    focusRef: canDismiss ? closeButtonRef : undefined,
     closeOnEscape: canDismiss,
     onEscape: handleClose,
     closeOnOutsideClick: canDismiss,

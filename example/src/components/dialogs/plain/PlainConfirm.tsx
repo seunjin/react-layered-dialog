@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import type { PlainConfirmDialogState } from '@/lib/dialogs';
@@ -29,12 +29,14 @@ export const PlainConfirm = ({
     closeDialog(id);
   }, [closeDialog, id, onConfirm]);
 
+  useEffect(() => {
+    confirmButtonRef.current?.focus();
+  }, []);
+
   useLayerBehavior({
     id,
     dialogs,
     zIndex,
-    autoFocus: true,
-    focusRef: confirmButtonRef,
     closeOnEscape: true,
     onEscape: handleCancel,
     closeOnOutsideClick: true,

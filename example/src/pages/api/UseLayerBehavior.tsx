@@ -9,8 +9,6 @@ const signature = `useLayerBehavior({
   zIndex,
   closeOnEscape,
   onEscape,
-  autoFocus,
-  focusRef,
   closeOnOutsideClick,
   onOutsideClick,
   outsideClickRef,
@@ -20,8 +18,6 @@ const signature = `useLayerBehavior({
   zIndex?: number;
   closeOnEscape?: boolean;
   onEscape?: () => void;
-  autoFocus?: boolean;
-  focusRef?: React.RefObject<HTMLElement | null>;
   closeOnOutsideClick?: boolean;
   onOutsideClick?: () => void;
   outsideClickRef?: React.RefObject<Element | null>;
@@ -73,18 +69,16 @@ export const UseLayerBehavior = () => (
           </dd>
         </div>
         <div>
-          <dt className="font-semibold">autoFocus / focusRef</dt>
-          <dd className="mt-1 text-sm text-muted-foreground">
-            다이얼로그가 마운트되면 지정된 요소에 포커스를 부여합니다.
-          </dd>
-        </div>
-        <div>
           <dt className="font-semibold">closeOnOutsideClick / outsideClickRef</dt>
           <dd className="mt-1 text-sm text-muted-foreground">
             ref 영역 밖에서 클릭이 발생했을 때 <InlineCode>onOutsideClick</InlineCode>을 호출합니다.
           </dd>
         </div>
       </dl>
+      <p className="mt-4 text-sm text-muted-foreground">
+        포커스 이동은 라이브러리가 대신 처리하지 않습니다. 필요한 경우 다이얼로그 컴포넌트 내부에서{' '}
+        <InlineCode>useEffect</InlineCode> 등을 활용해 원하는 요소에 <InlineCode>focus()</InlineCode>를 호출하세요.
+      </p>
     </Section>
 
     <Section as="h2" id="usage" title="사용 예시">

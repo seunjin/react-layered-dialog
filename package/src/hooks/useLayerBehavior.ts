@@ -29,16 +29,6 @@ export type UseLayerBehaviorOptions = {
   onEscape?: () => void;
 
   /**
-   * 레이어가 마운트될 때 특정 요소에 자동으로 포커스를 주는 동작을 활성화할지 여부입니다.
-   * @default false
-   */
-  autoFocus?: boolean;
-  /**
-   * `autoFocus`가 true일 때, 포커스를 받을 요소의 ref 객체입니다.
-   */
-  focusRef?: React.RefObject<HTMLElement | null>;
-
-  /**
    * 레이어 외부를 클릭했을 때 닫는 동작을 활성화할지 여부입니다.
    * @default false
    */
@@ -65,8 +55,6 @@ export function useLayerBehavior(opts: UseLayerBehaviorOptions) {
     zIndex,
     closeOnEscape = false,
     onEscape,
-    autoFocus = false,
-    focusRef,
     closeOnOutsideClick = false,
     onOutsideClick,
     outsideClickRef,
@@ -92,12 +80,6 @@ export function useLayerBehavior(opts: UseLayerBehaviorOptions) {
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [closeOnEscape, onEscape, zIndex, topZIndex]);
-
-  // 마운트 시 포커스
-  useEffect(() => {
-    if (!autoFocus) return;
-    focusRef?.current?.focus?.();
-  }, [autoFocus, focusRef]);
 
   // 바깥 클릭 닫기
   useEffect(() => {

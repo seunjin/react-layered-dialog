@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import type { PlainModalDialogState } from '@/lib/dialogs';
@@ -25,12 +25,16 @@ export const PlainModal = ({
     closeDialog(id);
   }, [closeDialog, id]);
 
+  useEffect(() => {
+    if (canDismiss) {
+      closeButtonRef.current?.focus();
+    }
+  }, [canDismiss]);
+
   useLayerBehavior({
     id,
     dialogs,
     zIndex,
-    autoFocus: canDismiss,
-    focusRef: canDismiss ? closeButtonRef : undefined,
     closeOnEscape: canDismiss,
     onEscape: handleClose,
     closeOnOutsideClick: canDismiss,
