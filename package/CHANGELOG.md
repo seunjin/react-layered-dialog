@@ -1,5 +1,12 @@
 # react-layered-dialog
 
+## 0.3.0
+
+### Minor Changes
+
+- - openDialog가 string 대신 { id, type } 형태의 DialogHandle을 반환하고, updateDialog는 핸들을 인자로 받도록 API를 전면 수정했습니다.
+  - DialogHandle 타입을 추가하고, BaseStateMeta를 분리해 DialogState<T>에서는 Required<BaseStateMeta>를 병합해 id/isOpen을 명확히 보장하도록 타입 구조를 정리했습니다.
+
 ## 0.2.0
 
 ### Minor Changes
