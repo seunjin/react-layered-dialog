@@ -3,19 +3,25 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
-const managerMethods = `type DialogManager<T extends { type: string }> = {
+const managerMethods = `import type {
+  DialogHandle,
+  DialogPatch,
+  DialogState,
+} from 'react-layered-dialog';
+
+type DialogManager<T extends { type: string }> = {
   subscribe(listener: () => void): () => void;
   getSnapshot(): DialogState<T>[];
   getServerSnapshot(): DialogState<T>[];
-  openDialog(state: T & { id?: string }): string;
+  openDialog(state: T & { id?: string }): DialogHandle<T['type']>;
   closeDialog(id?: string): void;
   closeAllDialogs(): void;
-  updateDialog(
-    id: string,
+  updateDialog<K extends T['type']>(
+    handle: DialogHandle<K>,
     nextState:
-      | Partial<Omit<DialogState<T>, 'id' | 'type' | 'isOpen'>>
-      | ((prev: DialogState<T>) => Partial<Omit<DialogState<T>, 'id' | 'type' | 'isOpen'>> | null | undefined)
-  ): DialogState<T> | null;
+      | DialogPatch<Extract<T, { type: K }>>
+      | ((prev: DialogState<Extract<T, { type: K }>>) => DialogPatch<Extract<T, { type: K }>> | null | undefined)
+  ): DialogState<Extract<T, { type: K }>> | null;
 };`;
 
 export const DialogManagerApi = () => (
@@ -36,7 +42,11 @@ export const DialogManagerApi = () => (
           설계되었습니다. React 환경이 아니어도 사용할 수 있습니다.
         </li>
         <li>
-          <InlineCode>openDialog</InlineCode>는 ID를 반환합니다. 중복 ID를 열면 경고만 출력하고 기존 항목은 덮어쓰지 않습니다.
+          <InlineCode>openDialog</InlineCode>는 <InlineCode>{'{ id, type }'}</InlineCode> 형태의 핸들을 반환합니다. 중복 ID를 열면 경고만 출력하고 기존 항목은 덮어쓰지 않습니다.
+        </li>
+        <li>
+          <InlineCode>DialogHandle</InlineCode>과 <InlineCode>DialogPatch</InlineCode>는
+          <InlineCode>react-layered-dialog</InlineCode>에서 타입으로 제공됩니다. 필요하면 직접 정의한 상태 유니온에 맞춰 제네릭을 지정하세요.
         </li>
         <li>
           <InlineCode>updateDialog</InlineCode>는 상태를 병합할 뿐, 값 검증이나 파생 상태 계산을 수행하지 않습니다.

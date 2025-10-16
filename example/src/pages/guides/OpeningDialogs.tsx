@@ -2,8 +2,6 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
-import { DemoCard } from '@/components/docs/DemoCard';
-import { BasicUsageDemo } from '@/components/demos/BasicUsageDemo';
 
 const openFromComponent = `import { useDialogs } from '@/lib/dialogs';
 
@@ -53,6 +51,12 @@ export const OpeningDialogs = () => (
         <InlineCode>useDialogs</InlineCode>는 가장 일반적인 접근 방식입니다.
         훅에서 받은 <InlineCode>openDialog</InlineCode> 함수는 타입 안전하게 payload를 검증합니다.
       </p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        <InlineCode>openDialog(&apos;alert&apos;, payload)</InlineCode>처럼 첫 번째 인자로{' '}
+        <InlineCode>type</InlineCode>을 전달하는 형태는{' '}
+        <InlineCode>createUseDialogs</InlineCode>가 다이얼로그 유니온을 분석해
+        각 타입별 payload를 좁혀 주기 때문에 가능한 시그니처입니다.
+      </p>
       <CodeBlock language="tsx" code={openFromComponent} />
     </Section>
 
@@ -61,6 +65,11 @@ export const OpeningDialogs = () => (
         API 호출, 상태 머신, 이벤트 핸들러 등 React 컨텍스트 밖에서도 다이얼로그를 관리하고 싶다면
         매니저 메서드를 그대로 export하여 사용하면 됩니다. 클래스가 아닌 클로저 기반 스토어라
         <InlineCode>this</InlineCode> 손실 걱정이 없습니다.
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        매니저 메서드를 직접 호출할 때는 <InlineCode>openDialog({`{ type: &apos;alert&apos;, ... }`})</InlineCode>{' '}
+        처럼 전체 payload 객체를 넘깁니다. 훅 버전과 서명이 다른 이유는 매니저가 타입을 좁혀 주지 않고
+        그대로 저장하기 때문입니다.
       </p>
       <CodeBlock language="ts" code={openFromImperative} />
     </Section>
@@ -78,18 +87,22 @@ export const OpeningDialogs = () => (
         </li>
       </ul>
       <p className="mt-4 text-sm text-muted-foreground">
-        ID는 <InlineCode>openDialog</InlineCode>가 반환합니다. 자체 ID를 부여하려면 payload에{' '}
-        <InlineCode>id</InlineCode> 필드를 명시하세요.
+        <InlineCode>openDialog</InlineCode>는 <InlineCode>{'{ id, type }'}</InlineCode> 핸들을 반환합니다.
+        <InlineCode>const {`{ id }`} = openDialog(...)</InlineCode>처럼 구조 분해해 저장하거나, payload에{' '}
+        <InlineCode>id</InlineCode>를 직접 지정하면 이후 <InlineCode>closeDialog(id)</InlineCode>로 닫을 수 있습니다.
       </p>
     </Section>
-
-    <Section as="h2" id="live-demo" title="실시간 예제">
-      <p>
-        아래 데모는 이 페이지에서 설명한 흐름을 그대로 구현합니다. 버튼을 눌러 실제 동작을 확인하고, 필요하면 코드 블록을 복사해 프로젝트에 활용하세요.
-      </p>
-      <DemoCard title="다이얼로그 열기/닫기 데모">
-        <BasicUsageDemo />
-      </DemoCard>
+    <Section as="h2" id="next" title="추가 참고">
+      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
+        <li>
+          실제 UI 상호작용을 보고 싶다면{' '}
+          <InlineCode>Examples → Live Showcase</InlineCode>에서 Alert/Confirm/Modal 흐름을 직접 확인하세요.
+        </li>
+        <li>
+          비동기 로직과 함께 사용하는 방법은{' '}
+          <InlineCode>Guides → Async Handling</InlineCode> 문서를 참고하면 패턴과 코드가 정리되어 있습니다.
+        </li>
+      </ul>
     </Section>
   </DocArticle>
 );

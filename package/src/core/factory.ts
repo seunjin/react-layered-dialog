@@ -7,6 +7,7 @@ import type {
   DialogState,
   DialogsConfig,
   DialogInstance,
+  DialogHandle,
 } from './types';
 
 /**
@@ -53,19 +54,19 @@ export function createUseDialogs<T extends { type: string }>(
       manager.getServerSnapshot
     );
 
-    const openDialog = <K extends T['type']>(
-      type: K,
-      payload: OpenDialogPayload<K>
-    ) => {
+    const openDialog = <K extends T['type']>(type: K, payload: OpenDialogPayload<K>) => {
       const finalState = {
         type,
         ...payload,
       } as unknown as StateForType<K>;
-      return manager.openDialog(finalState);
+      return manager.openDialog(finalState) as DialogHandle<K>;
     };
 
-    const updateDialog = <K extends T['type']>(id: string, nextState: UpdateDialogPayload<K>) => {
-      return manager.updateDialog(id, nextState as Parameters<typeof manager.updateDialog>[1]);
+    const updateDialog = <K extends T['type']>(
+      handle: DialogHandle<K>,
+      nextState: UpdateDialogPayload<K>
+    ) => {
+      return manager.updateDialog(handle, nextState as Parameters<typeof manager.updateDialog>[1]);
     };
 
     // state 배열을 "상관된 유니온" 타입의 객체 배열로 변환합니다.

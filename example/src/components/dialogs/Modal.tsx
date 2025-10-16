@@ -19,6 +19,7 @@ export const Modal = ({
   dismissable,
   closeOnOutsideClick,
   dimmed = true,
+  onClose,
 }: ModalProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -27,8 +28,9 @@ export const Modal = ({
   const outsideClickFlag = closeOnOutsideClick ?? dismissableFlag;
 
   const handleClose = useCallback(() => {
+    onClose?.();
     closeDialog(id);
-  }, [closeDialog, id]);
+  }, [closeDialog, id, onClose]);
 
   useEffect(() => {
     if (canDismiss) {

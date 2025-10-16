@@ -22,8 +22,9 @@ type ConfirmState = {
   type: 'confirm';
   title: string;
   message: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
+  onConfirm?: () => void | false;
+  onCancel?: () => void | false;
+  step?: 'confirm' | 'loading' | 'done';
 };
 
 type ModalState = {
@@ -32,6 +33,7 @@ type ModalState = {
   description?: string;
   body: ReactNode;
   canDismiss?: boolean;
+  onClose?: () => void;
 };
 
 type PlainAlertState = {
@@ -55,6 +57,7 @@ type PlainModalState = {
   description?: string;
   body: ReactNode;
   canDismiss?: boolean;
+  onClose?: () => void;
 };
 
 type AppDialogState =

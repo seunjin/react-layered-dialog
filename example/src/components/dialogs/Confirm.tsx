@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import { useDialogs } from '@/lib/dialogs';
 import type { ConfirmDialogState } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
@@ -18,19 +19,33 @@ export const Confirm = ({
   dismissable = true,
   closeOnOutsideClick = true,
   dimmed = true,
+  step = 'confirm',
 }: ConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const panelRef = useRef<HTMLDivElement>(null);
 
+  const isLoading = step === 'loading';
+  const isDone = step === 'done';
+
   const handleCancel = useCallback(() => {
-    onCancel?.();
-    closeDialog(id);
-  }, [closeDialog, id, onCancel]);
+    if (!onCancel || isLoading) return;
+    const shouldClose = onCancel();
+    if (shouldClose !== false) {
+      closeDialog(id);
+    }
+  }, [closeDialog, id, isLoading, onCancel]);
 
   const handleConfirm = useCallback(() => {
-    onConfirm?.();
-    closeDialog(id);
-  }, [closeDialog, id, onConfirm]);
+    if (isLoading) return;
+    if (!onConfirm) {
+      closeDialog(id);
+      return;
+    }
+    const shouldClose = onConfirm();
+    if (shouldClose !== false) {
+      closeDialog(id);
+    }
+  }, [closeDialog, id, isLoading, onConfirm]);
 
   useLayerBehavior({
     id,
@@ -79,11 +94,22 @@ export const Confirm = ({
           {message}
         </p>
         <div className="mt-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={handleCancel}>
-            취소
-          </Button>
-          <Button autoFocus onClick={handleConfirm}>
-            확인
+          {onCancel && !isDone ? (
+            <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
+              취소
+            </Button>
+          ) : null}
+          <Button autoFocus onClick={handleConfirm} disabled={isLoading}>
+            {isLoading ? (
+              <span className="inline-flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                진행 중...
+              </span>
+            ) : isDone ? (
+              '닫기'
+            ) : (
+              '확인'
+            )}
           </Button>
         </div>
       </motion.div>

@@ -1,5 +1,5 @@
 // manager.ts
-import type { DialogPatch, DialogState, Listener } from './types';
+import type { DialogHandle, DialogPatch, DialogState, Listener } from './types';
 
 let dialogIdCounter = 0;
 
@@ -52,7 +52,7 @@ export class DialogManager<T extends { type: string }> {
    * @param state 다이얼로그에 전달될 상태 객체
    * @returns 생성된 다이얼로그의 고유 ID
    */
-  openDialog = (state: T & { id?: string }): string => {
+  openDialog = (state: T & { id?: string }): DialogHandle<T['type']> => {
     const id = state.id ?? `dialog-${dialogIdCounter++}`;
 
     if (this.dialogs.some((d) => d.id === id)) {
@@ -78,7 +78,7 @@ export class DialogManager<T extends { type: string }> {
 
     this.dialogs = [...this.dialogs, newDialog];
     this.emitChange();
-    return id;
+    return { id, type: newDialog.type as T['type'] };
   };
 
   /**
@@ -111,31 +111,45 @@ export class DialogManager<T extends { type: string }> {
     this.emitChange();
   };
 
-  updateDialog = (
-    id: string,
+  updateDialog = <K extends T['type']>(
+    handle: DialogHandle<K>,
     nextState:
-      | DialogPatch<T>
-      | ((prev: DialogState<T>) => DialogPatch<T> | null | undefined)
-  ): DialogState<T> | null => {
-    const index = this.dialogs.findIndex((dialog) => dialog.id === id);
+      | DialogPatch<Extract<T, { type: K }>>
+      | ((
+          prev: DialogState<Extract<T, { type: K }>>
+        ) => DialogPatch<Extract<T, { type: K }>> | null | undefined)
+  ): DialogState<Extract<T, { type: K }>> | null => {
+    const index = this.dialogs.findIndex((dialog) => dialog.id === handle.id);
     if (index === -1) return null;
 
-    const prevDialog = this.dialogs[index];
+    const prevDialog = this.dialogs[index] as DialogState<Extract<T, { type: K }>>;
     if (!nextState) return prevDialog;
 
-    const computed = typeof nextState === 'function' ? nextState(prevDialog) : nextState;
+    if (prevDialog.type !== handle.type) {
+      console.warn(
+        `[react-layered-dialog] Tried to update dialog "${handle.id}" as type "${handle.type}", but actual type is "${prevDialog.type}".`
+      );
+      return prevDialog;
+    }
+
+    const computed =
+      typeof nextState === 'function'
+        ? nextState(prevDialog)
+        : (nextState as DialogPatch<Extract<T, { type: K }>>);
     if (!computed) return prevDialog;
 
-    const patch = computed as Partial<DialogState<T>>;
+    const patch = computed as Partial<DialogState<Extract<T, { type: K }>>>;
 
-    const updatedDialog: DialogState<T> = {
+    const updatedDialog: DialogState<Extract<T, { type: K }>> = {
       ...prevDialog,
       ...patch,
       id: prevDialog.id,
       type: prevDialog.type,
     };
 
-    this.dialogs = this.dialogs.map((dialog, i) => (i === index ? updatedDialog : dialog));
+    this.dialogs = this.dialogs.map((dialog, i) =>
+      i === index ? (updatedDialog as DialogState<T>) : dialog
+    );
 
     this.emitChange();
     return updatedDialog;

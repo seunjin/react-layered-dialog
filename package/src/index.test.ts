@@ -3,7 +3,7 @@ import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createDialogManager, createUseDialogs } from './index';
 import type React from 'react';
-import type { DialogState, BaseState } from './core/types';
+import type { DialogState, BaseState, DialogHandle } from './core/types';
 
 // --- 테스트 환경 설정 ---
 
@@ -47,16 +47,16 @@ describe('DialogManager (코어 로직) - 단위 테스트', () => {
   });
 
   it('closeDialog(id)를 호출하면 특정 다이얼로그가 제거되어야 합니다.', () => {
-    let idToClose = '';
+    let handleToClose: DialogHandle<'confirm'> | null = null;
     act(() => {
       manager.openDialog({ type: 'alert', message: '첫 번째' });
-      idToClose = manager.openDialog({ type: 'confirm', question: '두 번째' });
+      handleToClose = manager.openDialog({ type: 'confirm', question: '두 번째' });
     });
 
     expect(manager.getSnapshot()).toHaveLength(2);
 
     act(() => {
-      manager.closeDialog(idToClose);
+      manager.closeDialog(handleToClose?.id);
     });
 
     const dialogs = manager.getSnapshot();
@@ -108,15 +108,15 @@ describe('DialogManager (코어 로직) - 단위 테스트', () => {
   });
 
   it('중간 다이얼로그를 닫은 후 새로 추가하면 더 높은 z-index가 부여되어야 합니다.', () => {
-    let secondId = '';
+    let secondHandle: DialogHandle<'confirm'> | null = null;
     act(() => {
       manager.openDialog({ type: 'alert', message: '첫 번째' });
-      secondId = manager.openDialog({ type: 'confirm', question: '두 번째' });
+      secondHandle = manager.openDialog({ type: 'confirm', question: '두 번째' });
       manager.openDialog({ type: 'alert', message: '세 번째' });
     });
 
     act(() => {
-      manager.closeDialog(secondId);
+      manager.closeDialog(secondHandle?.id);
     });
 
     act(() => {
@@ -132,35 +132,37 @@ describe('DialogManager (코어 로직) - 단위 테스트', () => {
   });
 
   it('updateDialog로 다이얼로그 상태를 부분 업데이트할 수 있어야 합니다.', () => {
-    let dialogId = '';
+    let dialogHandle: DialogHandle<'confirm'>;
     act(() => {
-      dialogId = manager.openDialog({ type: 'confirm', question: '원본 질문' });
+      dialogHandle = manager.openDialog({ type: 'confirm', question: '원본 질문' });
     });
 
     act(() => {
-      manager.updateDialog(dialogId, { question: '수정된 질문', dismissable: false });
+      manager.updateDialog(dialogHandle, { question: '수정된 질문', dismissable: false });
     });
 
-    let target = manager.getSnapshot().find((dialog) => dialog.id === dialogId) as ConfirmState;
+    let target = manager
+      .getSnapshot()
+      .find((dialog) => dialog.id === dialogHandle.id) as ConfirmState;
     expect(target.question).toBe('수정된 질문');
     expect(target.dismissable).toBe(false);
 
     act(() => {
-      manager.updateDialog(dialogId, (prev) => ({
+      manager.updateDialog(dialogHandle, (prev) => ({
         question: `${prev.question}!`,
         zIndex: 9999,
       }));
     });
 
-    target = manager.getSnapshot().find((dialog) => dialog.id === dialogId) as ConfirmState;
+    target = manager.getSnapshot().find((dialog) => dialog.id === dialogHandle.id) as ConfirmState;
     expect(target.question).toBe('수정된 질문!');
     expect(target.zIndex).toBe(9999);
 
     act(() => {
-      manager.updateDialog(dialogId, { zIndex: undefined });
+      manager.updateDialog(dialogHandle, { zIndex: undefined });
     });
 
-    target = manager.getSnapshot().find((dialog) => dialog.id === dialogId) as ConfirmState;
+    target = manager.getSnapshot().find((dialog) => dialog.id === dialogHandle.id) as ConfirmState;
     expect(target.zIndex).toBeUndefined();
   });
 
@@ -212,17 +214,17 @@ describe('useDialogs 훅 (React 연동) - 통합 테스트', () => {
 
   it('closeDialog 호출 시 dialogs 상태가 올바르게 업데이트되어야 합니다.', () => {
     const { result } = renderHook(() => useDialogs());
-    let idToClose = '';
+    let handleToClose: DialogHandle<'confirm'> | null = null;
 
     act(() => {
       result.current.openDialog('alert', { message: '첫 번째' });
-      idToClose = result.current.openDialog('confirm', { question: '두 번째' });
+      handleToClose = result.current.openDialog('confirm', { question: '두 번째' });
     });
 
     expect(result.current.dialogs).toHaveLength(2);
 
     act(() => {
-      result.current.closeDialog(idToClose);
+      result.current.closeDialog(handleToClose?.id);
     });
 
     expect(result.current.dialogs).toHaveLength(1);
@@ -231,20 +233,20 @@ describe('useDialogs 훅 (React 연동) - 통합 테스트', () => {
 
   it('updateDialog 호출 시 dialogs 상태가 최신 값으로 반영되어야 합니다.', () => {
     const { result } = renderHook(() => useDialogs());
-    let targetId = '';
+    let handle: DialogHandle<'confirm'>;
 
     act(() => {
-      targetId = result.current.openDialog('confirm', { question: '초기 값' });
+      handle = result.current.openDialog('confirm', { question: '초기 값' });
     });
 
     act(() => {
-      result.current.updateDialog(targetId, { question: '변경된 값' });
+      result.current.updateDialog(handle, { question: '변경된 값' });
     });
 
     expect((result.current.dialogs[0].state as ConfirmState).question).toBe('변경된 값');
 
     act(() => {
-      result.current.updateDialog(targetId, (prev) => ({
+      result.current.updateDialog(handle, (prev) => ({
         question: `${prev.question}!`,
       }));
     });

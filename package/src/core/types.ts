@@ -42,10 +42,22 @@ export interface BaseLayerProps {
  * 다이얼로그 상태 정의 시 공통으로 확장하는 기본 타입입니다.
  * `id`와 `isOpen`은 매니저에서 자동으로 채워지므로 선택적으로만 선언합니다.
  */
-export interface BaseState extends BaseLayerProps {
+export interface BaseStateMeta {
+  /**
+   * 매니저가 부여하는 다이얼로그 고유 ID입니다.
+   */
   id?: string;
+  /**
+   * 현재 다이얼로그가 열린 상태인지 여부입니다.
+   */
   isOpen?: boolean;
 }
+
+/**
+ * 다이얼로그 상태 정의 시 공통으로 확장하는 기본 타입입니다.
+ * `BaseLayerProps`에 더해 `id`, `isOpen` 메타 필드를 포함합니다.
+ */
+export type BaseState = BaseLayerProps & BaseStateMeta;
 
 /**
  * 다이얼로그 상태 업데이트 시 사용할 수 있는 부분 상태 타입입니다.
@@ -55,11 +67,9 @@ export type DialogPatch<T extends { type: string }> = Partial<
   Omit<DialogState<T>, 'id' | 'type' | 'isOpen'>
 >;
 
-export type DialogState<T> = T &
-  BaseLayerProps & {
-    id: string;
-    isOpen: boolean;
-  };
+type RequiredMeta = Required<Pick<BaseStateMeta, 'id' | 'isOpen'>>;
+
+export type DialogState<T> = T & BaseLayerProps & RequiredMeta;
 
 export type Listener = () => void;
 
@@ -84,3 +94,8 @@ export interface DialogsConfig {
    */
   baseZIndex?: number;
 }
+
+export type DialogHandle<K extends string = string> = {
+  id: string;
+  type: K;
+};

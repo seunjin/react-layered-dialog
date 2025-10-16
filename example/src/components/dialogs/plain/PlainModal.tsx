@@ -19,6 +19,7 @@ export const PlainModal = ({
   dismissable,
   closeOnOutsideClick,
   dimmed = true,
+  onClose,
 }: PlainModalProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -26,8 +27,9 @@ export const PlainModal = ({
   const outsideClickFlag = closeOnOutsideClick ?? dismissableFlag;
 
   const handleClose = useCallback(() => {
+    onClose?.();
     closeDialog(id);
-  }, [closeDialog, id]);
+  }, [closeDialog, id, onClose]);
 
   useLayerBehavior({
     id,

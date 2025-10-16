@@ -6,6 +6,7 @@
 
 ## 다이얼로그 구현 철학
 - `AppDialogState`는 각 애플리케이션이 직접 정의하고, 상태별 UI 컴포넌트도 사용자가 구현한다. 라이브러리는 상태 스택 관리(`openDialog`, `closeDialog`, `updateDialog`)와 z-index 계산만 책임진다.
+- `openDialog`는 `{ id, type }` 핸들을 반환한다. 후속 API(`updateDialog`, `closeDialog`) 호출 시 이 핸들을 그대로 전달해 타입 안전성을 확보한다.
 - 외부 UI 라이브러리(shadcn 등)를 기반으로 한 래퍼 컴포넌트는 공식 패키지에 포함하지 않는다. 필요 시 사용자가 래핑하도록 가이드만 제공하거나 예제를 문서에서 참조한다.
 - 상태 타입은 `BaseState` 또는 `DialogState<T>` 패턴을 기본으로 사용한다. 이렇게 하면 `BaseLayerProps`(dimmed, dismissable 등)와 메타 필드(`id`, `isOpen`, `zIndex`)가 자동으로 일관성 있게 적용된다.
 
@@ -16,5 +17,6 @@
 ## 문서 & 코드 템플릿
 - README와 Docs는 항상 최신 API(포커스 직접 제어 등)를 반영하도록 유지한다.
 - 코드 템플릿은 예제 흐름과 동일한 패턴(수동 포커스, ESC 처리 등)을 보여주어 복사 시 일관된 스타일을 유지한다.
+- API 문서와 예제는 `updateDialog(handle, patch)` 형태로 작성한다. 기존 ID 기반 호출 예시는 모두 핸들 기반으로 교체한다.
 - 오버레이는 `pointer-events-none` + 내부 `pointer-events-auto` 패턴으로 구현해 dim을 끄더라도 배경 인터랙션을 보장한다.
 - `scrollLock` 등 전역 동작 플래그는 `DialogRenderer`가 전체 다이얼로그 배열을 기준으로 제어한다. 개별 훅에서는 전역 DOM 조작을 수행하지 않는다.

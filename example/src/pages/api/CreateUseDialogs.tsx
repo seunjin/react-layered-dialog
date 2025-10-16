@@ -3,7 +3,9 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
-const signature = `createUseDialogs<T extends { type: string }>(
+const signature = `import type { DialogHandle, DialogState, DialogInstance } from 'react-layered-dialog';
+
+createUseDialogs<T extends { type: string }>(
   manager: DialogManager<T>,
   componentMap: { [K in T['type']]: React.ComponentType<DialogState<Extract<T, { type: K }>>> }
 ): () => {
@@ -11,11 +13,11 @@ const signature = `createUseDialogs<T extends { type: string }>(
   openDialog: <K extends T['type']>(
     type: K,
     payload: Omit<Extract<T, { type: K }>, 'type' | 'id' | 'isOpen'> & { id?: string }
-  ) => string;
+  ) => DialogHandle<K>;
   closeDialog: (id?: string) => void;
   closeAllDialogs: () => void;
   updateDialog: <K extends T['type']>(
-    id: string,
+    handle: DialogHandle<K>,
     nextState:
       | Partial<Omit<Extract<T, { type: K }>, 'id' | 'type' | 'isOpen'>>
       | ((prev: DialogState<Extract<T, { type: K }>>) => Partial<Omit<Extract<T, { type: K }>, 'id' | 'type' | 'isOpen'>> | null | undefined)
@@ -65,7 +67,7 @@ export const CreateUseDialogs = () => (
         <div>
           <dt className="font-semibold">openDialog</dt>
           <dd className="mt-1 text-sm text-muted-foreground">
-            type과 payload를 받아 다이얼로그를 열고 ID를 반환합니다.
+            type과 payload를 받아 다이얼로그를 열고 <InlineCode>{'{ id, type }'}</InlineCode> 핸들을 반환합니다.
           </dd>
         </div>
         <div>
@@ -77,7 +79,7 @@ export const CreateUseDialogs = () => (
         <div>
           <dt className="font-semibold">updateDialog</dt>
           <dd className="mt-1 text-sm text-muted-foreground">
-            부분 객체 또는 콜백을 사용해 이미 열린 다이얼로그를 갱신합니다.
+            부분 객체 또는 콜백을 사용해 이미 열린 다이얼로그를 갱신합니다. <InlineCode>openDialog</InlineCode>가 반환한 핸들을 그대로 전달하세요.
           </dd>
         </div>
       </dl>

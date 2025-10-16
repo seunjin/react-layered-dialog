@@ -35,28 +35,28 @@ const baseLayerSnippet = `export interface BaseLayerProps {
   scrollLock?: boolean;
 }`;
 
-const baseStateSnippet = `export interface BaseState extends BaseLayerProps {
+const baseStateMetaSnippet = `export interface BaseStateMeta {
   id?: string;
   isOpen?: boolean;
 }`;
 
-const dialogStateSnippet = `export type DialogState<T> = T &
-  BaseLayerProps & {
-    id: string;
-    isOpen: boolean;
-  };`;
+const baseStateSnippet = `export type BaseState = BaseLayerProps & BaseStateMeta;`;
 
-const patchSnippet = `const id = manager.openDialog({
+const dialogStateSnippet = `export type DialogState<T> = T &
+  BaseLayerProps &
+  Required<BaseStateMeta>;`;
+
+const patchSnippet = `const handle = manager.openDialog({
   type: 'alert',
   title: '처음 제목',
 });
 
-manager.updateDialog(id, {
+manager.updateDialog(handle, {
   title: '업데이트된 제목',
   dimmed: false,
 });
 
-manager.updateDialog(id, (prev) => ({
+manager.updateDialog(handle, (prev) => ({
   title: prev.title.toUpperCase(),
 }));`;
 
@@ -102,31 +102,36 @@ export const CoreTypes = () => (
 
     <Section as="h2" id="base-state" title="BaseState와 DialogState">
       <p>
+        <InlineCode>BaseStateMeta</InlineCode>는 매니저가 제어하는 메타 필드(
+        <InlineCode>id</InlineCode>, <InlineCode>isOpen</InlineCode>)를 정의합니다.
+      </p>
+      <CodeBlock language="ts" code={baseStateMetaSnippet} />
+      <p>
         <InlineCode>BaseState</InlineCode>는{' '}
-        <InlineCode>BaseLayerProps</InlineCode>를 상속하고{' '}
-        <InlineCode>id</InlineCode>, <InlineCode>isOpen</InlineCode>을
-        선택적으로 선언합니다. 앱 전역 상태 유니온을 정의할 때{' '}
-        <InlineCode>BaseState</InlineCode>와 교차하면 공통 필드를 쉽게 공유할 수
-        있습니다.
+        <InlineCode>BaseLayerProps</InlineCode>와 메타 필드를 결합한 타입입니다.
+        앱 전역 상태 유니온을 선언할 때 <InlineCode>BaseState</InlineCode>를
+        확장하면 dim, ESC 옵션처럼 공통 동작을 손쉽게 공유할 수 있습니다.
       </p>
       <CodeBlock language="ts" code={baseStateSnippet} />
       <p>
         <InlineCode>DialogState&lt;T&gt;</InlineCode>는 라이브러리가 내부적으로
-        사용하는 최종 상태 형태입니다. <InlineCode>id</InlineCode>,
-        <InlineCode>isOpen</InlineCode>, <InlineCode>zIndex</InlineCode> 같은
-        메타 필드가 자동으로 채워지기 때문에 컴포넌트는 완성된 상태 객체를 바로
-        받을 수 있습니다.
+        사용하는 최종 상태 형태입니다. <InlineCode>id</InlineCode>와{' '}
+        <InlineCode>isOpen</InlineCode>을 필수로 만들고,
+        <InlineCode>BaseLayerProps</InlineCode>를 병합하여 z-index, dim, ESC, scroll
+        lock 같은 동작 플래그를 일관되게 제공합니다.
       </p>
       <CodeBlock language="ts" code={dialogStateSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           상태 유니온을 <InlineCode>DialogState&lt;T&gt;</InlineCode>로 감싸면
-          매니저가 <InlineCode>zIndex</InlineCode>와 포인터 관련 옵션을 자동으로
-          병합해 줍니다.
+          매니저가 <InlineCode>id</InlineCode>, <InlineCode>isOpen</InlineCode>,
+          <InlineCode>zIndex</InlineCode>, <InlineCode>dimmed</InlineCode>,
+          <InlineCode>dismissable</InlineCode>, <InlineCode>closeOnOutsideClick</InlineCode>,
+          <InlineCode>scrollLock</InlineCode>을 자동으로 병합합니다.
         </li>
         <li>
           컴포넌트 입장에서는 완성된 <InlineCode>{'{ ...state }'}</InlineCode>를
-          받을 수 있어 props 정의가 단순해집니다.
+          받을 수 있어 props 정의와 테스트가 단순해집니다.
         </li>
       </ul>
     </Section>

@@ -5,6 +5,7 @@
 - 포커스, 키보드, 애니메이션 등 행동은 각 다이얼로그 내부에서 수동으로 제어한다.
 - `useLayerBehavior` 훅은 ESC/외부 클릭 보조 기능만 제공하며, 포커스는 애플리케이션 책임이다.
 - 새로운 기능을 추가할 때는 README, Docs, Core Types 가이드(예: `/core/core-types`)를 동시에 업데이트한다.
+- `openDialog`는 `{ id, type }` 객체를 반환하며 `updateDialog`는 해당 핸들을 인자로 받는다. 모든 예제와 테스트는 이 패턴을 따르며, ID 문자열만 전달하는 API는 허용하지 않는다.
 - PR에는 의사결정 배경을 간단히 기록하고, 테스트(필요 시 `pnpm test` / `pnpm --filter example run build`)를 실행한다.
 
 ## 코드 스타일 & 패턴
