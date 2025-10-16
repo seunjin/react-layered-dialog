@@ -80,6 +80,7 @@ export type PlainModalDialogState = Extract<
   AppDialogState,
   { type: 'plain-modal' }
 >;
+
 const { manager } = createDialogManager<AppDialogState>();
 
 export const useDialogs = createUseDialogs(manager, {

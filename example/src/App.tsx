@@ -3,7 +3,6 @@ import { RouterProvider } from 'react-router-dom';
 import { useDialogs } from '@/lib/dialogs';
 import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 import { router } from './router';
-
 function App() {
   const { dialogs } = useDialogs();
 

@@ -1,8 +1,10 @@
-import { useCallback, useEffect } from 'react';
-import { useDialogs } from '@/lib/dialogs';
-import type { DialogState } from 'react-layered-dialog';
-import type { ConfirmDialogState } from '@/lib/dialogs';
+import { useCallback, useRef } from 'react';
+import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
+import { useDialogs } from '@/lib/dialogs';
+import type { ConfirmDialogState } from '@/lib/dialogs';
+import type { DialogState } from 'react-layered-dialog';
+import { useLayerBehavior } from 'react-layered-dialog';
 
 type ConfirmProps = DialogState<ConfirmDialogState>;
 
@@ -18,6 +20,7 @@ export const Confirm = ({
   dimmed = true,
 }: ConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const handleCancel = useCallback(() => {
     onCancel?.();
@@ -29,35 +32,42 @@ export const Confirm = ({
     closeDialog(id);
   }, [closeDialog, id, onConfirm]);
 
-  useEffect(() => {
-    if (!dismissable) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const isTopDialog =
-        dialogs.length > 0 &&
-        dialogs[dialogs.length - 1].state.id === id;
-      if (event.key === 'Escape' && isTopDialog) {
-        handleCancel();
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [dialogs, handleCancel, id, dismissable]);
+  useLayerBehavior({
+    id,
+    dialogs,
+    zIndex,
+    closeOnEscape: dismissable,
+    onEscape: handleCancel,
+    closeOnOutsideClick,
+    onOutsideClick: handleCancel,
+    outsideClickRef: panelRef,
+  });
 
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center ${
-        dimmed ? 'bg-black/40 pointer-events-auto' : 'bg-transparent pointer-events-none'
+        dimmed ? 'pointer-events-auto' : 'pointer-events-none'
       }`}
       style={{ zIndex }}
       role="dialog"
       aria-modal="true"
       aria-labelledby={`confirm-${id}-title`}
       aria-describedby={`confirm-${id}-message`}
-      onClick={closeOnOutsideClick ? handleCancel : undefined}
     >
-      <div
-        className="pointer-events-auto relative min-w-[300px] rounded-lg bg-white p-6 shadow-lg"
-        onClick={(event) => event.stopPropagation()}
+      {dimmed && (
+        <motion.div
+          className="absolute inset-0 bg-black/40 pointer-events-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      )}
+      <motion.div
+        ref={panelRef}
+        className="relative min-w-[320px] rounded-lg bg-white p-6 shadow-xl pointer-events-auto"
+        initial={{ scale: 0.92, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.92, opacity: 0 }}
       >
         <h3 id={`confirm-${id}-title`} className="text-lg font-semibold">
           {title}
@@ -76,7 +86,7 @@ export const Confirm = ({
             확인
           </Button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

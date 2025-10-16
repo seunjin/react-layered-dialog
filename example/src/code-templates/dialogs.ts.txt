@@ -1,30 +1,31 @@
 import {
   createDialogManager,
   createUseDialogs,
-  type BaseState,
+  type BaseLayerProps,
+  type DialogState,
 } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
 
-type AlertState = BaseState & {
+type AlertState = {
   type: 'alert';
   title: string;
   message: string;
   onOk?: () => void;
-};
+} & Partial<BaseLayerProps>;
 
-type ConfirmState = BaseState & {
+type ConfirmState = {
   type: 'confirm';
   title: string;
   message: string;
   onConfirm?: () => void;
   onCancel?: () => void;
-};
+} & Partial<BaseLayerProps>;
 
 type AppDialogState = AlertState | ConfirmState;
 
-export type AlertDialogState = Extract<AppDialogState, { type: 'alert' }>;
-export type ConfirmDialogState = Extract<AppDialogState, { type: 'confirm' }>;
+export type AlertDialogProps = DialogState<AlertState>;
+export type ConfirmDialogProps = DialogState<ConfirmState>;
 
 const { manager } = createDialogManager<AppDialogState>();
 
