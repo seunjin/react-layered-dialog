@@ -13,6 +13,9 @@ export const Confirm = ({
   onConfirm,
   onCancel,
   zIndex,
+  dismissable = true,
+  closeOnOutsideClick = true,
+  dimmed = true,
 }: ConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
 
@@ -27,6 +30,7 @@ export const Confirm = ({
   }, [closeDialog, id, onConfirm]);
 
   useEffect(() => {
+    if (!dismissable) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       const isTopDialog =
         dialogs.length > 0 &&
@@ -37,20 +41,22 @@ export const Confirm = ({
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [dialogs, handleCancel, id]);
+  }, [dialogs, handleCancel, id, dismissable]);
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/40"
+      className={`fixed inset-0 flex items-center justify-center ${
+        dimmed ? 'bg-black/40 pointer-events-auto' : 'bg-transparent pointer-events-none'
+      }`}
       style={{ zIndex }}
       role="dialog"
       aria-modal="true"
       aria-labelledby={`confirm-${id}-title`}
       aria-describedby={`confirm-${id}-message`}
-      onClick={handleCancel}
+      onClick={closeOnOutsideClick ? handleCancel : undefined}
     >
       <div
-        className="min-w-[300px] rounded-lg bg-white p-6 shadow-lg"
+        className="pointer-events-auto relative min-w-[300px] rounded-lg bg-white p-6 shadow-lg"
         onClick={(event) => event.stopPropagation()}
       >
         <h3 id={`confirm-${id}-title`} className="text-lg font-semibold">

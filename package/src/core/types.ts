@@ -24,7 +24,7 @@ export interface BaseLayerProps {
    * `useLayerBehavior` 훅의 `closeOnOutsideClick` 옵션을 통해 구현됩니다.
    * @default true
    */
-  closeOnOverlayClick?: boolean;
+  closeOnOutsideClick?: boolean;
   /**
    * Escape 키를 눌렀을 때 레이어를 닫을지 여부입니다.
    * `useLayerBehavior` 훅의 `closeOnEscape` 옵션을 통해 구현됩니다.
@@ -55,11 +55,11 @@ export type DialogPatch<T extends { type: string }> = Partial<
   Omit<DialogState<T>, 'id' | 'type' | 'isOpen'>
 >;
 
-export type DialogState<T> = T & {
-  id: string;
-  isOpen: boolean;
-  zIndex?: number;
-};
+export type DialogState<T> = T &
+  BaseLayerProps & {
+    id: string;
+    isOpen: boolean;
+  };
 
 export type Listener = () => void;
 

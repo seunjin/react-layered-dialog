@@ -4,6 +4,7 @@ import type { DialogState } from 'react-layered-dialog';
 import type { PlainConfirmDialogState } from '@/lib/dialogs';
 import { Button } from '@/components/ui/button';
 import { useLayerBehavior } from 'react-layered-dialog';
+import { cn } from '@/lib/utils';
 
 type PlainConfirmProps = DialogState<PlainConfirmDialogState>;
 
@@ -14,6 +15,9 @@ export const PlainConfirm = ({
   onConfirm,
   onCancel,
   zIndex,
+  dismissable = true,
+  closeOnOutsideClick = true,
+  dimmed = true,
 }: PlainConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -32,16 +36,21 @@ export const PlainConfirm = ({
     id,
     dialogs,
     zIndex,
-    closeOnEscape: true,
+    closeOnEscape: dismissable,
     onEscape: handleCancel,
-    closeOnOutsideClick: true,
+    closeOnOutsideClick,
     onOutsideClick: handleCancel,
     outsideClickRef: panelRef,
   });
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/40 transition-none"
+      className={cn(
+        'fixed inset-0 flex items-center justify-center transition-none',
+        dimmed
+          ? 'bg-black/40 pointer-events-auto'
+          : 'bg-transparent pointer-events-none'
+      )}
       style={{ zIndex }}
       role="dialog"
       aria-modal="true"
@@ -50,7 +59,7 @@ export const PlainConfirm = ({
     >
       <div
         ref={panelRef}
-        className="min-w-[320px] rounded-lg border border-border bg-white p-6 shadow-lg"
+        className="pointer-events-auto relative min-w-[320px] rounded-lg border border-border bg-white p-6 shadow-lg"
       >
         <h3 id={`plain-confirm-${id}-title`} className="text-lg font-semibold">
           {title}

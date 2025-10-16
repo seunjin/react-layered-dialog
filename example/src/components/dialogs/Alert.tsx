@@ -8,7 +8,16 @@ import { useLayerBehavior } from 'react-layered-dialog';
 
 type AlertProps = DialogState<AlertDialogState>;
 
-export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
+export const Alert = ({
+  id,
+  title,
+  message,
+  onOk,
+  zIndex,
+  dismissable = true,
+  closeOnOutsideClick = true,
+  dimmed = true,
+}: AlertProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -21,31 +30,36 @@ export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
     id,
     dialogs,
     zIndex,
-    closeOnEscape: true,
+    closeOnEscape: dismissable,
     onEscape: handleClose,
-    closeOnOutsideClick: true,
+    closeOnOutsideClick,
     onOutsideClick: handleClose,
     outsideClickRef: panelRef,
   });
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center"
+    <motion.div
+      className={`fixed inset-0 flex items-center justify-center ${
+        dimmed ? 'pointer-events-auto' : 'pointer-events-none'
+      }`}
       style={{ zIndex }}
       role="alertdialog"
       aria-modal="true"
       aria-labelledby={`alert-${id}-title`}
       aria-describedby={`alert-${id}-message`}
     >
-      <motion.div
-        className="absolute inset-0 bg-black/40"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      />
+      {dimmed && (
+        <motion.div
+          className="absolute inset-0 bg-black/40 pointer-events-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      )}
+
       <motion.div
         ref={panelRef}
-        className="relative min-w-[280px] rounded-lg bg-white p-6 shadow-xl"
+        className="relative min-w-[280px] rounded-lg bg-white p-6 shadow-xl pointer-events-auto"
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}
@@ -65,6 +79,6 @@ export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
           </Button>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };

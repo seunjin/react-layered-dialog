@@ -312,7 +312,7 @@
   font-style: italic;
 }
 
-button {
+button[data-slot='button'] {
   &:focus {
     outline: 2px solid var(--ring);
     outline-offset: 2px;

@@ -8,7 +8,17 @@ import { useLayerBehavior } from 'react-layered-dialog';
 
 type ConfirmProps = DialogState<ConfirmDialogState>;
 
-export const Confirm = ({ id, title, message, onConfirm, onCancel, zIndex }: ConfirmProps) => {
+export const Confirm = ({
+  id,
+  title,
+  message,
+  onConfirm,
+  onCancel,
+  zIndex,
+  dismissable = true,
+  closeOnOutsideClick = true,
+  dimmed = true,
+}: ConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -26,32 +36,34 @@ export const Confirm = ({ id, title, message, onConfirm, onCancel, zIndex }: Con
     id,
     dialogs,
     zIndex,
-    closeOnEscape: true,
+    closeOnEscape: dismissable,
     onEscape: handleCancel,
-    closeOnOutsideClick: true,
+    closeOnOutsideClick,
     onOutsideClick: handleCancel,
     outsideClickRef: panelRef,
   });
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center"
+      className="fixed inset-0 flex items-center justify-center pointer-events-none"
       style={{ zIndex }}
       role="dialog"
       aria-modal="true"
       aria-labelledby={`confirm-${id}-title`}
       aria-describedby={`confirm-${id}-message`}
     >
-      <motion.div
-        className="absolute inset-0 bg-black/40"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
-      />
+      {dimmed ? (
+        <motion.div
+          className="absolute inset-0 bg-black/40 pointer-events-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2, ease: 'easeInOut' }}
+        />
+      ) : null}
       <motion.div
         ref={panelRef}
-        className="relative min-w-[320px] rounded-lg bg-white p-6 shadow-xl"
+        className="relative min-w-[320px] rounded-lg bg-white p-6 shadow-xl pointer-events-auto"
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}

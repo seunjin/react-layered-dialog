@@ -10,15 +10,16 @@ export const PlainUsageDemo = () => {
       description: '모션을 사용하지 않는 간단한 모달 예제입니다.',
       body: (
         <div className="space-y-4 text-sm text-muted-foreground">
-          <p>애니메이션 없이도 충분히 사용 가능한 레이아웃을 구현할 수 있습니다.</p>
+          <p>
+            애니메이션 없이도 충분히 사용 가능한 레이아웃을 구현할 수 있습니다.
+          </p>
           <div className="flex justify-end">
-            <Button variant="outline" onClick={() => closeDialog()}>
+            <Button autoFocus variant="outline" onClick={() => closeDialog()}>
               닫기
             </Button>
           </div>
         </div>
       ),
-      footer: <span className="text-xs text-muted-foreground">Footer 영역 예시입니다.</span>,
     });
 
   return (

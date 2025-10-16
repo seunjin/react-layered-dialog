@@ -1,21 +1,27 @@
-import { createDialogManager, createUseDialogs } from 'react-layered-dialog';
+import {
+  createDialogManager,
+  createUseDialogs,
+  type BaseState,
+} from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
 
-type AppDialogState =
-  | {
-      type: 'alert';
-      title: string;
-      message: string;
-      onOk?: () => void;
-    }
-  | {
-      type: 'confirm';
-      title: string;
-      message: string;
-      onConfirm?: () => void;
-      onCancel?: () => void;
-    };
+type AlertState = BaseState & {
+  type: 'alert';
+  title: string;
+  message: string;
+  onOk?: () => void;
+};
+
+type ConfirmState = BaseState & {
+  type: 'confirm';
+  title: string;
+  message: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+};
+
+type AppDialogState = AlertState | ConfirmState;
 
 export type AlertDialogState = Extract<AppDialogState, { type: 'alert' }>;
 export type ConfirmDialogState = Extract<AppDialogState, { type: 'confirm' }>;

@@ -1,4 +1,8 @@
-import { createDialogManager, createUseDialogs } from 'react-layered-dialog';
+import {
+  createDialogManager,
+  createUseDialogs,
+  type BaseState,
+} from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
 import { Modal } from '@/components/dialogs/Modal';
@@ -7,57 +11,75 @@ import { PlainConfirm } from '@/components/dialogs/plain/PlainConfirm';
 import { PlainModal } from '@/components/dialogs/plain/PlainModal';
 import type { ReactNode } from 'react';
 
+type AlertState = BaseState & {
+  type: 'alert';
+  title: string;
+  message: string;
+  onOk?: () => void;
+};
+
+type ConfirmState = BaseState & {
+  type: 'confirm';
+  title: string;
+  message: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+};
+
+type ModalState = BaseState & {
+  type: 'modal';
+  title: string;
+  description?: string;
+  body: ReactNode;
+  canDismiss?: boolean;
+};
+
+type PlainAlertState = BaseState & {
+  type: 'plain-alert';
+  title: string;
+  message: string;
+  onOk?: () => void;
+};
+
+type PlainConfirmState = BaseState & {
+  type: 'plain-confirm';
+  title: string;
+  message: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+};
+
+type PlainModalState = BaseState & {
+  type: 'plain-modal';
+  title: string;
+  description?: string;
+  body: ReactNode;
+  canDismiss?: boolean;
+};
+
 type AppDialogState =
-  | {
-      type: 'alert';
-      title: string;
-      message: string;
-      onOk?: () => void;
-    }
-  | {
-      type: 'confirm';
-      title: string;
-      message: string;
-      onConfirm?: () => void;
-      onCancel?: () => void;
-    }
-  | {
-      type: 'modal';
-      title: string;
-      description?: string;
-      body: ReactNode;
-      footer?: ReactNode;
-      canDismiss?: boolean;
-    }
-  | {
-      type: 'plain-alert';
-      title: string;
-      message: string;
-      onOk?: () => void;
-    }
-  | {
-      type: 'plain-confirm';
-      title: string;
-      message: string;
-      onConfirm?: () => void;
-      onCancel?: () => void;
-    }
-  | {
-      type: 'plain-modal';
-      title: string;
-      description?: string;
-      body: ReactNode;
-      footer?: ReactNode;
-      canDismiss?: boolean;
-    }
-  ;
+  | AlertState
+  | ConfirmState
+  | ModalState
+  | PlainAlertState
+  | PlainConfirmState
+  | PlainModalState;
 
 export type AlertDialogState = Extract<AppDialogState, { type: 'alert' }>;
 export type ConfirmDialogState = Extract<AppDialogState, { type: 'confirm' }>;
 export type ModalDialogState = Extract<AppDialogState, { type: 'modal' }>;
-export type PlainAlertDialogState = Extract<AppDialogState, { type: 'plain-alert' }>;
-export type PlainConfirmDialogState = Extract<AppDialogState, { type: 'plain-confirm' }>;
-export type PlainModalDialogState = Extract<AppDialogState, { type: 'plain-modal' }>;
+export type PlainAlertDialogState = Extract<
+  AppDialogState,
+  { type: 'plain-alert' }
+>;
+export type PlainConfirmDialogState = Extract<
+  AppDialogState,
+  { type: 'plain-confirm' }
+>;
+export type PlainModalDialogState = Extract<
+  AppDialogState,
+  { type: 'plain-modal' }
+>;
 const { manager } = createDialogManager<AppDialogState>();
 
 export const useDialogs = createUseDialogs(manager, {

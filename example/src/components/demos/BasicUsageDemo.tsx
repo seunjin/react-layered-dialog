@@ -10,9 +10,11 @@ export const BasicUsageDemo = () => {
       description: '모달 내부에 원하는 UI를 자유롭게 배치할 수 있습니다.',
       body: (
         <div className="space-y-4 text-sm text-muted-foreground">
-          <p>버튼, 폼, 리스트 등 어떤 컴포넌트든 이 영역에 렌더링할 수 있습니다.</p>
+          <p>
+            버튼, 폼, 리스트 등 어떤 컴포넌트든 이 영역에 렌더링할 수 있습니다.
+          </p>
           <div className="flex justify-end">
-            <Button variant="outline" onClick={() => closeDialog()}>
+            <Button autoFocus variant="outline" onClick={() => closeDialog()}>
               닫기
             </Button>
           </div>

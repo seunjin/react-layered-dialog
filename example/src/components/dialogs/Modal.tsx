@@ -14,13 +14,17 @@ export const Modal = ({
   title,
   description,
   body,
-  footer,
   canDismiss = false,
   zIndex,
+  dismissable,
+  closeOnOutsideClick,
+  dimmed = true,
 }: ModalProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dismissableFlag = dismissable ?? canDismiss;
+  const outsideClickFlag = closeOnOutsideClick ?? dismissableFlag;
 
   const handleClose = useCallback(() => {
     closeDialog(id);
@@ -36,31 +40,35 @@ export const Modal = ({
     id,
     dialogs,
     zIndex,
-    closeOnEscape: canDismiss,
+    closeOnEscape: dismissableFlag,
     onEscape: handleClose,
-    closeOnOutsideClick: canDismiss,
+    closeOnOutsideClick: outsideClickFlag,
     onOutsideClick: handleClose,
     outsideClickRef: panelRef,
   });
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center"
+      className={`fixed inset-0 flex items-center justify-center ${
+        dimmed ? 'pointer-events-auto' : 'pointer-events-none'
+      }`}
       style={{ zIndex }}
       role="dialog"
       aria-modal="true"
       aria-labelledby={`modal-${id}-title`}
       aria-describedby={description ? `modal-${id}-description` : undefined}
     >
-      <motion.div
-        className="absolute inset-0 bg-black/40"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      />
+      {dimmed && (
+        <motion.div
+          className="absolute inset-0 bg-black/40 pointer-events-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      )}
       <motion.div
         ref={panelRef}
-        className="relative w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl"
+        className="relative w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl pointer-events-auto"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -92,7 +100,6 @@ export const Modal = ({
           ) : null}
         </header>
         <div className="mt-4 space-y-4">{body}</div>
-        {footer ? <footer className="mt-6">{footer}</footer> : null}
       </motion.div>
     </div>
   );

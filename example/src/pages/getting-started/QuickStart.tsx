@@ -46,6 +46,13 @@ export const QuickStart = () => (
         필요한 데이터를 원하는 형태로 추가하고, 각 분기는 서로 다른 속성 집합을
         가져도 무방합니다.
       </p>
+      <p>
+        예제에서는 각 상태를 <InlineCode>BaseState</InlineCode>와 교차시켜
+        선언합니다. 이렇게 하면 <InlineCode>dismissable</InlineCode>,
+        <InlineCode>closeOnOutsideClick</InlineCode>,
+        <InlineCode>dimmed</InlineCode> 같은 공통 동작 플래그를 한 번에 재사용하면서
+        필요할 때만 오버라이드할 수 있습니다.
+      </p>
       <CodeBlock language="ts" code={dialogsTsCode} />
     </Section>
 
