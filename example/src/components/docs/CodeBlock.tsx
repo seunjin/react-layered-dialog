@@ -49,7 +49,6 @@ export const CodeBlock: FC<CodeBlockProps> = ({
         style={vscDarkPlus}
         showLineNumbers
         customStyle={{
-          margin: 0,
           padding: '1rem',
           backgroundColor: 'transparent',
           borderRadius: '0.375rem',
