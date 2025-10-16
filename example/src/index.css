@@ -151,7 +151,7 @@
   body.scroll-locked {
     overflow: hidden;
   }
-  ::selection {
+  .SyntaxHighlighter::selection {
     background: color-mix(in oklch, var(--accent) 30%, transparent);
   }
   .kbd {

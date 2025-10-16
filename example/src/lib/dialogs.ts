@@ -1,7 +1,7 @@
 import {
   createDialogManager,
   createUseDialogs,
-  type BaseState,
+  type DialogState,
 } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
@@ -11,14 +11,14 @@ import { PlainConfirm } from '@/components/dialogs/plain/PlainConfirm';
 import { PlainModal } from '@/components/dialogs/plain/PlainModal';
 import type { ReactNode } from 'react';
 
-type AlertState = BaseState & {
+type AlertState = {
   type: 'alert';
   title: string;
   message: string;
   onOk?: () => void;
 };
 
-type ConfirmState = BaseState & {
+type ConfirmState = {
   type: 'confirm';
   title: string;
   message: string;
@@ -26,7 +26,7 @@ type ConfirmState = BaseState & {
   onCancel?: () => void;
 };
 
-type ModalState = BaseState & {
+type ModalState = {
   type: 'modal';
   title: string;
   description?: string;
@@ -34,14 +34,14 @@ type ModalState = BaseState & {
   canDismiss?: boolean;
 };
 
-type PlainAlertState = BaseState & {
+type PlainAlertState = {
   type: 'plain-alert';
   title: string;
   message: string;
   onOk?: () => void;
 };
 
-type PlainConfirmState = BaseState & {
+type PlainConfirmState = {
   type: 'plain-confirm';
   title: string;
   message: string;
@@ -49,7 +49,7 @@ type PlainConfirmState = BaseState & {
   onCancel?: () => void;
 };
 
-type PlainModalState = BaseState & {
+type PlainModalState = {
   type: 'plain-modal';
   title: string;
   description?: string;
@@ -58,12 +58,12 @@ type PlainModalState = BaseState & {
 };
 
 type AppDialogState =
-  | AlertState
-  | ConfirmState
-  | ModalState
-  | PlainAlertState
-  | PlainConfirmState
-  | PlainModalState;
+  | DialogState<AlertState>
+  | DialogState<ConfirmState>
+  | DialogState<ModalState>
+  | DialogState<PlainAlertState>
+  | DialogState<PlainConfirmState>
+  | DialogState<PlainModalState>;
 
 export type AlertDialogState = Extract<AppDialogState, { type: 'alert' }>;
 export type ConfirmDialogState = Extract<AppDialogState, { type: 'confirm' }>;

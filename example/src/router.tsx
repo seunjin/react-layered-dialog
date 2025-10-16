@@ -5,6 +5,7 @@ import { Introduction } from '@/pages/getting-started/Introduction';
 import { QuickStart } from '@/pages/getting-started/QuickStart';
 import { Architecture } from '@/pages/core/Architecture';
 import { DefiningDialogs } from '@/pages/core/DefiningDialogs';
+import { CoreTypes } from '@/pages/core/CoreTypes';
 import { OpeningDialogs } from '@/pages/guides/OpeningDialogs';
 import { UpdatingDialogs } from '@/pages/guides/UpdatingDialogs';
 import { LayerBehaviorAddon } from '@/pages/guides/LayerBehaviorAddon';
@@ -29,6 +30,7 @@ export const routeConfig = [
     children: [
       { path: 'architecture', element: <Architecture />, name: '코어 아키텍처' },
       { path: 'defining-dialogs', element: <DefiningDialogs />, name: '다이얼로그 타입 설계' },
+      { path: 'core-types', element: <CoreTypes />, name: '코어 타입 가이드' },
     ],
   },
   {

@@ -45,6 +45,7 @@ export const CodeBlock: FC<CodeBlockProps> = ({
         )}
       </Button>
       <SyntaxHighlighter
+        className={'SyntaxHighlighter'}
         language={language}
         style={vscDarkPlus}
         showLineNumbers
