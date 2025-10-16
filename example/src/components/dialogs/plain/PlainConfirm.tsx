@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import type { PlainConfirmDialogState } from '@/lib/dialogs';
@@ -16,7 +16,6 @@ export const PlainConfirm = ({
   zIndex,
 }: PlainConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
-  const confirmButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const handleCancel = useCallback(() => {
@@ -28,10 +27,6 @@ export const PlainConfirm = ({
     onConfirm?.();
     closeDialog(id);
   }, [closeDialog, id, onConfirm]);
-
-  useEffect(() => {
-    confirmButtonRef.current?.focus();
-  }, []);
 
   useLayerBehavior({
     id,
@@ -70,7 +65,7 @@ export const PlainConfirm = ({
           <Button variant="outline" onClick={handleCancel}>
             취소
           </Button>
-          <Button ref={confirmButtonRef} onClick={handleConfirm}>
+          <Button autoFocus onClick={handleConfirm}>
             확인
           </Button>
         </div>

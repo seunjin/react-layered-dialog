@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { useDialogs } from '@/lib/dialogs';
@@ -10,17 +10,12 @@ type AlertProps = DialogState<AlertDialogState>;
 
 export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
   const { dialogs, closeDialog } = useDialogs();
-  const okButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const handleClose = useCallback(() => {
     onOk?.();
     closeDialog(id);
   }, [closeDialog, id, onOk]);
-
-  useEffect(() => {
-    okButtonRef.current?.focus();
-  }, []);
 
   useLayerBehavior({
     id,
@@ -65,7 +60,7 @@ export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
           {message}
         </p>
         <div className="mt-4 flex justify-end">
-          <Button ref={okButtonRef} onClick={handleClose}>
+          <Button autoFocus onClick={handleClose}>
             확인
           </Button>
         </div>

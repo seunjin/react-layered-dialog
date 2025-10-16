@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import type { PlainAlertDialogState } from '@/lib/dialogs';
@@ -9,7 +9,6 @@ type PlainAlertProps = DialogState<PlainAlertDialogState>;
 
 export const PlainAlert = ({ id, title, message, onOk, zIndex }: PlainAlertProps) => {
   const { dialogs, closeDialog } = useDialogs();
-  const okButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const handleClose = useCallback(() => {
@@ -27,10 +26,6 @@ export const PlainAlert = ({ id, title, message, onOk, zIndex }: PlainAlertProps
     onOutsideClick: handleClose,
     outsideClickRef: panelRef,
   });
-
-  useEffect(() => {
-    okButtonRef.current?.focus();
-  }, []);
 
   return (
     <div
@@ -52,7 +47,7 @@ export const PlainAlert = ({ id, title, message, onOk, zIndex }: PlainAlertProps
           {message}
         </p>
         <div className="mt-4 flex justify-end">
-          <Button ref={okButtonRef} onClick={handleClose}>
+          <Button autoFocus onClick={handleClose}>
             확인
           </Button>
         </div>

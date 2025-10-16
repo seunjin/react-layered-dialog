@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { useDialogs } from '@/lib/dialogs';
@@ -17,7 +17,6 @@ export const Confirm = ({
   zIndex,
 }: ConfirmProps) => {
   const { dialogs, closeDialog } = useDialogs();
-  const confirmButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const handleCancel = useCallback(() => {
@@ -29,10 +28,6 @@ export const Confirm = ({
     onConfirm?.();
     closeDialog(id);
   }, [closeDialog, id, onConfirm]);
-
-  useEffect(() => {
-    confirmButtonRef.current?.focus();
-  }, []);
 
   useLayerBehavior({
     id,
@@ -77,7 +72,7 @@ export const Confirm = ({
           <Button variant="outline" onClick={handleCancel}>
             취소
           </Button>
-          <Button ref={confirmButtonRef} onClick={handleConfirm}>
+          <Button autoFocus onClick={handleConfirm}>
             확인
           </Button>
         </div>

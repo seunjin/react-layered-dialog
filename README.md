@@ -56,17 +56,13 @@ function App() {
 
 ## Focus & Accessibility
 
-`react-layered-dialog`는 포커스 이동을 자동으로 처리하지 않습니다. 각 다이얼로그 컴포넌트 안에서 `ref.current?.focus()` 또는 선호하는 방식으로 초점을 직접 관리해 주세요.
+`react-layered-dialog`는 포커스 이동을 자동으로 처리하지 않습니다. 각 다이얼로그 컴포넌트 안에서 표준
+`autoFocus` 속성이나 필요에 맞는 포커스 전략을 직접 지정해 주세요.
 필요하다면 `useLayerBehavior` 훅을 사용해 ESC, 외부 클릭 처리 등을 보조적으로 적용할 수 있습니다.
 
 ```tsx
 function AlertDialog({ id, title, message }: DialogState<AlertState>) {
-  const okButtonRef = useRef<HTMLButtonElement>(null);
   const { dialogs, closeDialog } = useDialogs();
-
-  useEffect(() => {
-    okButtonRef.current?.focus();
-  }, []);
 
   useLayerBehavior({
     id,
@@ -79,7 +75,7 @@ function AlertDialog({ id, title, message }: DialogState<AlertState>) {
     <div role="alertdialog" aria-modal="true">
       <h3>{title}</h3>
       <p>{message}</p>
-      <button ref={okButtonRef} onClick={() => closeDialog(id)}>
+      <button autoFocus onClick={() => closeDialog(id)}>
         확인
       </button>
     </div>
@@ -87,7 +83,8 @@ function AlertDialog({ id, title, message }: DialogState<AlertState>) {
 }
 ```
 
-위와 같이 필요한 포커스 전략이나 접근성 속성은 다이얼로그 컴포넌트를 구현하는 애플리케이션 측에서 제어하면 됩니다.
+위와 같이 기본 포커스는 브라우저가 처리하도록 두고, 더 정교한 포커스 제어나 우선순위가 필요하면 `ref`와
+`useEffect` 등을 조합해 직접 구현하면 됩니다.
 
 ---
 

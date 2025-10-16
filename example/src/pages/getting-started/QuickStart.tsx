@@ -22,6 +22,30 @@ export const QuickStart = () => (
         매니저, 훅을 한 번에 정의합니다. 이 파일은 애플리케이션 어디에서든
         재사용됩니다.
       </p>
+      <p>
+        다이얼로그 유니온에서 가장 중요한 규칙은 각 분기에{' '}
+        <InlineCode>type</InlineCode> 필드를 명시하는 것입니다. 이 값이
+        렌더러가 어떤 컴포넌트와 연결되어야 하는지를 결정하고, 동시에
+        TypeScript가 상태를 안전하게 좁힐 수 있도록 하는 식별자 역할을 합니다.
+      </p>
+      <p>
+        <InlineCode>createDialogManager&lt;AppDialogState&gt;</InlineCode>는 이
+        필드를 기반으로 <InlineCode>openDialog</InlineCode>나
+        <InlineCode>updateDialog</InlineCode> 호출 시 올바른 분기를 선택하도록
+        강제합니다. 예를 들어{' '}
+        <InlineCode>openDialog(&#123; type: &apos;alert&apos;, ...&#125;)</InlineCode>를
+        호출하면 <InlineCode>alert</InlineCode> 상태에 필요한 속성만 입력하도록
+        편집기에서 즉시 피드백을 받을 수 있습니다. 또한
+        <InlineCode>Extract</InlineCode>를 이용해{' '}
+        <InlineCode>AlertDialogState</InlineCode> 같은 파생 타입을 만들면,
+        훅과 컴포넌트 전반에서 동일한 모델을 재사용할 수 있습니다.
+      </p>
+      <p>
+        <InlineCode>type</InlineCode> 외의 필드는 전적으로 사용하는 다이얼로그에
+        맞춰 자유롭게 설계하면 됩니다. 제목, 버튼 콜백, 폼 입력값 등 UI에
+        필요한 데이터를 원하는 형태로 추가하고, 각 분기는 서로 다른 속성 집합을
+        가져도 무방합니다.
+      </p>
       <CodeBlock language="ts" code={dialogsTsCode} />
     </Section>
 

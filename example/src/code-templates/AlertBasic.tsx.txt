@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import { useDialogs } from '@/lib/dialogs';
 import type { DialogState } from 'react-layered-dialog';
 import type { AlertDialogState } from '@/lib/dialogs';
@@ -8,11 +7,6 @@ type AlertProps = DialogState<AlertDialogState>;
 
 export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
   const { closeDialog } = useDialogs();
-  const okButtonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    okButtonRef.current?.focus();
-  }, []);
 
   const handleClose = () => {
     onOk?.();
@@ -40,7 +34,7 @@ export const Alert = ({ id, title, message, onOk, zIndex }: AlertProps) => {
           {message}
         </p>
         <div className="mt-4 flex justify-end">
-          <Button ref={okButtonRef} onClick={handleClose}>
+          <Button autoFocus onClick={handleClose}>
             확인
           </Button>
         </div>
