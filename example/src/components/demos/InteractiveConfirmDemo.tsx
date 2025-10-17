@@ -83,11 +83,11 @@ export const InteractiveConfirmDemo = () => {
                 checked={dimmed}
                 onChange={(event) => setDimmed(event.currentTarget.checked)}
               />
-              dimmed (배경 어둡게)
+              dimmed:
+              <span className="text-sm text-muted-foreground">
+                해제하면 배경 dim 없이 확인창만 표시됩니다.
+              </span>
             </label>
-            <p className="pl-6 text-sm text-muted-foreground">
-              해제하면 배경 dim 없이 확인창만 표시됩니다.
-            </p>
           </div>
 
           <div>
@@ -95,13 +95,15 @@ export const InteractiveConfirmDemo = () => {
               <input
                 type="checkbox"
                 checked={closeOnEscape}
-                onChange={(event) => setCloseOnEscape(event.currentTarget.checked)}
+                onChange={(event) =>
+                  setCloseOnEscape(event.currentTarget.checked)
+                }
               />
-              closeOnEscape (ESC로 닫기)
+              closeOnEscape:
+              <span className="text-sm text-muted-foreground">
+                끄면 ESC 키로 닫히지 않습니다.
+              </span>
             </label>
-            <p className="pl-6 text-sm text-muted-foreground">
-              끄면 ESC 키로 닫히지 않습니다.
-            </p>
           </div>
 
           <div>
@@ -113,11 +115,11 @@ export const InteractiveConfirmDemo = () => {
                   setCloseOnOutsideClick(event.currentTarget.checked)
                 }
               />
-              closeOnOutsideClick (바깥 클릭 허용)
+              closeOnOutsideClick:
+              <span className="text-sm text-muted-foreground">
+                끄면 다이얼로그 외부를 클릭해도 닫히지 않습니다.
+              </span>
             </label>
-            <p className="pl-6 text-sm text-muted-foreground">
-              끄면 다이얼로그 외부를 클릭해도 닫히지 않습니다.
-            </p>
           </div>
 
           <div>
@@ -127,11 +129,11 @@ export const InteractiveConfirmDemo = () => {
                 checked={scrollLock}
                 onChange={(event) => setScrollLock(event.currentTarget.checked)}
               />
-              scrollLock (배경 스크롤 잠금)
+              scrollLock:
+              <span className="text-sm text-muted-foreground">
+                끄면 다이얼로그가 열려 있어도 배경 스크롤이 허용됩니다.
+              </span>
             </label>
-            <p className="pl-6 text-sm text-muted-foreground">
-              끄면 다이얼로그가 열려 있어도 배경 스크롤이 허용됩니다.
-            </p>
           </div>
 
           <Button onClick={handleOpenConfirm}>확인 다이얼로그 열기</Button>
