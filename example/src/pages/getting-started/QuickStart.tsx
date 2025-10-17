@@ -84,7 +84,7 @@ export const QuickStart = () => (
       <p className="mt-2">
         <InlineCode>AlertDialogProps</InlineCode> 타입을 <InlineCode>src/lib/dialogs</InlineCode>
         에서 import하면 <InlineCode>DialogState</InlineCode>가 확장한 공통 필드(
-        <InlineCode>dismissable</InlineCode>, <InlineCode>dimmed</InlineCode> 등)를 그대로
+        <InlineCode>closeOnEscape</InlineCode>, <InlineCode>dimmed</InlineCode> 등)를 그대로
         사용할 수 있습니다. Quick Start 예제는 <InlineCode>useLayerBehavior</InlineCode>를
         조합해 ESC·외부 클릭 처리까지 구현합니다.
       </p>

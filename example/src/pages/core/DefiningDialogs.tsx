@@ -38,7 +38,7 @@ type ConfirmState = {
   title: string;
   onConfirm: () => void;
   onCancel?: () => void;
-  dismissable?: boolean;
+  closeOnEscape?: boolean;
 };
 
 type AppDialogState = DialogState<AlertState> | DialogState<ConfirmState>;
@@ -100,7 +100,7 @@ export const DefiningDialogs = () => (
           <InlineCode>DialogState&lt;T&gt;</InlineCode>를 직접 사용하면{' '}
           <InlineCode>BaseLayerProps</InlineCode>를 커스터마이즈하면서{' '}
           <InlineCode>id</InlineCode>, <InlineCode>isOpen</InlineCode>은 필수로 보장됩니다.
-          다이얼로그별로 기본 dim 여부나 dismissable 값을 다르게 지정하고 싶을 때 유용합니다.
+          다이얼로그별로 기본 dim 여부나 closeOnEscape 값을 다르게 지정하고 싶을 때 유용합니다.
         </p>
         <CodeBlock language="ts" code={layeredPatternSnippet} />
       </Section>

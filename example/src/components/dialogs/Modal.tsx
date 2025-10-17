@@ -16,7 +16,7 @@ export const Modal = ({
   body,
   canDismiss = false,
   zIndex,
-  dismissable,
+  closeOnEscape,
   closeOnOutsideClick,
   dimmed = true,
   onClose,
@@ -24,8 +24,8 @@ export const Modal = ({
   const { dialogs, closeDialog } = useDialogs();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const dismissableFlag = dismissable ?? canDismiss;
-  const outsideClickFlag = closeOnOutsideClick ?? dismissableFlag;
+  const closeOnEscapeFlag = closeOnEscape ?? canDismiss;
+  const outsideClickFlag = closeOnOutsideClick ?? closeOnEscapeFlag;
 
   const handleClose = useCallback(() => {
     onClose?.();
@@ -42,7 +42,7 @@ export const Modal = ({
     id,
     dialogs,
     zIndex,
-    closeOnEscape: dismissableFlag,
+    closeOnEscape: closeOnEscapeFlag,
     onEscape: handleClose,
     closeOnOutsideClick: outsideClickFlag,
     onOutsideClick: handleClose,

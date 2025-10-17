@@ -27,7 +27,7 @@ const baseLayerSnippet = `export interface BaseLayerProps {
    * \`useLayerBehavior\` 훅의 \`closeOnEscape\` 옵션을 통해 구현됩니다.
    * @default true
    */
-  dismissable?: boolean;
+  closeOnEscape?: boolean;
   /**
    * 레이어가 열렸을 때 배경 스크롤을 막을지 여부입니다. (향후 구현 예정)
    * @default true
@@ -87,11 +87,9 @@ export const CoreTypes = () => (
           오버레이를 그리고 배경 클릭을 막습니다.
         </li>
         <li>
-          <InlineCode>closeOnOutsideClick</InlineCode>,{' '}
-          <InlineCode>dismissable</InlineCode>:{' '}
-          <InlineCode>useLayerBehavior</InlineCode>의{' '}
-          <InlineCode>closeOnOutsideClick</InlineCode> /
-          <InlineCode>closeOnEscape</InlineCode>에 연결됩니다.
+          <InlineCode>closeOnEscape</InlineCode>,{' '}
+          <InlineCode>closeOnOutsideClick</InlineCode>:{' '}
+          <InlineCode>useLayerBehavior</InlineCode>의 대응 옵션과 연결됩니다.
         </li>
         <li>
           <InlineCode>scrollLock</InlineCode>: 향후 배경 스크롤을 잠글 때 사용할
@@ -126,7 +124,7 @@ export const CoreTypes = () => (
           상태 유니온을 <InlineCode>DialogState&lt;T&gt;</InlineCode>로 감싸면
           매니저가 <InlineCode>id</InlineCode>, <InlineCode>isOpen</InlineCode>,
           <InlineCode>zIndex</InlineCode>, <InlineCode>dimmed</InlineCode>,
-          <InlineCode>dismissable</InlineCode>, <InlineCode>closeOnOutsideClick</InlineCode>,
+          <InlineCode>closeOnEscape</InlineCode>, <InlineCode>closeOnOutsideClick</InlineCode>,
           <InlineCode>scrollLock</InlineCode>을 자동으로 병합합니다.
         </li>
         <li>
@@ -162,7 +160,7 @@ export const CoreTypes = () => (
         </li>
         <li>
           <InlineCode>useLayerBehavior</InlineCode>는{' '}
-          <InlineCode>dismissable</InlineCode>과{' '}
+          <InlineCode>closeOnEscape</InlineCode>와{' '}
           <InlineCode>closeOnOutsideClick</InlineCode> 값을 받아 ESC/외부 클릭
           동작을 구성합니다.
         </li>

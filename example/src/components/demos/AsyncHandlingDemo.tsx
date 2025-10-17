@@ -20,7 +20,7 @@ export const AsyncHandlingDemo = () => {
           message: '삭제 작업을 처리하고 있습니다...',
           onConfirm: undefined,
           onCancel: undefined,
-          dismissable: false,
+          closeOnEscape: false,
           closeOnOutsideClick: false,
         });
 
@@ -34,7 +34,7 @@ export const AsyncHandlingDemo = () => {
               return false;
             },
             onCancel: undefined,
-            dismissable: true,
+            closeOnEscape: true,
             closeOnOutsideClick: true,
           });
         }, 1200);

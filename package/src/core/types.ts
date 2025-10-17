@@ -30,7 +30,7 @@ export interface BaseLayerProps {
    * `useLayerBehavior` 훅의 `closeOnEscape` 옵션을 통해 구현됩니다.
    * @default true
    */
-  dismissable?: boolean;
+  closeOnEscape?: boolean;
   /**
    * 레이어가 열렸을 때 배경 스크롤을 막을지 여부입니다. (향후 구현 예정)
    * @default true

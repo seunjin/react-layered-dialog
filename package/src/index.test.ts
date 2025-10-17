@@ -138,14 +138,14 @@ describe('DialogManager (코어 로직) - 단위 테스트', () => {
     });
 
     act(() => {
-      manager.updateDialog(dialogHandle, { question: '수정된 질문', dismissable: false });
+      manager.updateDialog(dialogHandle, { question: '수정된 질문', closeOnEscape: false });
     });
 
     let target = manager
       .getSnapshot()
       .find((dialog) => dialog.id === dialogHandle.id) as ConfirmState;
     expect(target.question).toBe('수정된 질문');
-    expect(target.dismissable).toBe(false);
+    expect(target.closeOnEscape).toBe(false);
 
     act(() => {
       manager.updateDialog(dialogHandle, (prev) => ({

@@ -16,15 +16,15 @@ export const PlainModal = ({
   body,
   zIndex,
   canDismiss = true,
-  dismissable,
+  closeOnEscape,
   closeOnOutsideClick,
   dimmed = true,
   onClose,
 }: PlainModalProps) => {
   const { dialogs, closeDialog } = useDialogs();
   const panelRef = useRef<HTMLDivElement>(null);
-  const dismissableFlag = dismissable ?? canDismiss;
-  const outsideClickFlag = closeOnOutsideClick ?? dismissableFlag;
+  const closeOnEscapeFlag = closeOnEscape ?? canDismiss;
+  const outsideClickFlag = closeOnOutsideClick ?? closeOnEscapeFlag;
 
   const handleClose = useCallback(() => {
     onClose?.();
@@ -35,7 +35,7 @@ export const PlainModal = ({
     id,
     dialogs,
     zIndex,
-    closeOnEscape: dismissableFlag,
+    closeOnEscape: closeOnEscapeFlag,
     onEscape: handleClose,
     closeOnOutsideClick: outsideClickFlag,
     onOutsideClick: handleClose,

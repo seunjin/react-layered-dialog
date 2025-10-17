@@ -14,7 +14,7 @@ export const PlainAlert = ({
   message,
   onOk,
   zIndex,
-  dismissable = true,
+  closeOnEscape = true,
   closeOnOutsideClick = true,
   dimmed = true,
 }: PlainAlertProps) => {
@@ -30,7 +30,7 @@ export const PlainAlert = ({
     id,
     dialogs,
     zIndex,
-    closeOnEscape: dismissable,
+    closeOnEscape,
     onEscape: handleClose,
     closeOnOutsideClick,
     onOutsideClick: handleClose,

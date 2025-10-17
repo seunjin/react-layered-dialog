@@ -8,7 +8,7 @@
 - `AppDialogState`는 각 애플리케이션이 직접 정의하고, 상태별 UI 컴포넌트도 사용자가 구현한다. 라이브러리는 상태 스택 관리(`openDialog`, `closeDialog`, `updateDialog`)와 z-index 계산만 책임진다.
 - `openDialog`는 `{ id, type }` 핸들을 반환한다. 후속 API(`updateDialog`, `closeDialog`) 호출 시 이 핸들을 그대로 전달해 타입 안전성을 확보한다.
 - 외부 UI 라이브러리(shadcn 등)를 기반으로 한 래퍼 컴포넌트는 공식 패키지에 포함하지 않는다. 필요 시 사용자가 래핑하도록 가이드만 제공하거나 예제를 문서에서 참조한다.
-- 상태 타입은 `BaseState` 또는 `DialogState<T>` 패턴을 기본으로 사용한다. 이렇게 하면 `BaseLayerProps`(dimmed, dismissable 등)와 메타 필드(`id`, `isOpen`, `zIndex`)가 자동으로 일관성 있게 적용된다.
+- 상태 타입은 `BaseState` 또는 `DialogState<T>` 패턴을 기본으로 사용한다. 이렇게 하면 `BaseLayerProps`(dimmed, closeOnEscape 등)와 메타 필드(`id`, `isOpen`, `zIndex`)가 자동으로 일관성 있게 적용된다.
 
 ## 애니메이션 전략
 - 기본 Alert/Confirm/Modal 컴포넌트는 `framer-motion`을 사용하지만, 이는 예제일 뿐 강제 사항이 아니다. 다른 다이얼로그는 CSS transition 등 원하는 방식을 선택할 수 있다.

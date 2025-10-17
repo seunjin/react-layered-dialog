@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
 import { CodeBlock } from './CodeBlock';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -45,12 +50,11 @@ export const DemoCard = ({
     hasVariants ? codeVariants![0].id : undefined
   );
 
-  const currentVariantId = isControlled
-    ? activeVariantId
-    : internalVariantId;
+  const currentVariantId = isControlled ? activeVariantId : internalVariantId;
 
   const currentVariant = hasVariants
-    ? codeVariants!.find((variant) => variant.id === currentVariantId) ?? codeVariants![0]
+    ? (codeVariants!.find((variant) => variant.id === currentVariantId) ??
+      codeVariants![0])
     : undefined;
 
   return (
@@ -58,7 +62,9 @@ export const DemoCard = ({
       <CardHeader className="space-y-2">
         <h3 className="text-base font-semibold">{title}</h3>
         {description ? (
-          <p className="text-sm text-muted-foreground break-words">{description}</p>
+          <p className="text-sm text-muted-foreground break-words">
+            {description}
+          </p>
         ) : null}
       </CardHeader>
       <CardContent className="space-y-4">
@@ -69,7 +75,9 @@ export const DemoCard = ({
           isControlled ? (
             <CodeBlock
               code={(currentVariant ?? codeVariants![0]).code.trim()}
-              language={(currentVariant ?? codeVariants![0]).language ?? language}
+              language={
+                (currentVariant ?? codeVariants![0]).language ?? language
+              }
             />
           ) : (
             <Tabs
@@ -101,9 +109,7 @@ export const DemoCard = ({
         ) : null}
       </CardContent>
       {actions ? (
-        <CardFooter className="flex flex-wrap gap-2">
-          {actions}
-        </CardFooter>
+        <CardFooter className="flex flex-wrap gap-2">{actions}</CardFooter>
       ) : null}
     </Card>
   );

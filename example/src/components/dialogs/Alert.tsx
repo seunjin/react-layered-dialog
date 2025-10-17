@@ -14,7 +14,7 @@ export const Alert = ({
   message,
   onOk,
   zIndex,
-  dismissable = true,
+  closeOnEscape = true,
   closeOnOutsideClick = true,
   dimmed = true,
 }: AlertProps) => {
@@ -30,7 +30,7 @@ export const Alert = ({
     id,
     dialogs,
     zIndex,
-    closeOnEscape: dismissable,
+    closeOnEscape,
     onEscape: handleClose,
     closeOnOutsideClick,
     onOutsideClick: handleClose,

@@ -15,7 +15,7 @@ export const PlainConfirm = ({
   onConfirm,
   onCancel,
   zIndex,
-  dismissable = true,
+  closeOnEscape = true,
   closeOnOutsideClick = true,
   dimmed = true,
 }: PlainConfirmProps) => {
@@ -36,7 +36,7 @@ export const PlainConfirm = ({
     id,
     dialogs,
     zIndex,
-    closeOnEscape: dismissable,
+    closeOnEscape,
     onEscape: handleCancel,
     closeOnOutsideClick,
     onOutsideClick: handleCancel,
