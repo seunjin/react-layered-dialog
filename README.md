@@ -68,7 +68,9 @@ function AlertDialog({ id, title, message }: DialogState<AlertState>) {
     id,
     dialogs,
     closeOnEscape: true,
+    closeOnOutsideClick: true,
     onEscape: () => closeDialog(id),
+    onOutsideClick: () => closeDialog(id),
   });
 
   return (
