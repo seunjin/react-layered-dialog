@@ -1,52 +1,31 @@
 import {
   DialogStore,
-  type DialogRenderFn,
-  type DialogId,
-  type OpenDialogOptions,
-  type OpenDialogResult,
+  createDialogApi,
+  defineDialog,
 } from 'react-layered-dialog';
+import RenewalConfirm from '@/components/dialogs/renewal/RenewalConfirm';
 
 /**
- * 리뉴얼 다이얼로그 데모 페이지에서 사용할 전역 스토어입니다.
- * 앱 어디에서든 import 해 동일한 스택을 공유합니다.
+ * 리뉴얼 데모에서 사용할 전역 다이얼로그 스토어입니다.
+ * 애플리케이션 어디에서든 동일한 인스턴스를 공유합니다.
  */
 export const renewalDialogStore = new DialogStore();
 
-/**
- * JSX 기반 다이얼로그를 연다.
- *
- * @example
- * openRenewalDialog(() => <MyDialog />);
- */
-export const openRenewalDialog = <
-  TState = unknown,
-  TOptions extends Record<string, unknown> = Record<string, unknown>
->(
-  renderer: DialogRenderFn<TState, TOptions>,
-  options?: OpenDialogOptions<TOptions>
-): OpenDialogResult => {
-  return renewalDialogStore.open(renderer, options);
-};
+const registry = {
+  confirm: defineDialog(RenewalConfirm),
+} as const;
 
 /**
- * 현재 열린 다이얼로그를 닫거나(인자 없음) 특정 ID의 다이얼로그를 닫습니다.
+ * 등록된 다이얼로그 정의를 기반으로 생성된 고수준 API입니다.
+ * - `renewalDialog.confirm(...)`
+ * - `renewalDialog.open(...)`
+ * - `renewalDialog.openAsync(...)` 등
  */
-export const closeRenewalDialog = (id?: DialogId) => {
-  renewalDialogStore.close(id);
-};
+export const renewalDialog = createDialogApi(renewalDialogStore, registry);
 
-/**
- * 다이얼로그를 스택에서 제거합니다.
- */
-export const unmountRenewalDialog = (id?: DialogId) => {
-  renewalDialogStore.unmount(id);
-};
-
-type UpdateStateArg = Parameters<typeof renewalDialogStore.updateState>[1];
-
-/**
- * 다이얼로그 상태를 외부에서 갱신하고 싶을 때 사용합니다.
- */
-export const updateRenewalDialog = (id: DialogId, updater: UpdateStateArg) => {
-  renewalDialogStore.updateState(id, updater);
-};
+// 사용 편의를 위해 저수준 함수도 함께 노출합니다.
+export const openDialog = renewalDialog.open;
+export const openDialogAsync = renewalDialog.openAsync;
+export const closeDialog = renewalDialog.close;
+export const unmountDialog = renewalDialog.unmount;
+export const updateDialog = renewalDialog.update;

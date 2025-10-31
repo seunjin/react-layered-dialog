@@ -10,9 +10,10 @@ export type DialogListener = () => void;
  * 다이얼로그를 렌더링할 때 호출되는 함수입니다.
  * 컨트롤러 컨텍스트를 인자로 전달해 사용자 컴포넌트가 제어 메서드에 접근할 수 있게 합니다.
  */
-export type DialogRenderFn<TState = unknown, TOptions extends Record<string, unknown> = Record<string, unknown>> = (
-  controller: DialogControllerContextValue<TState, TOptions>
-) => ReactNode;
+export type DialogRenderFn<
+  TProps extends Record<string, unknown> = Record<string, unknown>,
+  TOptions extends Record<string, unknown> = Record<string, unknown>
+> = (controller: DialogControllerContextValue<TProps, TOptions>) => ReactNode;
 
 /**
  * 다이얼로그 고유 식별자 타입.
@@ -39,10 +40,20 @@ export interface DialogEntry {
   /** z-index 값. 지정하지 않으면 Store가 자동으로 증가시키며 부여합니다. */
   zIndex: number;
   /** 사용자 정의 상태. `update`를 통해 변경되며 컨트롤러를 통해 노출됩니다. */
-  state: unknown;
+  state: Record<string, unknown> | undefined;
   /** 사용자 지정 옵션. 다이얼로그 선언 시 함께 전달됩니다. */
   options: Record<string, unknown> & { zIndex: number };
+  /** 비동기 다이얼로그 제어를 위한 핸들러 */
+  asyncHandlers?: DialogAsyncEntryHandlers;
+  /** 내부 메타 데이터 (로딩 등) */
+  meta: DialogEntryMeta;
 }
+
+export interface DialogEntryMeta {
+  status: DialogStatus;
+}
+
+export type DialogStatus = 'idle' | 'loading' | 'done' | 'error';
 
 /**
  * 현재 다이얼로그 스택에 대한 메타 정보입니다.
@@ -57,10 +68,57 @@ export interface DialogStackInfo {
 }
 
 /**
+ * 다이얼로그 상태 업데이트 인자 타입입니다.
+ */
+export type DialogStateUpdater<TProps extends Record<string, unknown> = Record<string, unknown>> =
+  | TProps
+  | Partial<TProps>
+  | ((prev: TProps) => TProps | Partial<TProps> | null | undefined);
+
+/**
+ * 비동기 다이얼로그에서 resolve로 전달되는 페이로드 형태입니다.
+ */
+export type DialogAsyncResolvePayload = {
+  ok: boolean;
+};
+
+/**
+ * 비동기 다이얼로그 호출 결과입니다.
+ */
+export type DialogOpenResult<
+  TProps extends Record<string, unknown> = Record<string, unknown>,
+  TOptions extends Record<string, unknown> = Record<string, unknown>
+> = {
+  dialog: OpenDialogResult;
+  close: () => void;
+  unmount: () => void;
+  update: (updater: DialogStateUpdater<TProps>) => void;
+  setStatus: (status: DialogStatus) => void;
+  status: DialogStatus;
+  getStatus: () => DialogStatus;
+  options: TOptions & { zIndex: number };
+};
+
+export type DialogAsyncResult<
+  TProps extends Record<string, unknown> = Record<string, unknown>,
+  TOptions extends Record<string, unknown> = Record<string, unknown>
+> = DialogOpenResult<TProps, TOptions> & {
+  ok: boolean;
+};
+
+/**
+ * 비동기 다이얼로그를 위해 엔트리에 저장되는 핸들러 모음입니다.
+ */
+export interface DialogAsyncEntryHandlers {
+  resolve: (payload: DialogAsyncResolvePayload) => void;
+  reject: (reason?: unknown) => void;
+}
+
+/**
  * 컨텍스트 훅으로 노출되는 컨트롤러 값의 형태입니다.
  */
 export interface DialogControllerContextValue<
-  TState = unknown,
+  TProps extends Record<string, unknown> = Record<string, unknown>,
   TOptions extends Record<string, unknown> = Record<string, unknown>
 > {
   /** 다이얼로그 ID */
@@ -68,9 +126,11 @@ export interface DialogControllerContextValue<
   /** 다이얼로그가 현재 열려 있는지 여부 */
   isOpen: boolean;
   /** 현재 다이얼로그의 사용자 정의 상태 */
-  state: TState;
+  state: TProps;
   /** 다이얼로그에 전달된 옵션 객체 */
   options: TOptions & { zIndex: number };
+  /** 다이얼로그 핸들 (id, componentKey) */
+  handle: OpenDialogResult;
   /** 현재 다이얼로그를 닫음. (isOpen=false) */
   close: () => void;
   /** 애니메이션 종료 후 다이얼로그를 완전히 제거 */
@@ -83,7 +143,7 @@ export interface DialogControllerContextValue<
    * 사용자 정의 상태 업데이트.
    * 객체 또는 이전 상태를 인자로 받는 함수형 업데이트를 지원합니다.
    */
-  update: (updater: unknown | ((prev: unknown) => unknown)) => void;
+  update: (updater: DialogStateUpdater<TProps>) => void;
   /**
    * 특정 필드 값을 안전하게 조회합니다.
    * state에 값이 없으면 fallback을 반환합니다.
@@ -96,6 +156,16 @@ export interface DialogControllerContextValue<
   getStateFields: <T extends Record<string, unknown>>(base: T) => T;
   /** 현재 스택 정보 */
   stack: DialogStackInfo;
+  /** Promise 기반 컨트롤러에서 결과를 resolve */
+  resolve?: (payload: DialogAsyncResolvePayload) => void;
+  /** Promise 기반 컨트롤러에서 Promise를 reject */
+  reject?: (reason?: unknown) => void;
+  /** 현재 컨트롤러 상태 */
+  status: DialogStatus;
+  /** 상태 조회 */
+  getStatus: () => DialogStatus;
+  /** 상태 설정 */
+  setStatus: (status: DialogStatus) => void;
 }
 
 /**

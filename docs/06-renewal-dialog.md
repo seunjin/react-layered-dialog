@@ -15,36 +15,41 @@
 - 각 엔트리에 컨트롤러 컨텍스트를 주입해 하위 컴포넌트가 `useDialogController()`로 제어 함수에 접근할 수 있게 한다.
 
 ## 3. `dialog.open`
-- 시그니처: `dialog.open(node: React.ReactNode): DialogHandle`.
+- 시그니처: `dialog.open(node: React.ReactNode): DialogOpenResult`.
 - JSX를 직접 받아 렌더링하며, 컴포넌트는 비즈니스 props(`isPending`, `onConfirm` 등)를 그대로 사용할 수 있다.
-- 반환된 `DialogHandle`에는 `id`, `close()`, `unmount()`, `update()` 등의 편의 메서드를 포함한다.
+- 반환된 객체에는 `close()`, `unmount()`, `update()`, `setStatus()` 등 동일 ID를 제어할 수 있는 메서드가 포함된다.
 - 옵션 객체를 함께 넘겨 추가 정책을 선언적으로 지정할 수 있다. (`{ zIndex, useDim, scrollLock, ... }`)
 
 ## 4. `dialog.openAsync`
-- Promise 기반으로 결과를 반환하는 API. (세부 스펙은 조율 중)
-- 컨트롤러에 `resolve`, `reject`를 주입해 패널에서 완료/실패 시점을 지정할 수 있게 한다.
-- 반환 값에는 결과 객체(`ok`, `value`), 다이얼로그 제어 함수(`close`, `unmount`, `update`), 옵션 정보 등이 포함될 예정이다.
+- Promise 기반으로 결과를 반환하는 API.
+- 컨트롤러에는 `resolve`, `reject`, `handle`이 주입되어 패널 내부에서 비동기 흐름을 직접 제어할 수 있다.
+- `await` 결과는 `DialogAsyncResult<TProps, TOptions>` 형태이며 다음 필드를 포함한다.
+  - `ok`: 컨트롤러에서 전달한 승인 여부 (true/false)
+  - `dialog`: `{ id, componentKey }` 형태의 다이얼로그 핸들
+  - `close()`, `unmount()`, `update()`, `setStatus(status)`: 동일 ID를 대상으로 한 제어 함수
+  - `status`: `'idle' | 'loading' | 'done' | 'error'` 중 현재 상태
+  - `options`: 최종 옵션 (`zIndex` 포함)
+- 호출부에서는 보통 `dialog.openAsync()`처럼 호출하며, 옵션 타입은 전달한 객체 리터럴로 자동 추론된다.
+- 컨트롤러에서 `resolve({ ok })`를 호출하면 Promise가 resolve되며, 다이얼로그를 닫는 시점은 호출부 또는 컨트롤러가 선택한다.
+- `reject(error)`는 Promise를 reject시키므로 네트워크 오류 등 예외 상황에서만 사용하고, 일반 취소 흐름은 `resolve({ ok: false })` 패턴을 권장한다.
   ```tsx
-  const result = await openDialogAsync<{ id: string }>((controller) => (
-    <ConfirmDialog
-      onConfirm={async () => {
-        controller.update({ step: 'loading' });
-        const response = await api.deleteItem(id);
-        controller.resolve({ ok: true, value: response.id });
-      }}
-      onCancel={() => controller.resolve({ ok: false })}
-    />
-  ));
+  const result = await renewalDialog.confirm((controller) => ({
+    title: '정말 삭제할까요?',
+    message: '이 동작은 되돌릴 수 없습니다.',
+    confirmLabel: '삭제',
+    cancelLabel: '취소',
+    onConfirm: () => controller.resolve?.({ ok: true }),
+    onCancel: () => controller.resolve?.({ ok: false }),
+  }), { dimmed: true });
 
-  if (!result.ok) return;
+  if (!result.ok) return; // resolve({ ok: false })
 
-  toast.success('삭제되었습니다.');
-  result.close();
+  toast.success(`다이얼로그 ${result.dialog.id} 완료`);
   ```
-- `reject(error)`는 Promise를 reject시키므로, 일반적인 취소 흐름에는 `resolve({ ok: false })`처럼 resolve 기반 패턴을 권장한다.
+- 전체 흐름은 `example/src/pages/renewal/Renewal.tsx` 페이지의 `RenewalConfirm` 사용 예제를 참고하면 된다.
 
 ## 5. `useDialogController`
-- 컨텍스트 훅으로, JSX 트리 내 어디에서나 `isOpen`, `close`, `unmount`, `closeAll`, `unmountAll`, `update`, `stack` 등에 접근할 수 있게 한다.
+- 컨텍스트 훅으로, JSX 트리 내 어디에서나 `isOpen`, `close`, `unmount`, `closeAll`, `unmountAll`, `update`, `setStatus`, `status`(`'idle' | 'loading' | 'done' | 'error'`), `stack` 등에 접근할 수 있게 한다.
 - 사용자가 dim, ESC, 스크롤락 등 모든 동작을 직접 구현하고 필요 시 헬퍼 훅으로 확장하는 방향을 권장한다.
 - `update`는 객체를 전달하면 기존 상태와 병합하며, 초기에 state가 비어 있어도 자동으로 생성된다.
 - `getStateField(key, fallback)` / `getStateFields(base)` 헬퍼를 제공해 `state`와 props를 손쉽게 병합할 수 있다.
@@ -109,7 +114,32 @@ const mutation = useMutation({
 });
 ```
 
-위 예시는 `example/src/lib/renewalDialogs.ts` 헬퍼(`openRenewalDialog`, `updateRenewalDialog`, `unmountRenewalDialog`)로 동일하게 적용할 수 있다. 향후 정식 API (`dialog.open`)에서도 동일한 패턴이 유지될 예정이다.
+### 7.3 `openAsync`로 확인 모달 처리
+```tsx
+const handleDelete = async () => {
+  const result = await renewalDialog.confirm((controller) => ({
+    title: '정말 삭제할까요?',
+    message: '이 작업은 되돌릴 수 없습니다.',
+    confirmLabel: '삭제',
+    cancelLabel: '취소',
+    onConfirm: () => controller.resolve?.({ ok: true }),
+    onCancel: () => controller.resolve?.({ ok: false }),
+  }), { dimmed: true });
+
+  if (!result.ok) return; // resolve({ ok: false })
+
+  result.setStatus('loading');
+  await api.deleteItem();
+  result.setStatus('done');
+  result.update({ step: 'done', note: '서버 삭제가 완료되었습니다.' });
+  result.close();
+  setTimeout(() => result.unmount(), 200);
+
+  toast.success(`다이얼로그 ${result.dialog.id} 처리 완료!`);
+};
+```
+
+위 예시는 `example/src/lib/renewalDialogs.ts` 헬퍼(`renewalDialog.confirm`, `renewalDialog.open`, `renewalDialog.update`)로 그대로 재현할 수 있다. 향후 정식 API (`dialog.confirm`, `dialog.open`)에서도 동일한 패턴이 유지될 예정이다.
 
 ## 8. 옵션 기반 제어
 
@@ -141,13 +171,13 @@ function CounterDialog() {
 
 ## 9. `dialog.open` vs `dialog.openAsync` 비교
 
-| 항목 | `dialog.open` | `dialog.openAsync` *(예정)* |
+| 항목 | `dialog.open` | `dialog.openAsync` |
 | --- | --- | --- |
-| 반환값 | `DialogHandle` (`id`, `componentKey`) | `Promise<DialogAsyncResult<T>>` (`ok`, `value`, `dialog`, `close`, `unmount`, `update`) |
+| 반환값 | `DialogOpenResult<TProps, TOptions>` | `Promise<DialogAsyncResult<TProps, TOptions>>` |
 | 주 사용처 | 단순 알림, 설정 UI 등 결과가 필요 없는 경우 | 확인 모달, 입력 후 후속 로직 등 결과가 필요한 비동기 흐름 |
-| 다이얼로그 제어 | `dialog.close(handle.id)`, `dialog.update(handle.id, patch)` 등 전역 API 사용 | `result.close()`, `result.update(patch)` 등 반환 객체에 바로 포함 |
-| 컨트롤러 메서드 | `update`, `close`, `unmount` | `resolve`, `reject`, `update` (reject는 예외 상황에 한해 사용) |
-| 비즈니스 로직 위치 | 다이얼로그 내부 또는 호출부 자유롭게 분배 | 호출부가 `await` 이후에 일관된 흐름으로 이어가기 용이 |
+| 다이얼로그 제어 | `dialog.close(handle.id)`, `dialog.update(handle.id, patch)` 등 전역 API 사용 | `result.close()`, `result.unmount()`, `result.update(patch)`을 결과 객체에서 직접 사용 |
+| 컨트롤러 메서드 | `update`, `close`, `unmount` | `resolve`, `reject`, `update`, `handle` (reject는 예외 상황에서만 사용 권장) |
+| 추가 데이터 | - | `result.dialog`(핸들), `result.options.zIndex` 등 후속 로직에 필요한 정보 제공 |
 
 두 API 모두 동일한 옵션 제네릭과 상태 헬퍼(`useDialogController<State, Options>()`)를 공유하므로, 상황에 맞춰 필요한 형태만 선택해서 사용하면 된다.
 

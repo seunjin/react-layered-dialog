@@ -6,6 +6,11 @@ import type {
   OpenDialogOptions,
   OpenDialogResult,
   DialogRenderFn,
+  DialogAsyncResult,
+  DialogAsyncResolvePayload,
+  DialogStateUpdater,
+  DialogStatus,
+  DialogOpenResult,
 } from './types';
 
 const DEFAULT_BASE_Z_INDEX = 1000;
@@ -45,39 +50,45 @@ export class DialogStore {
   getSnapshot = (): DialogStoreSnapshot => this.snapshot;
 
   /**
-   * 새 다이얼로그를 스택에 추가합니다.
-   *
-   * @param renderer 컨트롤러를 받아 JSX를 반환하는 함수
-   * @param options ID, z-index 등의 초기 옵션
+   * 새 다이얼로그 엔트리를 생성하고 공통 전처리를 수행합니다.
    */
-  open = <
-    TState = unknown,
-    TOptions extends Record<string, unknown> = Record<string, unknown>
+  private createEntry = <
+    TProps extends Record<string, unknown> = Record<string, unknown>,
+    TOptions extends Record<string, unknown> = Record<string, unknown>,
   >(
-    renderer: DialogRenderFn<TState, TOptions>,
-    options: OpenDialogOptions<TOptions> = {} as OpenDialogOptions<TOptions>
-  ): OpenDialogResult => {
-    const { id: providedId, componentKey: providedComponentKey, zIndex: providedZIndex, ...rest } = options;
+    renderer: DialogRenderFn<TProps, TOptions>,
+    options: OpenDialogOptions<TOptions> = {} as OpenDialogOptions<TOptions>,
+    extras: Partial<DialogEntry> = {}
+  ) => {
+    const {
+      id: providedId,
+      componentKey: providedComponentKey,
+      zIndex: providedZIndex,
+      ...rest
+    } = options;
     const id = providedId ?? `dialog-${dialogSeq++}`;
-    const componentKey = providedComponentKey ?? `dialog-component-${componentSeq++}`;
+    const componentKey =
+      providedComponentKey ?? `dialog-component-${componentSeq++}`;
 
     if (this.entries.some((entry) => entry.id === id)) {
       throw new Error(`[react-layered-dialog] Duplicate dialog id "${id}".`);
     }
 
     const hasCustomZIndex = typeof providedZIndex === 'number';
-    const zIndex = hasCustomZIndex ? providedZIndex! : this.nextZIndex++;
+    const zIndex = hasCustomZIndex
+      ? (providedZIndex as number)
+      : this.nextZIndex++;
 
     if (hasCustomZIndex) {
       this.nextZIndex = Math.max(this.nextZIndex, zIndex + 1);
     }
 
-    const normalizedOptions: Record<string, unknown> & { zIndex: number } = {
+    const normalizedOptions = {
       ...(rest as Record<string, unknown>),
       zIndex,
-    };
+    } as TOptions & { zIndex: number };
 
-    const entry: DialogEntry = {
+    const baseEntry: DialogEntry = {
       id,
       renderer: renderer as DialogRenderFn,
       componentKey,
@@ -86,13 +97,146 @@ export class DialogStore {
       zIndex,
       state: undefined,
       options: normalizedOptions,
+      meta: {
+        status: 'idle',
+      },
+    };
+
+    const entry: DialogEntry = {
+      ...baseEntry,
+      ...extras,
+    };
+
+    return {
+      entry,
+      handle: { id, componentKey } as OpenDialogResult,
+      options: normalizedOptions,
+    };
+  };
+
+  private createOpenResult = <
+    TProps extends Record<string, unknown> = Record<string, unknown>,
+    TOptions extends Record<string, unknown> = Record<string, unknown>
+  >(
+    handle: OpenDialogResult,
+    options: TOptions & { zIndex: number }
+  ) => {
+    const close = () => this.close(handle.id);
+    const unmount = () => this.unmount(handle.id);
+    const update = (updater: DialogStateUpdater<TProps>) => {
+      this.updateState(handle.id, updater);
+    };
+    const setStatus = (status: DialogStatus) => {
+      this.setStatus(handle.id, status);
+    };
+    const getStatus = () => this.getStatus(handle.id);
+
+    const result: DialogOpenResult<TProps, TOptions> = {
+      dialog: handle,
+      close,
+      unmount,
+      update,
+      setStatus,
+      getStatus,
+      get status() {
+        return getStatus();
+      },
+      options,
+    };
+
+    return result;
+  };
+
+  /**
+   * 새 다이얼로그를 스택에 추가합니다.
+   *
+   * @param renderer 컨트롤러를 받아 JSX를 반환하는 함수
+   * @param options ID, z-index 등의 초기 옵션
+   */
+  open = <
+    TProps extends Record<string, unknown> = Record<string, unknown>,
+    TOptions extends Record<string, unknown> = Record<string, unknown>,
+  >(
+    renderer: DialogRenderFn<TProps, TOptions>,
+    options: OpenDialogOptions<TOptions> = {} as OpenDialogOptions<TOptions>
+  ): DialogOpenResult<TProps, TOptions> => {
+    const { entry, handle, options: optionsSnapshot } = this.createEntry(renderer, options);
+    this.entries = [...this.entries, entry];
+    this.updateSnapshot();
+    this.emitChange();
+
+    return this.createOpenResult<TProps, TOptions>(handle, optionsSnapshot);
+  };
+
+  /**
+   * Promise 기반 다이얼로그를 열고 결과를 반환합니다.
+   */
+  openAsync = <
+    TProps extends Record<string, unknown> = Record<string, unknown>,
+    TOptions extends Record<string, unknown> = Record<string, unknown>,
+  >(
+    renderer: DialogRenderFn<TProps, TOptions>,
+    options: OpenDialogOptions<TOptions> = {} as OpenDialogOptions<TOptions>
+  ): Promise<DialogAsyncResult<TProps, TOptions>> => {
+    const {
+      entry,
+      handle,
+      options: optionsSnapshot,
+    } = this.createEntry(renderer, options);
+
+    let settle: ((value: DialogAsyncResult<TProps, TOptions>) => void) | null =
+      null;
+    let rejectPromiseRef: ((reason?: unknown) => void) | null = null;
+    let settled = false;
+
+    const resolveController = (payload: DialogAsyncResolvePayload) => {
+      if (settled) return;
+      settled = true;
+      const base = this.createOpenResult<TProps, TOptions>(handle, optionsSnapshot);
+      settle?.(Object.assign(base, { ok: payload.ok }));
+    };
+
+    const rejectController = (reason?: unknown) => {
+      if (settled) return;
+      settled = true;
+      rejectPromiseRef?.(reason);
+    };
+
+    const promise = new Promise<DialogAsyncResult<TProps, TOptions>>(
+      (resolvePromise, rejectPromise) => {
+        settle = resolvePromise;
+        rejectPromiseRef = rejectPromise;
+      }
+    );
+
+    entry.asyncHandlers = {
+      resolve: resolveController as (
+        payload: DialogAsyncResolvePayload
+      ) => void,
+      reject: rejectController,
     };
 
     this.entries = [...this.entries, entry];
     this.updateSnapshot();
     this.emitChange();
 
-    return { id, componentKey };
+    return promise;
+  };
+
+  setStatus = (id: DialogId, status: DialogStatus) => {
+    const entry = this.entries.find((item) => item.id === id);
+    if (!entry) return;
+    this.updateEntry(id, {
+      meta: {
+        ...entry.meta,
+        status,
+      },
+    });
+  };
+
+  getStatus = (id: DialogId): DialogStatus => {
+    const entry = this.entries.find((item) => item.id === id);
+    return entry?.meta.status ?? 'idle';
   };
 
   /**
@@ -158,24 +302,32 @@ export class DialogStore {
    * 다이얼로그 상태를 갱신합니다.
    * 객체 또는 updater 함수를 받아 이전 상태 기반으로 계산할 수 있습니다.
    */
-  updateState = (id: DialogId, updater: DialogEntry['state'] | ((prev: unknown) => unknown)) => {
+  updateState = <TProps extends Record<string, unknown>>(
+    id: DialogId,
+    updater: DialogStateUpdater<TProps>
+  ) => {
     const entry = this.entries.find((item) => item.id === id);
     if (!entry) return;
 
+    const currentState = (entry.state as TProps | undefined) ?? ({} as TProps);
     const nextState =
-      typeof updater === 'function' ? (updater as (prev: unknown) => unknown)(entry.state) : updater;
+      typeof updater === 'function'
+        ? updater(currentState)
+        : updater;
 
     if (nextState == null) return;
 
-    let finalState = nextState;
+    let finalState = nextState as Record<string, unknown>;
     if (
       typeof nextState === 'object' &&
       nextState !== null &&
       !Array.isArray(nextState)
     ) {
       const prevState =
-        entry.state && typeof entry.state === 'object' && !Array.isArray(entry.state)
-          ? (entry.state as Record<string, unknown>)
+        currentState &&
+        typeof currentState === 'object' &&
+        !Array.isArray(currentState)
+          ? (currentState as Record<string, unknown>)
           : {};
       finalState = {
         ...prevState,

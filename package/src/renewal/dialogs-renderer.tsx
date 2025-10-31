@@ -53,11 +53,15 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
       isOpen: entry.isOpen,
       state: entry.state,
       options: entry.options as Record<string, unknown> & { zIndex: number },
+      handle: { id: entry.id, componentKey: entry.componentKey },
       close: () => store.close(entry.id),
       unmount: () => store.unmount(entry.id),
       closeAll: store.closeAll,
       unmountAll: store.unmountAll,
       update: (updater) => store.updateState(entry.id, updater),
+      setStatus: (status) => store.setStatus(entry.id, status),
+      getStatus: () => store.getStatus(entry.id),
+      status: entry.meta?.status ?? 'idle',
       getStateField: <V,>(key: PropertyKey, fallback: V) => {
         const current = entry.state as Record<PropertyKey, unknown> | undefined;
         if (current && Object.prototype.hasOwnProperty.call(current, key)) {
@@ -71,8 +75,20 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
         return { ...base, ...current };
       },
       stack: computeStackInfo(allEntries, entry.id),
+      resolve: entry.asyncHandlers?.resolve,
+      reject: entry.asyncHandlers?.reject,
     }),
-    [allEntries, entry.id, entry.isOpen, entry.options, entry.state, store]
+    [
+      allEntries,
+      entry.asyncHandlers,
+      entry.componentKey,
+      entry.id,
+      entry.isOpen,
+      entry.meta?.status,
+      entry.options,
+      entry.state,
+      store,
+    ]
   );
 
   return <DialogControllerProvider value={controller}>{entry.renderer(controller)}</DialogControllerProvider>;
@@ -83,12 +99,12 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
  * 제네릭을 통해 상태 타입을 지정할 수 있습니다.
  */
 export function useDialogController<
-  TState = unknown,
+  TProps extends Record<string, unknown> = Record<string, unknown>,
   TOptions extends Record<string, unknown> = Record<string, unknown>
 >() {
   const controller = useDialogControllerInternal();
-  return controller as DialogControllerContextValue<TState, TOptions> & {
+  return controller as DialogControllerContextValue<TProps, TOptions> & {
     getStateField: <V>(key: PropertyKey, fallback: V) => V;
-    getStateFields: <B extends Record<string, unknown>>(base: B) => B & Partial<TState>;
+    getStateFields: <B extends Record<string, unknown>>(base: B) => B & Partial<TProps>;
   };
 }
