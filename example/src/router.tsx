@@ -14,6 +14,7 @@ import { CreateUseDialogs } from '@/pages/api/CreateUseDialogs';
 import { DialogManagerApi } from '@/pages/api/DialogManagerApi';
 import { UseLayerBehavior } from '@/pages/api/UseLayerBehavior';
 import { LiveShowcase } from '@/pages/examples/LiveShowcase';
+import Renewal from './pages/renewal/Renewal';
 
 export const routeConfig = [
   {
@@ -28,8 +29,16 @@ export const routeConfig = [
     path: 'core',
     title: 'Core',
     children: [
-      { path: 'architecture', element: <Architecture />, name: '코어 아키텍처' },
-      { path: 'defining-dialogs', element: <DefiningDialogs />, name: '다이얼로그 타입 설계' },
+      {
+        path: 'architecture',
+        element: <Architecture />,
+        name: '코어 아키텍처',
+      },
+      {
+        path: 'defining-dialogs',
+        element: <DefiningDialogs />,
+        name: '다이얼로그 타입 설계',
+      },
       { path: 'core-types', element: <CoreTypes />, name: '코어 타입 가이드' },
     ],
   },
@@ -37,27 +46,64 @@ export const routeConfig = [
     path: 'guides',
     title: 'Guides',
     children: [
-      { path: 'opening-dialogs', element: <OpeningDialogs />, name: '다이얼로그 열기' },
-      { path: 'updating-dialogs', element: <UpdatingDialogs />, name: '상태 업데이트' },
-      { path: 'layer-behavior', element: <LayerBehaviorAddon />, name: 'useLayerBehavior 활용' },
+      {
+        path: 'opening-dialogs',
+        element: <OpeningDialogs />,
+        name: '다이얼로그 열기',
+      },
+      {
+        path: 'updating-dialogs',
+        element: <UpdatingDialogs />,
+        name: '상태 업데이트',
+      },
+      {
+        path: 'layer-behavior',
+        element: <LayerBehaviorAddon />,
+        name: 'useLayerBehavior 활용',
+      },
     ],
   },
   {
     path: 'api',
     title: 'API',
     children: [
-      { path: 'create-dialog-manager', element: <CreateDialogManager />, name: 'createDialogManager' },
-      { path: 'create-use-dialogs', element: <CreateUseDialogs />, name: 'createUseDialogs' },
-      { path: 'dialog-manager', element: <DialogManagerApi />, name: 'DialogManager' },
-      { path: 'use-layer-behavior', element: <UseLayerBehavior />, name: 'useLayerBehavior' },
+      {
+        path: 'create-dialog-manager',
+        element: <CreateDialogManager />,
+        name: 'createDialogManager',
+      },
+      {
+        path: 'create-use-dialogs',
+        element: <CreateUseDialogs />,
+        name: 'createUseDialogs',
+      },
+      {
+        path: 'dialog-manager',
+        element: <DialogManagerApi />,
+        name: 'DialogManager',
+      },
+      {
+        path: 'use-layer-behavior',
+        element: <UseLayerBehavior />,
+        name: 'useLayerBehavior',
+      },
     ],
   },
   {
     path: 'examples',
     title: 'Examples',
     children: [
-      { path: 'live-showcase', element: <LiveShowcase />, name: 'Live Showcase' },
+      {
+        path: 'live-showcase',
+        element: <LiveShowcase />,
+        name: 'Live Showcase',
+      },
     ],
+  },
+  {
+    path: 'renewal',
+    title: 'Renewal',
+    children: [{ path: 'renewal', element: <Renewal />, name: 'Renewal' }],
   },
 ];
 
@@ -67,7 +113,10 @@ export const router = createBrowserRouter(
       path: '/',
       element: <MainLayout />,
       children: [
-        { index: true, element: <Navigate to="/getting-started/introduction" replace /> },
+        {
+          index: true,
+          element: <Navigate to="/getting-started/introduction" replace />,
+        },
         ...routeConfig.flatMap((section) =>
           section.children.map((child) => ({
             path: `${section.path}/${child.path}`,

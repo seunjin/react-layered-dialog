@@ -3,22 +3,32 @@ import { RouterProvider } from 'react-router-dom';
 import { useDialogs } from '@/lib/dialogs';
 import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 import { router } from './router';
+import { DialogsRenderer } from 'react-layered-dialog';
+import { renewalDialogStore } from '@/lib/renewalDialogs';
 function App() {
   const { dialogs } = useDialogs();
 
   useEffect(() => {
-    console.log(
-      '%c[React Layered Dialog] %cState Changed:',
-      'color: #7c3aed; font-weight: bold;',
-      'color: inherit;',
-      dialogs
-    );
-  }, [dialogs]);
+    const unsubscribe = renewalDialogStore.subscribe(() => {
+      const snapshot = renewalDialogStore.getSnapshot();
+      console.log('[renewal dialogs]', snapshot.entries);
+    });
+    return unsubscribe;
+  }, []);
+  // useEffect(() => {
+  //   console.log(
+  //     '%c[React Layered Dialog] %cState Changed:',
+  //     'color: #7c3aed; font-weight: bold;',
+  //     'color: inherit;',
+  //     dialogs
+  //   );
+  // }, [dialogs]);
 
   return (
     <>
       <RouterProvider router={router} />
       <DialogRenderer dialogs={dialogs} />
+      <DialogsRenderer store={renewalDialogStore} />
     </>
   );
 }
