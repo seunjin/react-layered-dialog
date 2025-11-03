@@ -110,48 +110,6 @@ export function defineDialog<
   return definition;
 }
 
-type AnyDialogDefinition = DialogDefinition<
-  Record<string, unknown>,
-  Record<string, unknown>,
-  DialogMode
->;
-
-type DialogApiBase = {
-  store: DialogStore;
-  open: DialogStore['open'];
-  openAsync: DialogStore['openAsync'];
-  close: DialogStore['close'];
-  unmount: DialogStore['unmount'];
-  closeAll: DialogStore['closeAll'];
-  unmountAll: DialogStore['unmountAll'];
-  update: DialogStore['updateState'];
-};
-
-export type DialogApi<TRegistry extends Record<string, AnyDialogDefinition>> = {
-  store: DialogStore;
-  open: DialogStore['open'];
-  openAsync: DialogStore['openAsync'];
-  close: DialogStore['close'];
-  unmount: DialogStore['unmount'];
-  closeAll: DialogStore['closeAll'];
-  unmountAll: DialogStore['unmountAll'];
-  update: DialogStore['updateState'];
-} & {
-  [K in keyof TRegistry]: DialogMethodFromDefinition<TRegistry[K]>;
-};
-
-type RegistryEntry<
-  TProps extends Record<string, unknown>,
-  TOptions extends Record<string, unknown>,
-  TMode extends DialogMode
-> =
-  | DialogDefinition<TProps, TOptions, TMode>
-  | {
-      component: DialogComponent<TProps, TOptions>;
-      mode?: TMode;
-      displayName?: string;
-    };
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyRegistryEntry = RegistryEntry<any, any, DialogMode>;
 
@@ -171,6 +129,18 @@ type NormalizeRegistry<TRegistry extends Record<string, AnyRegistryEntry>> = {
     : never;
 };
 
+type RegistryEntry<
+  TProps extends Record<string, unknown>,
+  TOptions extends Record<string, unknown>,
+  TMode extends DialogMode
+> =
+  | DialogDefinition<TProps, TOptions, TMode>
+  | {
+      component: DialogComponent<TProps, TOptions>;
+      mode?: TMode;
+      displayName?: string;
+    };
+
 function normalizeDefinition<
   TProps extends Record<string, unknown>,
   TOptions extends Record<string, unknown>,
@@ -187,6 +157,30 @@ function normalizeDefinition<
     displayName: entry.displayName,
   }) as DialogDefinition<TProps, TOptions, TMode>;
 }
+
+type DialogApiBase = {
+  store: DialogStore;
+  open: DialogStore['open'];
+  openAsync: DialogStore['openAsync'];
+  close: DialogStore['close'];
+  unmount: DialogStore['unmount'];
+  closeAll: DialogStore['closeAll'];
+  unmountAll: DialogStore['unmountAll'];
+  update: DialogStore['updateState'];
+};
+
+export type DialogApi<TRegistry extends Record<string, AnyRegistryEntry>> = {
+  store: DialogStore;
+  open: DialogStore['open'];
+  openAsync: DialogStore['openAsync'];
+  close: DialogStore['close'];
+  unmount: DialogStore['unmount'];
+  closeAll: DialogStore['closeAll'];
+  unmountAll: DialogStore['unmountAll'];
+  update: DialogStore['updateState'];
+} & {
+  [K in keyof TRegistry]: DialogMethodFromDefinition<NormalizeRegistry<TRegistry>[K]>;
+};
 
 export function createDialogApi<
   TRegistry extends Record<string, AnyRegistryEntry>
@@ -241,7 +235,7 @@ export function createDialogApi<
         renderer,
         options as OpenDialogOptions<Params['options']>
       );
-    }) as DialogMethodFromDefinition<typeof definition>;
+    }) as DialogMethodFromDefinition<NormalizeRegistry<TRegistry>[typeof key]>;
 
     registryApi[key] = method;
   });

@@ -95,7 +95,7 @@ export class DialogStore {
       isOpen: true,
       isMounted: true,
       zIndex,
-      state: {} as Record<string, unknown>,
+      state: {},
       options: normalizedOptions,
       meta: {
         status: 'idle',
