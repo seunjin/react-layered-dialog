@@ -1,6 +1,6 @@
 import { useMemo, useSyncExternalStore } from 'react';
-import { DialogControllerProvider, useDialogControllerInternal } from './controller-context';
-import type { DialogStore } from './dialog-store';
+import { DialogControllerProvider, useDialogControllerInternal } from './controller';
+import type { DialogStore } from './store';
 import type { DialogControllerContextValue, DialogEntry } from './types';
 
 type DialogsRendererProps = {

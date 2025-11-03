@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import type { ComponentType } from 'react';
-import type { DialogStore } from './dialog-store';
+import type { DialogStore } from './store';
 import type {
   DialogControllerContextValue,
   DialogRenderFn,
@@ -9,6 +9,11 @@ import type {
   OpenDialogOptions,
 } from './types';
 
+/**
+ * 다이얼로그 레지스트리 유틸리티.
+ * 컴포넌트를 등록해 `createDialogApi`로 고수준 메서드를 생성하고,
+ * 필요시 모드(동기/비동기)나 displayName을 지정할 수 있습니다.
+ */
 type DialogOptionsMarker<TOptions> = {
   /** @internal phantom type 연결용 */
   __dialogOptionsMarker?: (options: TOptions) => void;
@@ -182,6 +187,11 @@ export type DialogApi<TRegistry extends Record<string, AnyRegistryEntry>> = {
   [K in keyof TRegistry]: DialogMethodFromDefinition<NormalizeRegistry<TRegistry>[K]>;
 };
 
+/**
+ * 등록된 다이얼로그 정의로부터 고수준 API를 생성합니다.
+ * 레지스트리 항목에 따라 `open` 또는 `openAsync` 호출을 자동으로 선택하며,
+ * 기본 스토어 조작 메서드와 레지스트리 키별 생성된 메서드를 함께 반환합니다.
+ */
 export function createDialogApi<
   TRegistry extends Record<string, AnyRegistryEntry>
 >(

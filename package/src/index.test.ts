@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { DialogStore } from './dialog-store';
-import { createDialogApi, type DialogComponent } from './dialog-registry';
+import { DialogStore } from './store';
+import { createDialogApi, type DialogComponent } from './registry';
 import type { DialogRenderFn } from './types';
 
 type TestDialogProps = {

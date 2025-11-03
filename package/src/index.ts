@@ -1,5 +1,5 @@
-export { DialogStore } from './dialog-store';
-export { DialogsRenderer, useDialogController } from './dialogs-renderer';
+export { DialogStore } from './store';
+export { DialogsRenderer, useDialogController } from './renderer';
 export {
   createDialogApi,
   defineDialog,
@@ -8,7 +8,7 @@ export {
   type DialogInput,
   type DialogMode,
   type DefineDialogOptions,
-} from './dialog-registry';
+} from './registry';
 export type {
   DialogAsyncEntryHandlers,
   DialogAsyncResolvePayload,

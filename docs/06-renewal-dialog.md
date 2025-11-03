@@ -1,6 +1,6 @@
-# 리뉴얼 다이얼로그 스펙 정리
+# 다이얼로그 API 스펙 정리
 
-이 문서는 `react-layered-dialog` 리뉴얼 버전에서 확정된 스펙과 설계 결정을 요약합니다.
+이 문서는 `react-layered-dialog`의 최신 다이얼로그 스펙과 설계 결정을 요약합니다.
 
 ## 1. 상태 스토어
 - 단일 스택 배열을 중앙에서 관리하며, 각 엔트리는 `id`, `component`, `isOpen`, `isMounted`, `controllerRefs` 등을 가진다.
@@ -68,8 +68,8 @@
 
 ## 6. 기타
 - 스크롤락은 사용자 구현에 맡기되, data-attribute나 `:has()` 예시를 문서로 제공한다.
-- 기존 `createUseDialogs` 기반 타입 매핑 API는 리뉴얼 버전에서 제거할 계획이다.
-- 현재는 실험 단계에서 `openRenewalDialog` 헬퍼를 사용하지만, 최종 목표는 `dialog.open(...)` / `dialog.openAsync(...)` 형태의 API를 제공해 `toast.success('...')`처럼 직관적인 사용 경험을 제공하는 것이다.
+- 기존 `createUseDialogs` 기반 타입 매핑 API는 단계적으로 제거할 계획이다.
+- 예제 앱에서는 임시로 `renewalDialog` 헬퍼를 사용하지만, 최종 목표는 `dialog.open(...)` / `dialog.openAsync(...)` 형태의 API를 제공해 `toast.success('...')`처럼 직관적인 사용 경험을 제공하는 것이다.
 
 ## 7. 등록 헬퍼(`defineDialog`)와 모드 선택
 
