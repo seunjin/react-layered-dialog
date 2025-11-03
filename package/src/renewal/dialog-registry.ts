@@ -5,26 +5,22 @@ import type {
   DialogControllerContextValue,
   DialogRenderFn,
   DialogAsyncResult,
+  DialogOpenResult,
   OpenDialogOptions,
 } from './types';
 
-/**
- * 다이얼로그 컴포넌트를 정의할 때 사용하는 기본 시그니처입니다.
- * props 타입과 옵션 타입만 지정하면 나머지는 자동으로 추론됩니다.
- */
 type DialogOptionsMarker<TOptions> = {
   /** @internal phantom type 연결용 */
   __dialogOptionsMarker?: (options: TOptions) => void;
 };
+
+export type DialogMode = 'sync' | 'async';
 
 export type DialogComponent<
   TProps extends Record<string, unknown> = Record<string, unknown>,
   TOptions extends Record<string, unknown> = Record<string, unknown>
 > = ComponentType<TProps> & DialogOptionsMarker<TOptions>;
 
-/**
- * 정의에 전달되는 입력은 props 객체이거나 컨트롤러 기반 팩토리입니다.
- */
 export type DialogInput<TProps, TController> =
   | TProps
   | ((controller: TController) => TProps);
@@ -35,82 +31,89 @@ function isControllerFactory<TProps, TController>(
   return typeof input === 'function';
 }
 
-/**
- * 정의된 다이얼로그 형태.
- */
-export type DialogDefinition<
+export interface DialogDefinition<
   TProps extends Record<string, unknown> = Record<string, unknown>,
   TOptions extends Record<string, unknown> = Record<string, unknown>,
-  TController extends DialogControllerContextValue<TProps, TOptions> = DialogControllerContextValue<
-    TProps,
-    TOptions
-  >
-> = (input: DialogInput<TProps, TController>) => DialogRenderFn<TProps, TOptions>;
+  TMode extends DialogMode = 'sync'
+> {
+  mode: TMode;
+  render: (
+    input: DialogInput<TProps, DialogControllerContextValue<TProps, TOptions>>
+  ) => DialogRenderFn<TProps, TOptions>;
+}
 
-/**
- * 다이얼로그 정의에서 필요한 타입들을 추출하기 위한 유틸리티입니다.
- */
 type DefinitionParams<D> = D extends DialogDefinition<
   infer TProps,
   infer TOptions,
-  infer TController
+  infer TMode
 >
   ? {
       props: TProps;
       options: TOptions;
-      controller: TController;
+      mode: TMode;
     }
   : never;
 
-/**
- * 다이얼로그 정의 하나로부터 생성되는 메서드 시그니처.
- */
 export type DialogMethodFromDefinition<D> = DefinitionParams<D> extends infer P
   ? P extends DefinitionParams<D>
-    ? (
-        input: DialogInput<P['props'], P['controller']>,
-        options?: OpenDialogOptions<P['options']>
-      ) => Promise<DialogAsyncResult<P['props'], P['options']>>
+    ? P['mode'] extends 'sync'
+      ? (
+          input: DialogInput<
+            P['props'],
+            DialogControllerContextValue<P['props'], P['options']>
+          >,
+          options?: OpenDialogOptions<P['options']>
+        ) => DialogOpenResult<P['props'], P['options']>
+      : (
+          input: DialogInput<
+            P['props'],
+            DialogControllerContextValue<P['props'], P['options']>
+          >,
+          options?: OpenDialogOptions<P['options']>
+        ) => Promise<DialogAsyncResult<P['props'], P['options']>>
     : never
   : never;
 
-/**
- * 다이얼로그 컴포넌트를 등록 가능한 정의로 변환합니다.
- */
+export interface DefineDialogOptions<TMode extends DialogMode = DialogMode> {
+  mode?: TMode;
+  displayName?: string;
+}
+
 export function defineDialog<
   TProps extends Record<string, unknown>,
-  TOptions extends Record<string, unknown> = Record<string, unknown>
->(component: DialogComponent<TProps, TOptions>): DialogDefinition<
-  TProps,
-  TOptions,
-  DialogControllerContextValue<TProps, TOptions>
-> {
-  const definition: DialogDefinition<TProps, TOptions, DialogControllerContextValue<TProps, TOptions>> = (
-    input
-  ) => {
-    const renderWithController: DialogRenderFn<TProps, TOptions> = (controller) => {
-      const props = isControllerFactory(input) ? input(controller) : input;
-      const ReactComponent = component as ComponentType<TProps>;
-      return createElement(ReactComponent, props as TProps);
-    };
+  TOptions extends Record<string, unknown> = Record<string, unknown>,
+  TMode extends DialogMode = 'sync'
+>(
+  component: DialogComponent<TProps, TOptions>,
+  options?: DefineDialogOptions<TMode>
+): DialogDefinition<TProps, TOptions, TMode> {
+  const mode = (options?.mode ?? 'sync') as TMode;
 
-    const sourceComponent = component as ComponentType<TProps> & { displayName?: string; name?: string };
-    (renderWithController as { displayName?: string }).displayName =
-      sourceComponent.displayName ?? (sourceComponent.name ? sourceComponent.name : 'DialogDefinition');
+  const definition: DialogDefinition<TProps, TOptions, TMode> = {
+    mode,
+    render: (input) => {
+      const renderWithController: DialogRenderFn<TProps, TOptions> = (controller) => {
+        const props = isControllerFactory(input) ? input(controller) : input;
+        const ReactComponent = component as ComponentType<TProps>;
+        return createElement(ReactComponent, props as TProps);
+      };
 
-    return renderWithController;
+      const sourceComponent = component as ComponentType<TProps> & { displayName?: string; name?: string };
+      const displayName =
+        options?.displayName ?? sourceComponent.displayName ?? sourceComponent.name ?? 'DialogDefinition';
+      (renderWithController as { displayName?: string }).displayName = displayName;
+
+      return renderWithController;
+    },
   };
 
   return definition;
 }
 
-/**
- * 등록된 다이얼로그 정의로부터 고수준 API를 생성합니다.
- */
 type AnyDialogDefinition = DialogDefinition<
   Record<string, unknown>,
   Record<string, unknown>,
-  DialogControllerContextValue<Record<string, unknown>, Record<string, unknown>>
+  DialogMode
 >;
 
 type DialogApiBase = {
@@ -137,10 +140,60 @@ export type DialogApi<TRegistry extends Record<string, AnyDialogDefinition>> = {
   [K in keyof TRegistry]: DialogMethodFromDefinition<TRegistry[K]>;
 };
 
-export function createDialogApi<TRegistry extends Record<string, AnyDialogDefinition>>(
+type RegistryEntry<
+  TProps extends Record<string, unknown>,
+  TOptions extends Record<string, unknown>,
+  TMode extends DialogMode
+> =
+  | DialogDefinition<TProps, TOptions, TMode>
+  | {
+      component: DialogComponent<TProps, TOptions>;
+      mode?: TMode;
+      displayName?: string;
+    };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyRegistryEntry = RegistryEntry<any, any, DialogMode>;
+
+type NormalizeRegistry<TRegistry extends Record<string, AnyRegistryEntry>> = {
+  [K in keyof TRegistry]: TRegistry[K] extends DialogDefinition<infer P, infer O, infer M>
+    ? DialogDefinition<P, O, M>
+    : TRegistry[K] extends {
+        component: DialogComponent<infer P, infer O>;
+        mode?: infer M;
+        displayName?: string;
+      }
+    ? DialogDefinition<
+        P,
+        O,
+        M extends DialogMode ? M : 'sync'
+      >
+    : never;
+};
+
+function normalizeDefinition<
+  TProps extends Record<string, unknown>,
+  TOptions extends Record<string, unknown>,
+  TMode extends DialogMode = 'sync'
+>(
+  entry: RegistryEntry<TProps, TOptions, TMode>
+): DialogDefinition<TProps, TOptions, TMode> {
+  if ('render' in entry) {
+    return entry;
+  }
+
+  return defineDialog(entry.component, {
+    mode: entry.mode,
+    displayName: entry.displayName,
+  }) as DialogDefinition<TProps, TOptions, TMode>;
+}
+
+export function createDialogApi<
+  TRegistry extends Record<string, AnyRegistryEntry>
+>(
   store: DialogStore,
   registry: TRegistry
-): DialogApi<TRegistry> {
+): DialogApi<NormalizeRegistry<TRegistry>> {
   const open: DialogStore['open'] = (renderer, options) => store.open(renderer, options);
   const openAsync: DialogStore['openAsync'] = (renderer, options) => store.openAsync(renderer, options);
   const close: DialogStore['close'] = (id) => store.close(id);
@@ -161,20 +214,34 @@ export function createDialogApi<TRegistry extends Record<string, AnyDialogDefini
   };
 
   const registryApi = {} as {
-    [K in keyof TRegistry]: DialogMethodFromDefinition<TRegistry[K]>;
+    [K in keyof TRegistry]: DialogMethodFromDefinition<NormalizeRegistry<TRegistry>[K]>;
   };
 
   (Object.keys(registry) as Array<keyof TRegistry>).forEach((key) => {
-    const definition = registry[key];
+    const entry = registry[key];
+    const definition = normalizeDefinition(entry) as NormalizeRegistry<TRegistry>[typeof key];
 
-    type Params = DefinitionParams<TRegistry[typeof key]>;
-    const method = ((input, options) => {
-      const renderer = definition(input as DialogInput<Params['props'], Params['controller']>);
+    type Params = DefinitionParams<NormalizeRegistry<TRegistry>[typeof key]>;
+    const method = ((input: unknown, options?: unknown) => {
+      const renderer = definition.render(
+        input as DialogInput<
+          Params['props'],
+          DialogControllerContextValue<Params['props'], Params['options']>
+        >
+      );
+
+      if (definition.mode === 'sync') {
+        return store.open<Params['props'], Params['options']>(
+          renderer,
+          options as OpenDialogOptions<Params['options']>
+        );
+      }
+
       return store.openAsync<Params['props'], Params['options']>(
         renderer,
         options as OpenDialogOptions<Params['options']>
       );
-    }) as DialogMethodFromDefinition<TRegistry[typeof key]>;
+    }) as DialogMethodFromDefinition<typeof definition>;
 
     registryApi[key] = method;
   });
@@ -182,5 +249,5 @@ export function createDialogApi<TRegistry extends Record<string, AnyDialogDefini
   return {
     ...baseApi,
     ...registryApi,
-  } as DialogApi<TRegistry>;
+  } as DialogApi<NormalizeRegistry<TRegistry>>;
 }

@@ -1,7 +1,11 @@
-import RenewalConfirm from '@/components/dialogs/renewal/RenewalConfirm';
+import RenewalConfirm, {
+  type RenewalConfirmOptions,
+  type RenewalConfirmProps,
+} from '@/components/dialogs/renewal/RenewalConfirm';
 import { DocArticle } from '@/components/docs/DocArticle';
 import { Button } from '@/components/ui/button';
 import { renewalDialog } from '@/lib/renewalDialogs';
+import type { DialogRenderFn } from 'react-layered-dialog';
 
 const Renewal = () => {
   const handleSingleDialogOpen = () => {
@@ -14,22 +18,31 @@ const Renewal = () => {
   };
 
   const handleMultiDialogOpen = () => {
-    renewalDialog.open(() => (
+    const secondRenderer: DialogRenderFn<
+      RenewalConfirmProps,
+      RenewalConfirmOptions
+    > = ({ closeAll }) => (
+      <RenewalConfirm
+        title="멀티 Confirm"
+        message="두 번째 Confirm입니다."
+        confirmLabel="모두 닫기"
+        onConfirm={closeAll}
+      />
+    );
+
+    const firstResult = renewalDialog.open<RenewalConfirmProps>(() => (
       <RenewalConfirm
         title="멀티 Confirm"
         message="첫 번째 Confirm입니다."
-        onConfirm={() => {
-          renewalDialog.open(({ closeAll }) => (
-            <RenewalConfirm
-              title="멀티 Confirm"
-              message="두 번째 Confirm입니다."
-              confirmLabel="확인"
-              onConfirm={closeAll}
-            />
-          ));
-        }}
+        confirmLabel="두 번째 Confirm 열기"
       />
     ));
+
+    firstResult.update({
+      onConfirm() {
+        renewalDialog.open(secondRenderer); // 같은 렌더러를 재사용해 필요할 때 다시 연다.
+      },
+    });
   };
 
   const handleAsyncConfirmDialogOpen = async () => {
@@ -51,7 +64,6 @@ const Renewal = () => {
     result.update({
       title: '삭제 완료',
       message: `다이얼로그 ${result.dialog.id}에서 resolve되었습니다.`,
-
       confirmLabel: '확인',
       onConfirm() {
         result.close();

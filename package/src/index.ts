@@ -17,8 +17,11 @@ export { DialogsRenderer, useDialogController } from './renewal/dialogs-renderer
 export {
   createDialogApi,
   defineDialog,
+  type DialogMode,
   type DialogComponent,
   type DialogInput,
+  type DialogDefinition,
+  type DefineDialogOptions,
 } from './renewal/dialog-registry';
 export type {
   DialogControllerContextValue,

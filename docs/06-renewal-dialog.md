@@ -71,9 +71,36 @@
 - 기존 `createUseDialogs` 기반 타입 매핑 API는 리뉴얼 버전에서 제거할 계획이다.
 - 현재는 실험 단계에서 `openRenewalDialog` 헬퍼를 사용하지만, 최종 목표는 `dialog.open(...)` / `dialog.openAsync(...)` 형태의 API를 제공해 `toast.success('...')`처럼 직관적인 사용 경험을 제공하는 것이다.
 
-## 7. 비동기 흐름 패턴 예시
+## 7. 등록 헬퍼(`defineDialog`)와 모드 선택
 
-### 7.1 컨트롤러 객체를 클로저로 보관
+- 레지스트리는 다음 두 가지 방식 중 하나로 등록할 수 있습니다.
+  ```ts
+  // 1) 간단한 객체 방식 (권장)
+  const registry = {
+    alert: { component: AlertDialog }, // mode 기본값: 'sync'
+    confirm: { component: ConfirmDialog, mode: 'async' },
+  } as const;
+
+  // 2) 세밀한 제어가 필요할 때
+  const registry = {
+    alert: defineDialog(AlertDialog),
+    confirm: defineDialog(ConfirmDialog, { mode: 'async', displayName: 'ConfirmDialog' }),
+  } as const;
+  ```
+- `defineDialog(Component)`는 기본적으로 `open` 기반의 동기 다이얼로그를 정의합니다.
+- Promise 기반이 필요한 경우 `defineDialog(Component, { mode: 'async' })`처럼 명시해 `openAsync` 흐름을 사용하도록 등록할 수 있습니다.
+- 레지스트리에 등록된 항목은 `createDialogApi`로 묶으면 `renewalDialog.confirm()`처럼 고수준 메서드가 생성되며, 동기/비동기 모드는 정의 시점의 설정을 따릅니다.
+- 예시:
+  ```ts
+  const registry = {
+    alert: defineDialog(AlertDialog), // 동기
+    confirm: defineDialog(ConfirmDialog, { mode: 'async' }), // 비동기
+  } as const;
+  ```
+
+## 8. 비동기 흐름 패턴 예시
+
+### 8.1 컨트롤러 객체를 클로저로 보관
 ```tsx
 const controllerRef = useRef<DialogControllerContextValue<NotificationState> | null>(null);
 
@@ -96,7 +123,7 @@ const handleOpen = () => {
 };
 ```
 
-### 7.2 반환된 handle을 통해 외부에서 업데이트
+### 8.2 반환된 handle을 통해 외부에서 업데이트
 ```tsx
 const { handle } = openDialog(() => (
   <NotificationDialog title="삭제 중" message="잠시만 기다려 주세요." />
@@ -114,7 +141,7 @@ const mutation = useMutation({
 });
 ```
 
-### 7.3 `openAsync`로 확인 모달 처리
+### 8.3 `openAsync`로 확인 모달 처리
 ```tsx
 const handleDelete = async () => {
   const result = await renewalDialog.confirm((controller) => ({
@@ -141,7 +168,7 @@ const handleDelete = async () => {
 
 위 예시는 `example/src/lib/renewalDialogs.ts` 헬퍼(`renewalDialog.confirm`, `renewalDialog.open`, `renewalDialog.update`)로 그대로 재현할 수 있다. 향후 정식 API (`dialog.confirm`, `dialog.open`)에서도 동일한 패턴이 유지될 예정이다.
 
-## 8. 옵션 기반 제어
+## 9. 옵션 기반 제어
 
 `dialog.open` 호출 시 옵션 객체를 함께 넘기고, 다이얼로그 내부에서는 `useDialogController<State, Options>()`로 옵션을 안전하게 사용할 수 있다.
 
@@ -169,7 +196,7 @@ function CounterDialog() {
 }
 ```
 
-## 9. `dialog.open` vs `dialog.openAsync` 비교
+## 10. `dialog.open` vs `dialog.openAsync` 비교
 
 | 항목 | `dialog.open` | `dialog.openAsync` |
 | --- | --- | --- |

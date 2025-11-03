@@ -40,7 +40,7 @@ export interface DialogEntry {
   /** z-index 값. 지정하지 않으면 Store가 자동으로 증가시키며 부여합니다. */
   zIndex: number;
   /** 사용자 정의 상태. `update`를 통해 변경되며 컨트롤러를 통해 노출됩니다. */
-  state: Record<string, unknown> | undefined;
+  state: Record<string, unknown>;
   /** 사용자 지정 옵션. 다이얼로그 선언 시 함께 전달됩니다. */
   options: Record<string, unknown> & { zIndex: number };
   /** 비동기 다이얼로그 제어를 위한 핸들러 */

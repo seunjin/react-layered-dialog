@@ -1,8 +1,4 @@
-import {
-  DialogStore,
-  createDialogApi,
-  defineDialog,
-} from 'react-layered-dialog';
+import { DialogStore, createDialogApi } from 'react-layered-dialog';
 import RenewalConfirm from '@/components/dialogs/renewal/RenewalConfirm';
 
 /**
@@ -11,17 +7,15 @@ import RenewalConfirm from '@/components/dialogs/renewal/RenewalConfirm';
  */
 export const renewalDialogStore = new DialogStore();
 
-const registry = {
-  confirm: defineDialog(RenewalConfirm),
-} as const;
-
 /**
  * 등록된 다이얼로그 정의를 기반으로 생성된 고수준 API입니다.
  * - `renewalDialog.confirm(...)`
  * - `renewalDialog.open(...)`
  * - `renewalDialog.openAsync(...)` 등
  */
-export const renewalDialog = createDialogApi(renewalDialogStore, registry);
+export const renewalDialog = createDialogApi(renewalDialogStore, {
+  confirm: { component: RenewalConfirm, mode: 'async' },
+});
 
 // 사용 편의를 위해 저수준 함수도 함께 노출합니다.
 export const openDialog = renewalDialog.open;

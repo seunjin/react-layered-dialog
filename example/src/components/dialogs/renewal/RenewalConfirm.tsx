@@ -32,10 +32,7 @@ export type RenewalConfirmOptions = {
  * `openDialog`와 `openDialogAsync` 모두에서 사용할 수 있도록
  * 기본 동작과 `resolve` 기반 비동기 제어를 함께 지원합니다.
  */
-const RenewalConfirm: DialogComponent<
-  RenewalConfirmProps,
-  RenewalConfirmOptions
-> = (props) => {
+const RenewalConfirm = ((props: RenewalConfirmProps) => {
   const controller = useDialogController<
     RenewalConfirmProps,
     RenewalConfirmOptions
@@ -160,6 +157,6 @@ const RenewalConfirm: DialogComponent<
       )}
     </AnimatePresence>
   );
-};
+}) satisfies DialogComponent<RenewalConfirmProps, RenewalConfirmOptions>;
 
 export default RenewalConfirm;

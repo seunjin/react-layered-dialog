@@ -47,7 +47,7 @@ describe('DialogManager (코어 로직) - 단위 테스트', () => {
   });
 
   it('closeDialog(id)를 호출하면 특정 다이얼로그가 제거되어야 합니다.', () => {
-    let handleToClose: DialogHandle<'confirm'> | null = null;
+    let handleToClose: DialogHandle<'confirm' | 'alert'> | null = null;
     act(() => {
       manager.openDialog({ type: 'alert', message: '첫 번째' });
       handleToClose = manager.openDialog({ type: 'confirm', question: '두 번째' });
@@ -108,7 +108,7 @@ describe('DialogManager (코어 로직) - 단위 테스트', () => {
   });
 
   it('중간 다이얼로그를 닫은 후 새로 추가하면 더 높은 z-index가 부여되어야 합니다.', () => {
-    let secondHandle: DialogHandle<'confirm'> | null = null;
+    let secondHandle: DialogHandle<'confirm' | 'alert'> | null = null;
     act(() => {
       manager.openDialog({ type: 'alert', message: '첫 번째' });
       secondHandle = manager.openDialog({ type: 'confirm', question: '두 번째' });
@@ -132,7 +132,7 @@ describe('DialogManager (코어 로직) - 단위 테스트', () => {
   });
 
   it('updateDialog로 다이얼로그 상태를 부분 업데이트할 수 있어야 합니다.', () => {
-    let dialogHandle: DialogHandle<'confirm'>;
+    let dialogHandle: DialogHandle<'confirm' | 'alert'>;
     act(() => {
       dialogHandle = manager.openDialog({ type: 'confirm', question: '원본 질문' });
     });
