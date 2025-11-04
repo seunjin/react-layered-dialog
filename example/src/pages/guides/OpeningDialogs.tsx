@@ -53,9 +53,9 @@ export const OpeningDialogs = () => (
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         <InlineCode>openDialog(&apos;alert&apos;, payload)</InlineCode>처럼 첫 번째 인자로{' '}
-        <InlineCode>type</InlineCode>을 전달하는 형태는{' '}
-        <InlineCode>createUseDialogs</InlineCode>가 다이얼로그 유니온을 분석해
-        각 타입별 payload를 좁혀 주기 때문에 가능한 시그니처입니다.
+        <InlineCode>type</InlineCode>을 전달할 수 있는 이유는{' '}
+        <InlineCode>createDialogApi</InlineCode>가 레지스트리를 바탕으로 타입을
+        분석해 각 분기별 payload를 자동으로 좁혀 주기 때문입니다.
       </p>
       <CodeBlock language="tsx" code={openFromComponent} />
     </Section>
@@ -63,13 +63,12 @@ export const OpeningDialogs = () => (
     <Section as="h2" id="manager" title="컴포넌트 외부에서 열기">
       <p>
         API 호출, 상태 머신, 이벤트 핸들러 등 React 컨텍스트 밖에서도 다이얼로그를 관리하고 싶다면
-        매니저 메서드를 그대로 export하여 사용하면 됩니다. 클래스가 아닌 클로저 기반 스토어라
-        <InlineCode>this</InlineCode> 손실 걱정이 없습니다.
+        <InlineCode>createDialogApi</InlineCode>가 반환한 헬퍼(open/close/update 등)를 그대로 export하여 사용하면 됩니다.
+        스토어 인스턴스 하나를 어디서든 공유할 수 있으므로 <InlineCode>this</InlineCode> 손실 걱정도 없습니다.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
-        매니저 메서드를 직접 호출할 때는 <InlineCode>openDialog({`{ type: &apos;alert&apos;, ... }`})</InlineCode>{' '}
-        처럼 전체 payload 객체를 넘깁니다. 훅 버전과 서명이 다른 이유는 매니저가 타입을 좁혀 주지 않고
-        그대로 저장하기 때문입니다.
+        헬퍼를 직접 호출할 때는 <InlineCode>openDialog({`{ type: &apos;alert&apos;, ... }`})</InlineCode>{' '}
+        처럼 전체 payload 객체를 넘깁니다. 첫 번째 인자로 문자열을 전달하는 방식과 동일하게 타입이 안전하게 체크됩니다.
       </p>
       <CodeBlock language="ts" code={openFromImperative} />
     </Section>

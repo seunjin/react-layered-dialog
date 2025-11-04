@@ -1,52 +1,68 @@
-import { useCallback, useRef } from 'react';
-import { motion } from 'motion/react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { useDialogs } from '@/lib/dialogs';
-import type { ConfirmDialogState } from '@/lib/dialogs';
-import type { DialogState } from 'react-layered-dialog';
-import { useLayerBehavior } from 'react-layered-dialog';
+import {
+  useDialogController,
+  type DialogComponent,
+} from 'react-layered-dialog';
+import type { ConfirmDialogProps, DialogBehaviorOptions } from '@/lib/dialogs';
 
-type ConfirmProps = DialogState<ConfirmDialogState>;
-
-export const Confirm = ({
-  id,
-  title,
-  message,
-  onConfirm,
-  onCancel,
-  zIndex,
-  closeOnEscape = true,
-  closeOnOutsideClick = true,
-  dimmed = true,
-}: ConfirmProps) => {
-  const { dialogs, closeDialog } = useDialogs();
+export const Confirm = ((props: ConfirmDialogProps) => {
+  const controller = useDialogController<ConfirmDialogProps, DialogBehaviorOptions>();
+  const { id, options, close, unmount, getStateFields, stack } = controller;
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const { title, message, onConfirm, onCancel } = getStateFields({
+    title: props.title,
+    message: props.message,
+    onConfirm: props.onConfirm,
+    onCancel: props.onCancel,
+  });
+
+  const closeOnEscape = options.closeOnEscape ?? true;
+  const closeOnOutsideClick = options.closeOnOutsideClick ?? true;
+  const dimmed = options.dimmed ?? true;
+  const zIndex = options.zIndex;
+  const isTop = stack.index === stack.size - 1;
 
   const handleCancel = useCallback(() => {
     onCancel?.();
-    closeDialog(id);
-  }, [closeDialog, id, onCancel]);
+    close();
+    unmount();
+  }, [close, onCancel, unmount]);
 
   const handleConfirm = useCallback(() => {
     onConfirm?.();
-    closeDialog(id);
-  }, [closeDialog, id, onConfirm]);
+    close();
+    unmount();
+  }, [close, onConfirm, unmount]);
 
-  useLayerBehavior({
-    id,
-    dialogs,
-    zIndex,
-    closeOnEscape,
-    onEscape: handleCancel,
-    closeOnOutsideClick,
-    onOutsideClick: handleCancel,
-    outsideClickRef: panelRef,
-  });
+  useEffect(() => {
+    if (!closeOnEscape || !isTop) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [closeOnEscape, handleCancel, isTop]);
+
+  useEffect(() => {
+    if (!closeOnOutsideClick || !isTop) return;
+    const onMouseDown = (event: MouseEvent) => {
+      if (!panelRef.current) return;
+      if (!panelRef.current.contains(event.target as Node)) {
+        handleCancel();
+      }
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [closeOnOutsideClick, handleCancel, isTop]);
 
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center ${
-        dimmed ? 'pointer-events-auto' : 'pointer-events-none'
+        dimmed ? 'bg-black/40 pointer-events-auto' : 'bg-transparent pointer-events-none'
       }`}
       style={{ zIndex }}
       role="dialog"
@@ -54,20 +70,9 @@ export const Confirm = ({
       aria-labelledby={`confirm-${id}-title`}
       aria-describedby={`confirm-${id}-message`}
     >
-      {dimmed && (
-        <motion.div
-          className="absolute inset-0 bg-black/40 pointer-events-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        />
-      )}
-      <motion.div
+      <div
         ref={panelRef}
-        className="relative min-w-[320px] rounded-lg bg-white p-6 shadow-xl pointer-events-auto"
-        initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.92, opacity: 0 }}
+        className="pointer-events-auto relative min-w-[320px] rounded-lg border border-border bg-white p-6 shadow-xl"
       >
         <h3 id={`confirm-${id}-title`} className="text-lg font-semibold">
           {title}
@@ -86,7 +91,7 @@ export const Confirm = ({
             확인
           </Button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
-};
+}) satisfies DialogComponent<ConfirmDialogProps, DialogBehaviorOptions>;

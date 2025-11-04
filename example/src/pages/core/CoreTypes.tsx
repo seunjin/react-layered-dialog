@@ -3,173 +3,148 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
-const baseLayerSnippet = `export interface BaseLayerProps {
-  /**
-   * 레이어의 쌓임 순서(z-index)입니다.
-   * 일반적으로 자동 관리에 맡기는 것을 권장합니다.
-   * 다른 라이브러리와의 z-index 충돌 등 특수한 경우에만 직접 지정하세요.
-   * 지정하지 않으면 \`baseZIndex\`(기본값 1000)부터 시작하는 값이 자동으로 할당됩니다.
-   */
-  zIndex?: number;
-  /**
-   * 레이어 뒤에 깔리는 어두운 배경(dim)을 표시할지 여부입니다.
-   * @default true
-   */
-  dimmed?: boolean;
-  /**
-   * 오버레이(배경) 클릭 시 레이어를 닫을지 여부입니다.
-   * \`useLayerBehavior\` 훅의 \`closeOnOutsideClick\` 옵션을 통해 구현됩니다.
-   * @default true
-   */
-  closeOnOutsideClick?: boolean;
-  /**
-   * Escape 키를 눌렀을 때 레이어를 닫을지 여부입니다.
-   * \`useLayerBehavior\` 훅의 \`closeOnEscape\` 옵션을 통해 구현됩니다.
-   * @default true
-   */
-  closeOnEscape?: boolean;
-  /**
-   * 레이어가 열렸을 때 배경 스크롤을 막을지 여부입니다. (향후 구현 예정)
-   * @default true
-   */
-  scrollLock?: boolean;
+const snapshotSnippet = `interface DialogEntry {
+  id: DialogId;
+  renderer: DialogRenderFn;
+  componentKey: string;
+  isOpen: boolean;
+  isMounted: boolean;
+  zIndex: number;
+  state: Record<string, unknown>;
+  options: Record<string, unknown> & { zIndex: number };
+  asyncHandlers?: DialogAsyncEntryHandlers;
+  meta: { status: DialogStatus };
+}
+
+interface DialogStoreSnapshot {
+  entries: DialogEntry[];
 }`;
 
-const baseStateMetaSnippet = `export interface BaseStateMeta {
-  id?: string;
-  isOpen?: boolean;
+const openResultSnippet = `type DialogOpenResult<TProps, TOptions> = {
+  dialog: OpenDialogResult;
+  close: () => void;
+  unmount: () => void;
+  update: (updater: DialogStateUpdater<TProps>) => void;
+  setStatus: (status: DialogStatus) => void;
+  status: DialogStatus;
+  getStatus: () => DialogStatus;
+  options: TOptions & { zIndex: number };
+};
+
+type DialogAsyncResult<TProps, TOptions> = DialogOpenResult<TProps, TOptions> & {
+  ok: boolean;
+};`;
+
+const controllerSnippet = `interface DialogControllerContextValue<TProps, TOptions> {
+  id: DialogId;
+  isOpen: boolean;
+  state: TProps;
+  options: TOptions & { zIndex: number };
+  handle: OpenDialogResult;
+  close: () => void;
+  unmount: () => void;
+  closeAll: () => void;
+  unmountAll: () => void;
+  update: (updater: DialogStateUpdater<TProps>) => void;
+  getStateField: <V>(key: PropertyKey, fallback: V) => V;
+  getStateFields: <B extends Record<string, unknown>>(base: B) => B & Partial<TProps>;
+  stack: DialogStackInfo;
+  resolve?: (payload: DialogAsyncResolvePayload) => void;
+  reject?: (reason?: unknown) => void;
+  status: DialogStatus;
+  getStatus: () => DialogStatus;
+  setStatus: (status: DialogStatus) => void;
 }`;
 
-const baseStateSnippet = `export type BaseState = BaseLayerProps & BaseStateMeta;`;
+const updaterSnippet = `type DialogStateUpdater<TProps> =
+  | TProps
+  | Partial<TProps>
+  | ((prev: TProps) => TProps | Partial<TProps> | null | undefined);`;
 
-const dialogStateSnippet = `export type DialogState<T> = T &
-  BaseLayerProps &
-  Required<BaseStateMeta>;`;
-
-const patchSnippet = `const handle = manager.openDialog({
-  type: 'alert',
-  title: '처음 제목',
-});
-
-manager.updateDialog(handle, {
-  title: '업데이트된 제목',
-  dimmed: false,
-});
-
-manager.updateDialog(handle, (prev) => ({
-  title: prev.title.toUpperCase(),
-}));`;
+const stackSnippet = `interface DialogStackInfo {
+  topId: DialogId | null;
+  size: number;
+  index: number;
+}`;
 
 export const CoreTypes = () => (
-  <DocArticle title="코어 타입 가이드">
+  <DocArticle title="핵심 타입 가이드">
     <p className="lead">
-      <InlineCode>package/src/core/types.ts</InlineCode>에 정의된 공통 타입은
-      다이얼로그 상태를 안전하게 설계하고,{' '}
-      <InlineCode>useLayerBehavior</InlineCode>와 연결되는 동작 플래그를
-      제공합니다. 이 문서는 각 타입의 역할과 기본값을 정리합니다.
+      패키지가 제공하는 타입은 대부분 스토어 스냅샷과 컨트롤러 계약을 설명합니다.
+      이 문서에서는 다이얼로그를 설계하거나 테스트할 때 알아 두면 좋은 핵심 타입을
+      정리합니다.
     </p>
 
-    <Section as="h2" id="base-layer-props" title="BaseLayerProps">
+    <Section as="h2" id="snapshot" title="DialogStoreSnapshot & DialogEntry">
       <p>
-        <InlineCode>BaseLayerProps</InlineCode>는 모든 다이얼로그 컴포넌트가
-        공유하는 동작 옵션입니다. 옵션의 기본값은{' '}
-        <InlineCode>DialogManager</InlineCode>와 컴포넌트 구현에서 설정해
-        두었습니다.
+        <InlineCode>DialogStoreSnapshot</InlineCode>은 스토어가 노출하는 최소 단위입니다.
+        <InlineCode>useSyncExternalStore</InlineCode>로 구독해도 되도록 불변 객체 구조를 사용합니다.
       </p>
-      <CodeBlock language="ts" code={baseLayerSnippet} />
+      <CodeBlock language="ts" code={snapshotSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          <InlineCode>zIndex</InlineCode>: 지정하지 않으면{' '}
-          <InlineCode>baseZIndex</InlineCode>부터 순차 증가합니다.
+          <InlineCode>options</InlineCode>는 항상 <InlineCode>zIndex</InlineCode>를 포함합니다.
+          사용자 정의 옵션을 추가하면 그대로 유지됩니다.
         </li>
         <li>
-          <InlineCode>dimmed</InlineCode>: <InlineCode>true</InlineCode> 시
-          오버레이를 그리고 배경 클릭을 막습니다.
-        </li>
-        <li>
-          <InlineCode>closeOnEscape</InlineCode>,{' '}
-          <InlineCode>closeOnOutsideClick</InlineCode>:{' '}
-          <InlineCode>useLayerBehavior</InlineCode>의 대응 옵션과 연결됩니다.
-        </li>
-        <li>
-          <InlineCode>scrollLock</InlineCode>: 향후 배경 스크롤을 잠글 때 사용할
-          예약 필드입니다.
+          <InlineCode>meta.status</InlineCode>는 <InlineCode>&apos;idle&apos; | &apos;loading&apos; | &apos;done&apos; | &apos;error&apos;</InlineCode> 중 하나입니다.
+          비동기 다이얼로그에서 진행 상태를 표현할 때 유용합니다.
         </li>
       </ul>
     </Section>
 
-    <Section as="h2" id="base-state" title="BaseState와 DialogState">
+    <Section as="h2" id="open-result" title="DialogOpenResult & DialogAsyncResult">
       <p>
-        <InlineCode>BaseStateMeta</InlineCode>는 매니저가 제어하는 메타 필드(
-        <InlineCode>id</InlineCode>, <InlineCode>isOpen</InlineCode>)를 정의합니다.
+        <InlineCode>open</InlineCode>과 <InlineCode>openAsync</InlineCode>는 제어 함수를 포함한 결과 객체를 반환합니다.
+        비동기 버전은 <InlineCode>ok</InlineCode> 플래그가 추가되며 Promise로 감싸져 있습니다.
       </p>
-      <CodeBlock language="ts" code={baseStateMetaSnippet} />
-      <p>
-        <InlineCode>BaseState</InlineCode>는{' '}
-        <InlineCode>BaseLayerProps</InlineCode>와 메타 필드를 결합한 타입입니다.
-        앱 전역 상태 유니온을 선언할 때 <InlineCode>BaseState</InlineCode>를
-        확장하면 dim, ESC 옵션처럼 공통 동작을 손쉽게 공유할 수 있습니다.
-      </p>
-      <CodeBlock language="ts" code={baseStateSnippet} />
-      <p>
-        <InlineCode>DialogState&lt;T&gt;</InlineCode>는 라이브러리가 내부적으로
-        사용하는 최종 상태 형태입니다. <InlineCode>id</InlineCode>와{' '}
-        <InlineCode>isOpen</InlineCode>을 필수로 만들고,
-        <InlineCode>BaseLayerProps</InlineCode>를 병합하여 z-index, dim, ESC, scroll
-        lock 같은 동작 플래그를 일관되게 제공합니다.
-      </p>
-      <CodeBlock language="ts" code={dialogStateSnippet} />
+      <CodeBlock language="ts" code={openResultSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          상태 유니온을 <InlineCode>DialogState&lt;T&gt;</InlineCode>로 감싸면
-          매니저가 <InlineCode>id</InlineCode>, <InlineCode>isOpen</InlineCode>,
-          <InlineCode>zIndex</InlineCode>, <InlineCode>dimmed</InlineCode>,
-          <InlineCode>closeOnEscape</InlineCode>, <InlineCode>closeOnOutsideClick</InlineCode>,
-          <InlineCode>scrollLock</InlineCode>을 자동으로 병합합니다.
+          <InlineCode>update</InlineCode>와 <InlineCode>setStatus</InlineCode>는 동일한 ID를 대상으로 작동합니다.
+          resolve 이후에도 호출할 수 있으므로 후속 애니메이션을 구성할 수 있습니다.
         </li>
         <li>
-          컴포넌트 입장에서는 완성된 <InlineCode>{'{ ...state }'}</InlineCode>를
-          받을 수 있어 props 정의와 테스트가 단순해집니다.
+          <InlineCode>options</InlineCode>는 다이얼로그 열 때 전달한 옵션의 스냅샷입니다.
+          렌더링 시점에 동일한 값을 참조하고 싶다면 컨트롤러의 <InlineCode>options</InlineCode> 대신
+          결과 객체를 활용하세요.
         </li>
       </ul>
     </Section>
 
-    <Section as="h2" id="patch" title="DialogPatch와 업데이트">
+    <Section as="h2" id="controller" title="DialogControllerContextValue">
       <p>
-        <InlineCode>DialogPatch</InlineCode>는{' '}
-        <InlineCode>DialogState</InlineCode>에서 <InlineCode>id</InlineCode>,
-        <InlineCode>type</InlineCode>, <InlineCode>isOpen</InlineCode>을 제외한
-        부분 상태 타입입니다. <InlineCode>manager.updateDialog</InlineCode>에
-        직접 객체를 전달하거나, 이전 상태를 받아 새 패치를 반환하는 함수로
-        사용할 수 있습니다.
+        <InlineCode>useDialogController</InlineCode> 훅은 이 컨텍스트 값을 반환합니다.
+        컴포넌트 내부에서 상태를 업데이트하거나 다른 다이얼로그와 상호작용할 수 있는
+        모든 수단이 포함되어 있습니다.
       </p>
-      <CodeBlock language="ts" code={patchSnippet} />
+      <CodeBlock language="ts" code={controllerSnippet} />
+      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
+        <li>
+          <InlineCode>stack</InlineCode>에는 현재 스택 크기와 최상단 여부가 포함됩니다.
+          중첩 다이얼로그에서 포커스 정책을 조정할 때 유용합니다.
+        </li>
+        <li>
+          <InlineCode>getStateField</InlineCode>와 <InlineCode>getStateFields</InlineCode>는
+          안전하게 사용자 정의 상태를 읽을 수 있도록 도와주는 헬퍼입니다.
+          상태가 아직 설정되지 않았을 때도 기본값을 반환합니다.
+        </li>
+      </ul>
+      <CodeBlock language="ts" code={stackSnippet} />
+    </Section>
+
+    <Section as="h2" id="updater" title="DialogStateUpdater">
+      <p>
+        <InlineCode>DialogStateUpdater</InlineCode>는 <InlineCode>open</InlineCode> 결과나 컨트롤러에서
+        상태를 갱신할 때 사용하는 타입입니다. 객체를 넘기거나 함수형 업데이트를 사용할 수 있으며,
+        <InlineCode>null</InlineCode> 또는 <InlineCode>undefined</InlineCode>를 반환하면 변경이 무시됩니다.
+      </p>
+      <CodeBlock language="ts" code={updaterSnippet} />
       <p className="text-sm text-muted-foreground">
-        패치 함수 내부에서도 <InlineCode>BaseLayerProps</InlineCode>에 포함된
-        동작 플래그를 안전하게 변경할 수 있으며, 값 검증이나 파생 로직은
-        애플리케이션 수준에서 자유롭게 구현하면 됩니다.
+        updater 함수는 기존 상태를 기반으로 부분 업데이트를 수행할 수 있습니다.
+        값이 <InlineCode>null</InlineCode> 또는 <InlineCode>undefined</InlineCode>이면 변경이 취소되므로,
+        조건부 업데이트를 구현할 때 유용합니다.
       </p>
-    </Section>
-
-    <Section as="h2" id="tips" title="어디에서 활용되나요?">
-      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>
-          <InlineCode>DialogRenderer</InlineCode>는 각 다이얼로그의{' '}
-          <InlineCode>scrollLock</InlineCode> 플래그를 검사해 배경 스크롤을
-          잠글지 판단합니다.
-        </li>
-        <li>
-          <InlineCode>useLayerBehavior</InlineCode>는{' '}
-          <InlineCode>closeOnEscape</InlineCode>와{' '}
-          <InlineCode>closeOnOutsideClick</InlineCode> 값을 받아 ESC/외부 클릭
-          동작을 구성합니다.
-        </li>
-        <li>
-          모든 공개 API에서 <InlineCode>DialogState</InlineCode>를 사용하므로,
-          사용자 정의 다이얼로그도 동일한 타입 계약을 따르면 자동으로 안전성이
-          보장됩니다.
-        </li>
-      </ul>
     </Section>
   </DocArticle>
 );

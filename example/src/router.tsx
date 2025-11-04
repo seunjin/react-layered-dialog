@@ -8,11 +8,11 @@ import { DefiningDialogs } from '@/pages/core/DefiningDialogs';
 import { CoreTypes } from '@/pages/core/CoreTypes';
 import { OpeningDialogs } from '@/pages/guides/OpeningDialogs';
 import { UpdatingDialogs } from '@/pages/guides/UpdatingDialogs';
-import { LayerBehaviorAddon } from '@/pages/guides/LayerBehaviorAddon';
+import { ControllerPatterns } from '@/pages/guides/ControllerPatterns';
 import { CreateDialogManager } from '@/pages/api/CreateDialogManager';
 import { CreateUseDialogs } from '@/pages/api/CreateUseDialogs';
 import { DialogManagerApi } from '@/pages/api/DialogManagerApi';
-import { UseLayerBehavior } from '@/pages/api/UseLayerBehavior';
+import { ControllerRenderer } from '@/pages/api/ControllerRenderer';
 import { LiveShowcase } from '@/pages/examples/LiveShowcase';
 import Renewal from './pages/renewal/Renewal';
 
@@ -57,9 +57,9 @@ export const routeConfig = [
         name: '상태 업데이트',
       },
       {
-        path: 'layer-behavior',
-        element: <LayerBehaviorAddon />,
-        name: 'useLayerBehavior 활용',
+        path: 'controller-patterns',
+        element: <ControllerPatterns />,
+        name: '컨트롤러 패턴',
       },
     ],
   },
@@ -68,14 +68,14 @@ export const routeConfig = [
     title: 'API',
     children: [
       {
-        path: 'create-dialog-manager',
+        path: 'dialog-store',
         element: <CreateDialogManager />,
-        name: 'createDialogManager',
+        name: 'DialogStore',
       },
       {
-        path: 'create-use-dialogs',
+        path: 'create-dialog-api',
         element: <CreateUseDialogs />,
-        name: 'createUseDialogs',
+        name: 'createDialogApi',
       },
       {
         path: 'dialog-manager',
@@ -83,9 +83,9 @@ export const routeConfig = [
         name: 'DialogManager',
       },
       {
-        path: 'use-layer-behavior',
-        element: <UseLayerBehavior />,
-        name: 'useLayerBehavior',
+        path: 'controller-renderer',
+        element: <ControllerRenderer />,
+        name: 'useDialogController & DialogsRenderer',
       },
     ],
   },

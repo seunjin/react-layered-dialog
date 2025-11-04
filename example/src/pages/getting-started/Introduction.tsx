@@ -39,7 +39,7 @@ export const Introduction = () => (
           시스템과 쉽게 통합됩니다.
         </li>
         <li>
-          <b>선택적 동작</b>: ESC, 외부 클릭 등은 <InlineCode>useLayerBehavior</InlineCode>로
+          <b>선택적 동작</b>: ESC, 외부 클릭 등은 컨트롤러 패턴이나 커스텀 훅으로
           필요한 만큼만 opt-in 할 수 있습니다.
         </li>
       </ul>

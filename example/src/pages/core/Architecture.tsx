@@ -5,110 +5,118 @@ import { CodeBlock } from '@/components/docs/CodeBlock';
 import { Link } from 'react-router-dom';
 
 const storeSnippet = `// src/lib/dialogs.ts
-import {
-  createDialogManager,
-  createUseDialogs,
-  type DialogState,
-  type DialogInstance,
-} from 'react-layered-dialog';
+import { useMemo, useSyncExternalStore } from 'react';
+import { DialogStore, createDialogApi } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
 
-type AlertState = {
-  type: 'alert';
-  title: string;
-  message: string;
-  onOk?: () => void;
+export type DialogBehaviorOptions = {
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
-type ConfirmState = {
-  type: 'confirm';
+export type AlertDialogProps = { title: string; message: string; onOk?: () => void };
+export type ConfirmDialogProps = {
   title: string;
   message: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
+  onConfirm?: () => void | false;
+  onCancel?: () => void | false;
+  step?: 'confirm' | 'loading' | 'done';
 };
 
-type AppDialogState = DialogState<AlertState> | DialogState<ConfirmState>;
-export type AppDialogInstance = DialogInstance<AppDialogState>;
+export const dialogStore = new DialogStore(1200);
 
-const { manager } = createDialogManager<AppDialogState>({
-  baseZIndex: 1200,
-});
+const registry = {
+  alert: { component: Alert },
+  confirm: { component: Confirm },
+} as const;
 
-export const useDialogs = createUseDialogs(manager, {
-  alert: Alert,
-  confirm: Confirm,
-});
+const dialogApi = createDialogApi(dialogStore, registry);
 
-export const openDialog = manager.openDialog;
-export const closeDialog = manager.closeDialog;
-export const closeAllDialogs = manager.closeAllDialogs;
-export const updateDialog = manager.updateDialog;`;
+export const openDialog = dialogApi.open;
+export const closeDialog = dialogApi.close;
+export const closeAllDialogs = dialogApi.closeAll;
+export const unmountDialog = dialogApi.unmount;
+export const unmountAllDialogs = dialogApi.unmountAll;
+export const updateDialog = dialogApi.update;
 
-const rendererSnippet = `// src/components/dialogs/DialogRenderer.tsx
-import { AnimatePresence } from 'motion/react';
-import { useEffect } from 'react';
-import type { AppDialogInstance } from '@/lib/dialogs';
-
-export const DialogRenderer = ({
-  dialogs,
-}: {
-  dialogs: readonly AppDialogInstance[];
-}) => {
-  // 선택 사항: scrollLock === true 인 다이얼로그가 있을 때 배경 스크롤 잠금
-  const isScrollLocked = dialogs.some(
-    (dialog) => 'scrollLock' in dialog.state && dialog.state.scrollLock === true
+export function useDialogs() {
+  const snapshot = useSyncExternalStore(
+    dialogStore.subscribe,
+    dialogStore.getSnapshot,
+    dialogStore.getSnapshot
   );
 
+  return useMemo(
+    () => ({
+      store: dialogStore,
+      dialogs: snapshot.entries,
+      openDialog,
+      closeDialog,
+      closeAllDialogs,
+      unmountDialog,
+      unmountAllDialogs,
+      updateDialog,
+    }),
+    [snapshot]
+  );
+}`;
+
+const rendererSnippet = `// src/components/dialogs/DialogRenderer.tsx
+import { useEffect, useSyncExternalStore } from 'react';
+import { DialogsRenderer, type DialogStore } from 'react-layered-dialog';
+
+export const DialogRenderer = ({ store }: { store: DialogStore }) => {
+  const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
+
+  const isScrollLocked = snapshot.entries.some((entry) => {
+    if (entry.options.scrollLock === true) return true;
+    const state = entry.state as Record<string, unknown> | undefined;
+    return state?.scrollLock === true;
+  });
+
   useEffect(() => {
-    if (!isScrollLocked) {
+    if (isScrollLocked) {
+      document.body.classList.add('scroll-locked');
+    } else {
       document.body.classList.remove('scroll-locked');
-      return;
     }
 
-    document.body.classList.add('scroll-locked');
     return () => {
       document.body.classList.remove('scroll-locked');
     };
   }, [isScrollLocked]);
 
-  return (
-    <AnimatePresence>
-      {dialogs.map(({ Component, state }) => (
-        <Component key={state.id} {...state} />
-      ))}
-    </AnimatePresence>
-  );
+  return <DialogsRenderer store={store} />;
 };`;
 
 export const Architecture = () => (
   <DocArticle title="코어 아키텍처">
     <p className="lead">
-      <InlineCode>react-layered-dialog</InlineCode>는 빈약한 전역 스토어 + 타입
-      안전한 훅 조합으로 동작합니다. 코어는 다이얼로그 스택과 z-index만
-      책임지고, UI·포커스·스크롤 정책은 애플리케이션이 선언적으로 구현합니다.
+      <InlineCode>react-layered-dialog</InlineCode>는 얇은 전역 스토어와
+      레지스트리만 제공하고, UI·동작은 애플리케이션이 직접 구현하는 방식을
+      지향합니다. 스택 관리, z-index 계산, 비동기 컨트롤러 같은 필수 기능만
+      코어가 책임지고 나머지는 선언적으로 조합할 수 있습니다.
     </p>
 
-    <Section as="h2" id="system-overview" title="핵심 구성">
+    <Section as="h2" id="system-overview" title="핵심 구성 요소">
       <ol className="ml-6 list-decimal space-y-2">
         <li>
-          <b>DialogManager</b>: 다이얼로그 상태 배열을 보관하고{' '}
-          <InlineCode>open</InlineCode>/<InlineCode>close</InlineCode>/
-          <InlineCode>update</InlineCode> 동작을 제공합니다.{' '}
-          <InlineCode>createDialogManager</InlineCode> 호출 시{' '}
-          <InlineCode>baseZIndex</InlineCode> 같은 전역 설정을 주입할 수
-          있습니다.
+          <b>DialogStore</b>: 다이얼로그 스택과 옵션을 보관하는 클래스입니다.
+          <InlineCode>open</InlineCode>, <InlineCode>close</InlineCode>,
+          <InlineCode>update</InlineCode> 같은 저수준 메서드를 제공합니다.
         </li>
         <li>
-          <b>createUseDialogs</b>: 매니저를 React 세계로 노출하는 훅
-          팩토리입니다. 다이얼로그 <InlineCode>type</InlineCode>과 렌더링할
-          컴포넌트를 매핑하는 책임은 앱에 있습니다.
+          <b>createDialogApi</b>: 스토어와 레지스트리를 연결해 타입 안전한
+          <InlineCode>openDialog</InlineCode>·<InlineCode>closeDialog</InlineCode>
+          와 같은 헬퍼를 생성합니다. 각 다이얼로그의 props/옵션 타입이 자동으로
+          추론됩니다.
         </li>
         <li>
-          <b>DialogRenderer</b>: 열린 다이얼로그 배열을 DOM에 렌더링하는 얇은
-          컴포넌트입니다. 포커스, 애니메이션, scroll lock 등은 이 레이어에서
-          확장합니다.
+          <b>DialogsRenderer + useDialogController</b>: 렌더러는 스토어를 구독하고,
+          개별 컴포넌트는 컨트롤러 훅을 통해 상태·옵션·제어 함수를 받아 사용합니다.
         </li>
       </ol>
     </Section>
@@ -116,38 +124,37 @@ export const Architecture = () => (
     <Section as="h2" id="flow" title="데이터 흐름">
       <ol className="ml-6 list-decimal space-y-2">
         <li>
-          앱이 정의한 <InlineCode>AppDialogState</InlineCode> 유니온을 기반으로
-          <InlineCode>createDialogManager</InlineCode>와{' '}
-          <InlineCode>createUseDialogs</InlineCode>를 초기화합니다.
+          하나의 <InlineCode>DialogStore</InlineCode> 인스턴스를 생성하고,
+          <InlineCode>createDialogApi</InlineCode>에 스토어와 레지스트리를 전달합니다.
         </li>
         <li>
-          컴포넌트에서는 <InlineCode>useDialogs</InlineCode>를 호출해{' '}
-          <InlineCode>dialogs</InlineCode> 배열과{' '}
-          <InlineCode>openDialog</InlineCode> 등의 제어 함수를 받습니다.
+          렌더러 계층에서는 <InlineCode>DialogsRenderer</InlineCode>에 스토어를 전달해
+          컨텍스트를 주입하고, 필요 시 전역 동작(scroll lock 등)을 추가합니다.
         </li>
         <li>
-          렌더러는 <InlineCode>dialogs</InlineCode>를 순회하면서 각 항목의{' '}
-          <InlineCode>Component</InlineCode>와 <InlineCode>state</InlineCode>를
-          그대로 렌더링합니다. dim, 포커스, scroll lock 같은 부가 동작은 렌더러
-          혹은 다이얼로그 컴포넌트에서 결정합니다.
+          다이얼로그 컴포넌트 내부에서는 <InlineCode>useDialogController</InlineCode>로
+          props, 옵션, <InlineCode>close</InlineCode>/<InlineCode>update</InlineCode> 같은
+          제어 함수를 받아 UI와 상호작용을 정의합니다.
+        </li>
+        <li>
+          애플리케이션 어디에서든 <InlineCode>openDialog</InlineCode>,
+          <InlineCode>closeDialog</InlineCode>, <InlineCode>updateDialog</InlineCode>를
+          호출해 스택을 선언적으로 제어합니다.
         </li>
       </ol>
     </Section>
 
     <Section as="h2" id="reference" title="참고 구현">
       <p>
-        아래 예시는 Alert/Confirm 다이얼로그만 사용하는 최소 스토어 구성을
-        보여줍니다.
-        <InlineCode>DialogState&lt;T&gt;</InlineCode>를 적용하면 공통 메타 필드(
-        <InlineCode>id</InlineCode>, <InlineCode>zIndex</InlineCode>,{' '}
-        <InlineCode>dimmed</InlineCode> 등)가 자동으로 합쳐집니다.
+        아래 샘플은 Alert/Confirm 두 가지 다이얼로그만 등록한 최소 구성을 보여줍니다.
+        스토어는 <InlineCode>useSyncExternalStore</InlineCode>로 구독하고, 필요한
+        제어 함수를 훅에서 재노출합니다.
       </p>
       <CodeBlock language="ts" code={storeSnippet} />
       <p className="mt-4">
-        렌더러는 열린 다이얼로그를 순회하며 렌더링만 담당합니다. 예제에서는
-        <InlineCode>scrollLock</InlineCode> 플래그를 보고{' '}
-        <InlineCode>body</InlineCode>
-        스크롤을 잠그는 선택적 로직을 포함했습니다.
+        렌더러는 스토어 스냅샷을 구독해 전역 scroll-lock을 처리한 뒤,
+        <InlineCode>DialogsRenderer</InlineCode>에 위임해 다이얼로그를 실제 DOM에
+        렌더링합니다.
       </p>
       <CodeBlock language="tsx" code={rendererSnippet} />
     </Section>
@@ -155,21 +162,19 @@ export const Architecture = () => (
     <Section as="h2" id="contracts" title="타입 계약 요약">
       <ul className="ml-6 list-disc space-y-2">
         <li>
-          <InlineCode>BaseLayerProps</InlineCode>와{' '}
-          <InlineCode>DialogState&lt;T&gt;</InlineCode>는 모든 다이얼로그가
-          공유하는 동작 플래그를 정의합니다. 상세 설명은{' '}
-          <InlineCode>Core → 코어 타입 가이드</InlineCode>에서 확인하세요.
+          <InlineCode>DialogStoreSnapshot</InlineCode>은 현재 열린 다이얼로그
+          엔트리 배열을 제공합니다. 각 엔트리는 <InlineCode>options</InlineCode>와
+          <InlineCode>state</InlineCode>, <InlineCode>meta.status</InlineCode> 등을 보관합니다.
         </li>
         <li>
-          <InlineCode>DialogInstance&lt;T&gt;</InlineCode>는 다이얼로그{' '}
-          <InlineCode>type</InlineCode>과 컴포넌트를 관계형(상관된 유니온)으로
-          묶어 잘못된 props 조합을 컴파일 단계에서 차단합니다.
+          <InlineCode>DialogControllerContextValue</InlineCode>는 컴포넌트에서 사용할 수 있는
+          모든 제어 함수를 담고 있습니다. <InlineCode>close</InlineCode>,
+          <InlineCode>unmount</InlineCode>, <InlineCode>update</InlineCode>, 비동기 컨트롤러의
+          <InlineCode>resolve</InlineCode>/<InlineCode>reject</InlineCode> 등이 포함됩니다.
         </li>
         <li>
-          <InlineCode>DialogPatch</InlineCode>는{' '}
-          <InlineCode>updateDialog</InlineCode>에 전달할 수 있는 부분 상태
-          형태이며, 함수 시그니처로 전달하면 이전 상태를 기반으로 파생 값을
-          계산할 수 있습니다.
+          <InlineCode>DialogStateUpdater</InlineCode>는 객체 혹은 함수형 업데이트를 모두 지원합니다.
+          동일한 ID를 가진 다이얼로그의 사용자 정의 상태를 부분 업데이트할 때 활용합니다.
         </li>
       </ul>
     </Section>
@@ -177,9 +182,8 @@ export const Architecture = () => (
     <Section as="h2" id="extension" title="확장 포인트">
       <ul className="ml-6 list-disc space-y-2">
         <li>
-          <b>레이어 동작</b>: ESC/외부 클릭 등은{' '}
-          <InlineCode>useLayerBehavior</InlineCode>를 조합하거나 직접 이벤트를
-          처리하세요. Quick Start 예제가 기본 패턴을 보여줍니다.
+          <b>레이어 동작</b>: ESC/외부 클릭 제어는 컨트롤러와 간단한 커스텀 훅을 조합해
+          구현합니다. 재사용 가능한 패턴은 <Link to="/guides/controller-patterns" className="text-primary underline">Guides → 컨트롤러 패턴</Link>에서 다룹니다.
         </li>
         <li>
           <b>렌더러 커스터마이징</b>: 애니메이션이 필요하면{' '}
@@ -204,14 +208,11 @@ export const Architecture = () => (
           >
             ConfirmAnimated.tsx
           </Link>
-          )을 참고해 <InlineCode>AnimatePresence</InlineCode>, 포커스 트랩 등을
-          추가하세요.
+          )을 참고하세요.
         </li>
-
         <li>
-          <b>전역 정책</b>: <InlineCode>scrollLock</InlineCode>처럼 전역 상태를
-          건드리는 동작은 렌더러 단계에서 명시적으로 관리합니다. 필요 없다면
-          해당 로직을 제거해도 됩니다.
+          <b>전역 정책</b>: scroll-lock이나 포커스 트랩처럼 전역 상태를 변경하는 로직은
+          렌더러 또는 상위 레이어에서 명시적으로 관리합니다. 필요 없다면 자유롭게 제거해도 됩니다.
         </li>
       </ul>
     </Section>

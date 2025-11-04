@@ -1,15 +1,16 @@
-import type { DialogInstance } from 'react-layered-dialog';
-import { AnimatePresence } from 'motion/react';
-import { useEffect } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
+import { DialogsRenderer, type DialogStore } from 'react-layered-dialog';
+import type { DialogBehaviorOptions } from '@/lib/dialogs';
 
-export const DialogRenderer = <T extends { type: string }>({
-  dialogs,
-}: {
-  dialogs: readonly DialogInstance<T>[];
-}) => {
-  const isScrollLocked = dialogs.some(
-    (dialog) => 'scrollLock' in dialog.state && dialog.state.scrollLock === true
-  );
+export const DialogRenderer = ({ store }: { store: DialogStore }) => {
+  const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
+
+  const isScrollLocked = snapshot.entries.some((entry) => {
+    const options = entry.options as DialogBehaviorOptions & { zIndex: number };
+    if (options.scrollLock === true) return true;
+    const state = entry.state as Record<string, unknown> | undefined;
+    return state?.scrollLock === true;
+  });
 
   useEffect(() => {
     if (isScrollLocked) {
@@ -23,11 +24,5 @@ export const DialogRenderer = <T extends { type: string }>({
     };
   }, [isScrollLocked]);
 
-  return (
-    <AnimatePresence>
-      {dialogs.map(({ Component, state }) => (
-        <Component key={state.id} {...state} />
-      ))}
-    </AnimatePresence>
-  );
+  return <DialogsRenderer store={store} />;
 };

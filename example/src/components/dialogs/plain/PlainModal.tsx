@@ -1,46 +1,67 @@
-import { useCallback, useRef } from 'react';
-import { useDialogs } from '@/lib/dialogs';
-import type { DialogState } from 'react-layered-dialog';
-import type { PlainModalDialogState } from '@/lib/dialogs';
+import { useCallback, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
-import { useLayerBehavior } from 'react-layered-dialog';
+import {
+  useDialogController,
+  type DialogComponent,
+} from 'react-layered-dialog';
+import type {
+  DialogBehaviorOptions,
+  PlainModalDialogProps,
+} from '@/lib/dialogs';
 import { cn } from '@/lib/utils';
 
-type PlainModalProps = DialogState<PlainModalDialogState>;
-
-export const PlainModal = ({
-  id,
-  title,
-  description,
-  body,
-  zIndex,
-  canDismiss = true,
-  closeOnEscape,
-  closeOnOutsideClick,
-  dimmed = true,
-  onClose,
-}: PlainModalProps) => {
-  const { dialogs, closeDialog } = useDialogs();
+export const PlainModal = ((props: PlainModalDialogProps) => {
+  const controller = useDialogController<
+    PlainModalDialogProps,
+    DialogBehaviorOptions
+  >();
+  const { id, options, close, unmount, getStateFields, stack } = controller;
   const panelRef = useRef<HTMLDivElement>(null);
-  const closeOnEscapeFlag = closeOnEscape ?? canDismiss;
-  const outsideClickFlag = closeOnOutsideClick ?? closeOnEscapeFlag;
+
+  const { title, description, body, canDismiss, onClose } = getStateFields({
+    title: props.title,
+    description: props.description,
+    body: props.body,
+    canDismiss: props.canDismiss ?? true,
+    onClose: props.onClose,
+  });
+
+  const closeOnEscape = options.closeOnEscape ?? canDismiss ?? false;
+  const closeOnOutsideClick =
+    options.closeOnOutsideClick ?? closeOnEscape;
+  const dimmed = options.dimmed ?? true;
+  const zIndex = options.zIndex;
+  const isTop = stack.index === stack.size - 1;
 
   const handleClose = useCallback(() => {
     onClose?.();
-    closeDialog(id);
-  }, [closeDialog, id, onClose]);
+    close();
+    unmount();
+  }, [close, onClose, unmount]);
 
-  useLayerBehavior({
-    id,
-    dialogs,
-    zIndex,
-    closeOnEscape: closeOnEscapeFlag,
-    onEscape: handleClose,
-    closeOnOutsideClick: outsideClickFlag,
-    onOutsideClick: handleClose,
-    outsideClickRef: panelRef,
-  });
+  useEffect(() => {
+    if (!closeOnEscape || !isTop) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [closeOnEscape, handleClose, isTop]);
+
+  useEffect(() => {
+    if (!closeOnOutsideClick || !isTop) return;
+    const onMouseDown = (event: MouseEvent) => {
+      if (!panelRef.current) return;
+      if (!panelRef.current.contains(event.target as Node)) {
+        handleClose();
+      }
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [closeOnOutsideClick, handleClose, isTop]);
 
   return (
     <div
@@ -96,4 +117,4 @@ export const PlainModal = ({
       </div>
     </div>
   );
-};
+}) satisfies DialogComponent<PlainModalDialogProps, DialogBehaviorOptions>;

@@ -3,90 +3,68 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
-const signature = `import type { DialogHandle, DialogState, DialogInstance } from 'react-layered-dialog';
+const signature = `createDialogApi<T extends Record<string, DialogDefinition | DialogConfig>>(
+  store: DialogStore,
+  registry: T
+): DialogApi<T>`;
 
-createUseDialogs<T extends { type: string }>(
-  manager: DialogManager<T>,
-  componentMap: { [K in T['type']]: React.ComponentType<DialogState<Extract<T, { type: K }>>> }
-): () => {
-  dialogs: readonly DialogInstance<T>[];
-  openDialog: <K extends T['type']>(
-    type: K,
-    payload: Omit<Extract<T, { type: K }>, 'type' | 'id' | 'isOpen'> & { id?: string }
-  ) => DialogHandle<K>;
-  closeDialog: (id?: string) => void;
-  closeAllDialogs: () => void;
-  updateDialog: <K extends T['type']>(
-    handle: DialogHandle<K>,
-    nextState:
-      | Partial<Omit<Extract<T, { type: K }>, 'id' | 'type' | 'isOpen'>>
-      | ((prev: DialogState<Extract<T, { type: K }>>) => Partial<Omit<Extract<T, { type: K }>, 'id' | 'type' | 'isOpen'>> | null | undefined)
-  ) => DialogState<Extract<T, { type: K }>> | null;
-}`;
+const example = `import { DialogStore, createDialogApi } from 'react-layered-dialog';
+import { Alert } from '@/components/dialogs/Alert';
+import { Confirm } from '@/components/dialogs/Confirm';
 
-const example = `const { manager } = createDialogManager<AppDialogState>();
+type AlertProps = { title: string; message: string };
+type ConfirmProps = { title: string; message: string; onConfirm: () => void };
 
-export const useDialogs = createUseDialogs(manager, {
-  alert: AlertDialog,
-  confirm: ConfirmDialog,
-});`;
+const dialogStore = new DialogStore();
+
+const dialog = createDialogApi(dialogStore, {
+  alert: { component: Alert },
+  confirm: { component: Confirm, mode: 'async' },
+} as const);
+
+dialog.alert({ title: '안내', message: 'Sync 다이얼로그' });
+
+const result = await dialog.confirm((controller) => ({
+  title: '정말 삭제할까요?',
+  message: '이 작업은 되돌릴 수 없습니다.',
+  onConfirm: () => controller.resolve?.({ ok: true }),
+  onCancel: () => controller.resolve?.({ ok: false }),
+}));`;
 
 export const CreateUseDialogs = () => (
-  <DocArticle title="createUseDialogs">
+  <DocArticle title="createDialogApi">
     <p className="lead">
-      매니저와 컴포넌트 맵을 연결하여 커스텀 <InlineCode>useDialogs</InlineCode> 훅을 생성합니다.
-      반환된 훅은 다이얼로그 배열과 제어 함수를 제공합니다.
+      <InlineCode>createDialogApi</InlineCode>는 레지스트리를 기반으로 타입 안전한
+      고수준 메서드를 생성합니다. 레지스트리에 등록한 각 키마다 동기 또는 비동기
+      open 함수가 자동으로 만들어지며, 기본 스토어 조작 메서드도 함께 제공됩니다.
     </p>
 
     <Section as="h2" id="signature" title="시그니처">
       <CodeBlock language="ts" code={signature} />
     </Section>
 
-    <Section as="h2" id="component-map" title="컴포넌트 맵 규칙">
-      <ul className="ml-6 list-disc space-y-2">
+    <Section as="h2" id="registry" title="레지스트리 구성">
+      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          키는 다이얼로그 <InlineCode>type</InlineCode> 문자열과 동일해야 합니다.
+          값으로 <InlineCode>{'{ component, mode }'}</InlineCode> 객체를 전달하면
+          간단하게 등록할 수 있습니다. <InlineCode>mode</InlineCode> 기본값은{' '}
+          <InlineCode>&apos;sync&apos;</InlineCode>이며 <InlineCode>&apos;async&apos;</InlineCode>로 지정하면
+          <InlineCode>openAsync</InlineCode> 기반 메서드가 생성됩니다.
         </li>
         <li>
-          값은 해당 타입의 <InlineCode>DialogState</InlineCode>를 props로 받는 React 컴포넌트여야 합니다.
-        </li>
-        <li>
-          다이얼로그 렌더링에 필요한 추가 데이터는 상태 유니온에 직접 포함하세요.
+          더 세밀한 제어가 필요하면 <InlineCode>defineDialog</InlineCode>로 컴포넌트를
+          감싼 뒤 레지스트리에 넣을 수 있습니다. displayName 등을 명시적으로 설정하고 싶을 때 유용합니다.
         </li>
       </ul>
     </Section>
 
-    <Section as="h2" id="return" title="반환 값">
-      <dl className="space-y-4">
-        <div>
-          <dt className="font-semibold">dialogs</dt>
-          <dd className="mt-1 text-sm text-muted-foreground">
-            현재 열린 다이얼로그 배열입니다. 렌더러에게 그대로 전달하면 됩니다.
-          </dd>
-        </div>
-        <div>
-          <dt className="font-semibold">openDialog</dt>
-          <dd className="mt-1 text-sm text-muted-foreground">
-            type과 payload를 받아 다이얼로그를 열고 <InlineCode>{'{ id, type }'}</InlineCode> 핸들을 반환합니다.
-          </dd>
-        </div>
-        <div>
-          <dt className="font-semibold">closeDialog / closeAllDialogs</dt>
-          <dd className="mt-1 text-sm text-muted-foreground">
-            스택에서 다이얼로그를 제거합니다. 인자를 생략하면 가장 상단 다이얼로그가 닫힙니다.
-          </dd>
-        </div>
-        <div>
-          <dt className="font-semibold">updateDialog</dt>
-          <dd className="mt-1 text-sm text-muted-foreground">
-            부분 객체 또는 콜백을 사용해 이미 열린 다이얼로그를 갱신합니다. <InlineCode>openDialog</InlineCode>가 반환한 핸들을 그대로 전달하세요.
-          </dd>
-        </div>
-      </dl>
-    </Section>
-
     <Section as="h2" id="usage" title="사용 예시">
       <CodeBlock language="ts" code={example} />
+      <p className="mt-2 text-sm text-muted-foreground">
+        반환된 객체에는 <InlineCode>open</InlineCode>, <InlineCode>close</InlineCode>,
+        <InlineCode>closeAll</InlineCode>, <InlineCode>update</InlineCode> 같은 기본 메서드도 포함됩니다.
+        필요하다면 그대로 export하여 애플리케이션 전역에서 재사용하세요.
+      </p>
     </Section>
   </DocArticle>
 );

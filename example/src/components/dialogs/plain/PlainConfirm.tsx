@@ -1,47 +1,70 @@
-import { useCallback, useRef } from 'react';
-import { useDialogs } from '@/lib/dialogs';
-import type { DialogState } from 'react-layered-dialog';
-import type { PlainConfirmDialogState } from '@/lib/dialogs';
+import { useCallback, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { useLayerBehavior } from 'react-layered-dialog';
+import {
+  useDialogController,
+  type DialogComponent,
+} from 'react-layered-dialog';
+import type {
+  DialogBehaviorOptions,
+  PlainConfirmDialogProps,
+} from '@/lib/dialogs';
 import { cn } from '@/lib/utils';
 
-type PlainConfirmProps = DialogState<PlainConfirmDialogState>;
-
-export const PlainConfirm = ({
-  id,
-  title,
-  message,
-  onConfirm,
-  onCancel,
-  zIndex,
-  closeOnEscape = true,
-  closeOnOutsideClick = true,
-  dimmed = true,
-}: PlainConfirmProps) => {
-  const { dialogs, closeDialog } = useDialogs();
+export const PlainConfirm = ((props: PlainConfirmDialogProps) => {
+  const controller = useDialogController<
+    PlainConfirmDialogProps,
+    DialogBehaviorOptions
+  >();
+  const { id, options, close, unmount, getStateFields, stack } = controller;
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const { title, message, onConfirm, onCancel } = getStateFields({
+    title: props.title,
+    message: props.message,
+    onConfirm: props.onConfirm,
+    onCancel: props.onCancel,
+  });
+
+  const closeOnEscape = options.closeOnEscape ?? true;
+  const closeOnOutsideClick = options.closeOnOutsideClick ?? true;
+  const dimmed = options.dimmed ?? true;
+  const zIndex = options.zIndex;
+  const isTop = stack.index === stack.size - 1;
 
   const handleCancel = useCallback(() => {
     onCancel?.();
-    closeDialog(id);
-  }, [closeDialog, id, onCancel]);
+    close();
+    unmount();
+  }, [close, onCancel, unmount]);
 
   const handleConfirm = useCallback(() => {
     onConfirm?.();
-    closeDialog(id);
-  }, [closeDialog, id, onConfirm]);
+    close();
+    unmount();
+  }, [close, onConfirm, unmount]);
 
-  useLayerBehavior({
-    id,
-    dialogs,
-    zIndex,
-    closeOnEscape,
-    onEscape: handleCancel,
-    closeOnOutsideClick,
-    onOutsideClick: handleCancel,
-    outsideClickRef: panelRef,
-  });
+  useEffect(() => {
+    if (!closeOnEscape || !isTop) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [closeOnEscape, handleCancel, isTop]);
+
+  useEffect(() => {
+    if (!closeOnOutsideClick || !isTop) return;
+    const onMouseDown = (event: MouseEvent) => {
+      if (!panelRef.current) return;
+      if (!panelRef.current.contains(event.target as Node)) {
+        handleCancel();
+      }
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [closeOnOutsideClick, handleCancel, isTop]);
 
   return (
     <div
@@ -81,4 +104,4 @@ export const PlainConfirm = ({
       </div>
     </div>
   );
-};
+}) satisfies DialogComponent<PlainConfirmDialogProps, DialogBehaviorOptions>;

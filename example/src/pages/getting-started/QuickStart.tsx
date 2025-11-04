@@ -38,29 +38,28 @@ export const QuickStart = () => (
           그대로 붙여 넣습니다.
         </li>
         <li>
-          <InlineCode>AppDialogState</InlineCode> 유니온의 모든 분기에{' '}
-          <InlineCode>type</InlineCode>을 정의하면, 매니저와 훅이 타입 안전하게
-          상태를 좁혀 줍니다.
+          <InlineCode>DialogStore</InlineCode> 인스턴스를 하나 만든 뒤{' '}
+          <InlineCode>createDialogApi</InlineCode>와 레지스트리를 연결하면
+          <InlineCode>openDialog</InlineCode>, <InlineCode>closeDialog</InlineCode> 등
+          고수준 메서드가 자동으로 생성됩니다.
         </li>
         <li>
-          <InlineCode>createDialogManager</InlineCode>와{' '}
-          <InlineCode>createUseDialogs</InlineCode> 호출 결과를 export하여 앱 전역에서
-          재사용합니다.
+          <InlineCode>useDialogs</InlineCode> 훅에서 스토어를 구독해{' '}
+          <InlineCode>dialogs</InlineCode> 스냅샷과 제어 함수를 한 번에
+          반환하도록 구성합니다.
         </li>
       </ol>
       <p className="mt-2">
-        이 단계에서는 <InlineCode>DialogState</InlineCode>를 이용해 컴포넌트에서 바로
-        사용할 수 있는 <InlineCode>AlertDialogProps</InlineCode> 같은 타입도 함께
-        export합니다. 이후 UI 컴포넌트에서 별도 타입 선언 없이 곧바로 import할 수
-        있습니다.
+        샘플 코드에는 <InlineCode>AlertDialogProps</InlineCode>처럼 다이얼로그별
+        props 타입과, 공통 동작을 제어하는 <InlineCode>DialogBehaviorOptions</InlineCode>
+        타입을 함께 정의했습니다. 이후 컴포넌트에서 동일한 타입을 불러와
+        재사용할 수 있습니다.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
-        <Link to="/core/core-types" className="text-primary underline">
-          Core → 코어 타입 가이드
+        <Link to="/core/architecture" className="text-primary underline">
+          Core → 코어 아키텍처
         </Link>
-        에서 <InlineCode>BaseState</InlineCode>,
-        <InlineCode>DialogState</InlineCode> 등이 제공하는 공통 옵션을 확인해 두면
-        커스텀 다이얼로그를 확장할 때 유용합니다.
+        문서에서 스토어와 레지스트리가 어떤 책임을 맡는지 자세히 설명합니다.
       </p>
       <CodeBlock language="ts" code={dialogsTsCode} />
     </Section>
@@ -72,21 +71,21 @@ export const QuickStart = () => (
           위치) 파일을 만들고 아래 코드를 붙여 넣습니다.
         </li>
         <li>
-          <InlineCode>useDialogs</InlineCode> 훅에서 제공하는{' '}
-          <InlineCode>dialogs</InlineCode> 배열과 <InlineCode>closeDialog</InlineCode>를
-          사용해 UI와 인터랙션을 구축합니다.
+          <InlineCode>useDialogController</InlineCode>로 props·옵션을 안전하게
+          받아오고, 컨트롤러가 제공하는 <InlineCode>stack</InlineCode> 정보를 활용해
+          ESC·외부 클릭 동작을 직접 구현합니다. 자세한 패턴은{' '}
+          <InlineCode>Guides → 컨트롤러 패턴</InlineCode>에서 다룹니다.
         </li>
         <li>
-          포커스/ESC/외부 클릭 동작은 필요 시{' '}
-          <InlineCode>useLayerBehavior</InlineCode>를 추가해 확장합니다.
+          포커스/ESC/외부 클릭 동작은 컨트롤러와 커스텀 훅을 조합해
+          필요한 만큼만 구현합니다.
         </li>
       </ol>
       <p className="mt-2">
-        <InlineCode>AlertDialogProps</InlineCode> 타입을 <InlineCode>src/lib/dialogs</InlineCode>
-        에서 import하면 <InlineCode>DialogState</InlineCode>가 확장한 공통 필드(
-        <InlineCode>closeOnEscape</InlineCode>, <InlineCode>dimmed</InlineCode> 등)를 그대로
-        사용할 수 있습니다. Quick Start 예제는 <InlineCode>useLayerBehavior</InlineCode>를
-        조합해 ESC·외부 클릭 처리까지 구현합니다.
+        <InlineCode>AlertDialogProps</InlineCode>와{' '}
+        <InlineCode>DialogBehaviorOptions</InlineCode> 타입을 재사용하면 컴포넌트마다
+        옵션을 다시 선언할 필요가 없습니다. Quick Start 예제는 컨트롤러
+        패턴으로 ESC·외부 클릭 처리까지 직접 구현하는 방법을 보여 줍니다.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         아래 코드는 하나의 기본 예시일 뿐이며, 실제 프로젝트에서는 UI 라이브러리나
@@ -99,17 +98,17 @@ export const QuickStart = () => (
       <ol className="ml-6 list-decimal space-y-2">
         <li>
           <InlineCode>DialogRenderer</InlineCode> 컴포넌트를 프로젝트에 추가해 열린
-          다이얼로그 배열을 순회하도록 합니다.
+          다이얼로그 스토어를 직접 구독하도록 합니다.
         </li>
         <li>
-          앱 엔트리에서 <InlineCode>useDialogs</InlineCode>를 호출한 뒤, UI 루트
-          어딘가(일반적으로 <InlineCode>&lt;App /&gt;</InlineCode> 상단)에 렌더러를
-          배치합니다.
+          앱 엔트리에서 <InlineCode>useDialogs</InlineCode>를 호출하고, 반환된
+          <InlineCode>store</InlineCode>를 렌더러에 전달합니다.
         </li>
       </ol>
       <p className="mt-2">
-        기본 렌더러는 단순히 열린 다이얼로그를 순서대로 렌더링합니다. 예시처럼
-        마크업을 분리해 두면 테스트와 커스터마이징이 쉬워집니다.
+        기본 렌더러는 스토어 스냅샷을 구독한 뒤 <InlineCode>DialogsRenderer</InlineCode>에
+        위임해 다이얼로그를 순서대로 렌더링합니다. 스토어에 직접 접근하므로
+        scroll-lock 여부 같은 부가 로직을 구현하기도 쉽습니다.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         <InlineCode>scrollLock</InlineCode> 옵션을 사용할 계획이라면, 렌더러에서
@@ -165,8 +164,7 @@ export const QuickStart = () => (
       <CodeBlock language="tsx" code={usageCode} />
       <p className="mt-2 text-sm text-muted-foreground">
         더 많은 패턴은 <InlineCode>Guides</InlineCode> 섹션을 참고하세요. ESC, 포커스
-        트랩 등을 추가하려면 <InlineCode>useLayerBehavior</InlineCode> 애드온을
-        조합하면 됩니다.
+        트랩 등을 추가하려면 컨트롤러 패턴을 참고하여 필요한 동작만 직접 구현해 주세요.
       </p>
     </Section>
   </DocArticle>

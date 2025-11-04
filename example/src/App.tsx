@@ -6,7 +6,7 @@ import { router } from './router';
 import { DialogsRenderer } from 'react-layered-dialog';
 import { renewalDialogStore } from '@/lib/renewalDialogs';
 function App() {
-  const { dialogs } = useDialogs();
+  const { store } = useDialogs();
 
   useEffect(() => {
     const unsubscribe = renewalDialogStore.subscribe(() => {
@@ -27,7 +27,7 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
-      <DialogRenderer dialogs={dialogs} />
+      <DialogRenderer store={store} />
       <DialogsRenderer store={renewalDialogStore} />
     </>
   );

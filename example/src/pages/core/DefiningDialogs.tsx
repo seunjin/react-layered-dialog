@@ -3,157 +3,131 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
-const basePatternSnippet = `// dialog-types.ts
-import type { BaseState, DialogState } from 'react-layered-dialog';
-
-type AlertPayload = BaseState & {
-  type: 'alert';
-  title: string;
-  message: string;
-};
-
-type ConfirmPayload = BaseState & {
-  type: 'confirm';
-  title: string;
-  onConfirm: () => void;
-  onCancel?: () => void;
-};
-
-export type AppDialogState = AlertPayload | ConfirmPayload;
-export type AlertDialogProps = DialogState<AlertPayload>;
-export type ConfirmDialogProps = DialogState<ConfirmPayload>;`;
-
-const layeredPatternSnippet = `// dialog-types.ts (커스텀 메타 필드를 직접 정의)
-import type { DialogState, DialogInstance } from 'react-layered-dialog';
-
-type AlertState = {
-  type: 'alert';
-  title: string;
-  message: string;
-  outsideClickEnabled?: boolean;
-};
-
-type ConfirmState = {
-  type: 'confirm';
-  title: string;
-  onConfirm: () => void;
-  onCancel?: () => void;
+const propsSnippet = `// dialog-types.ts
+export type DialogBehaviorOptions = {
+  dimmed?: boolean;
   closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
-type AppDialogState = DialogState<AlertState> | DialogState<ConfirmState>;
-export type AppDialogInstance = DialogInstance<AppDialogState>;`;
-
-const directPayloadSnippet = `// dialog-types.ts (필요한 필드만 선언하는 가장 단순한 형태)
-type RawAlert = {
-  type: 'alert';
+export type AlertDialogProps = {
   title: string;
   message: string;
+  onOk?: () => void;
 };
 
-type RawConfirm = {
-  type: 'confirm';
+export type ConfirmDialogProps = {
   title: string;
-  onConfirm: () => void;
-  onCancel?: () => void;
+  message: string;
+  onConfirm?: () => void | false;
+  onCancel?: () => void | false;
+  step?: 'confirm' | 'loading' | 'done';
 };
 
-export type AppDialogPayload = RawAlert | RawConfirm;`;
+export type ModalDialogProps = {
+  title: string;
+  description?: string;
+  canDismiss?: boolean;
+  onClose?: () => void;
+};`;
 
-const mapSnippet = `// dialog-map.tsx
-import type { DialogInstance } from 'react-layered-dialog';
-import type { AppDialogState } from './dialog-types';
+const registrySnippet = `// dialogs.ts (일부)
+import { DialogStore, createDialogApi } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
+import { Modal } from '@/components/dialogs/Modal';
+import type {
+  AlertDialogProps,
+  ConfirmDialogProps,
+  ModalDialogProps,
+  DialogBehaviorOptions,
+} from './dialog-types';
 
-export const dialogComponentMap: Record<
-  AppDialogState['type'],
-  DialogInstance<AppDialogState>['Component']
-> = {
-  alert: Alert,
-  confirm: Confirm,
-};`;
+export const dialogStore = new DialogStore();
+
+const registry = {
+  alert: { component: Alert },
+  confirm: { component: Confirm, mode: 'async' },
+  modal: {
+    component: Modal,
+    // 디스플레이 이름을 지정할 수 있습니다.
+    displayName: 'AppModal',
+  },
+} as const;
+
+export const dialogApi = createDialogApi(dialogStore, registry);
+
+// 구체적인 타입이 필요한 경우
+type AlertMethod = typeof dialogApi.alert;
+type AlertOptions = Parameters<AlertMethod>[1]; // OpenDialogOptions<DialogBehaviorOptions>`;
 
 export const DefiningDialogs = () => (
   <DocArticle title="다이얼로그 타입 설계">
     <p className="lead">
-      모든 다이얼로그는 <InlineCode>type</InlineCode> 필드를 가진 디스크리미네이티드 유니온으로
-      정의합니다. 나머지 필드는 각 다이얼로그의 UI에 필요한 최소 props만 포함하세요.
+      새 API에서는 다이얼로그마다 필요한 props 타입과 공통 동작 옵션을 분리해 정의합니다.
+      상태 스택과 메타 데이터는 <InlineCode>DialogStore</InlineCode>가 담당하므로,
+      각 다이얼로그가 받아야 할 데이터에 집중할 수 있습니다.
     </p>
 
-    <Section as="h2" id="patterns" title="대표 설계 패턴">
-      <Section as="h3" id="pattern-base-state" title="패턴 1. BaseState 확장">
-        <p>
-          <InlineCode>BaseState</InlineCode>를 교차하면 dim, ESC, 외부 클릭 옵션을
-          기본값과 함께 공유할 수 있습니다. 공통 동작을 가져가면서 개별 다이얼로그에
-          필요한 필드는 자유롭게 추가하세요.
-        </p>
-        <CodeBlock language="ts" code={basePatternSnippet} />
-      </Section>
-
-      <Section
-        as="h3"
-        id="pattern-layered"
-        title="패턴 2. DialogState로 메타 필드 직접 관리"
-      >
-        <p>
-          <InlineCode>DialogState&lt;T&gt;</InlineCode>를 직접 사용하면{' '}
-          <InlineCode>BaseLayerProps</InlineCode>를 커스터마이즈하면서{' '}
-          <InlineCode>id</InlineCode>, <InlineCode>isOpen</InlineCode>은 필수로 보장됩니다.
-          다이얼로그별로 기본 dim 여부나 closeOnEscape 값을 다르게 지정하고 싶을 때 유용합니다.
-        </p>
-        <CodeBlock language="ts" code={layeredPatternSnippet} />
-      </Section>
-
-      <Section
-        as="h3"
-        id="pattern-raw"
-        title="패턴 3. 최소 Payload만 선언"
-      >
-        <p>
-          가장 단순한 형태로 <InlineCode>type</InlineCode>과 필요한 필드만 선언한 뒤,
-          <InlineCode>DialogState</InlineCode> 변환을 후속 단계에서 수행하는 방식입니다.
-          상태 정의는 간결하지만 컴포넌트 쪽에서 메타 필드를 수동으로 합쳐야 하므로,
-          공통 동작이 거의 없을 때만 권장합니다.
-        </p>
-        <CodeBlock language="ts" code={directPayloadSnippet} />
-      </Section>
-    </Section>
-
-    <Section as="h2" id="component-map" title="컴포넌트 매핑">
+    <Section as="h2" id="props" title="1. Props & 옵션 정의">
       <p>
-        <InlineCode>createUseDialogs</InlineCode>에 전달하는 컴포넌트 맵은 단순한 객체입니다.
-        다이얼로그 상태를 받아 JSX를 반환하는 함수이면 무엇이든 사용할 수 있습니다.
-        <InlineCode>DialogInstance</InlineCode> 타입을 사용하면 각 컴포넌트에 정확한 props 타입이
-        연결됩니다.
+        다이얼로그별로 필요한 필드를 명시적으로 선언하고, dim/ESC/스크롤락 같이
+        공통으로 다룰 동작은 <InlineCode>DialogBehaviorOptions</InlineCode>처럼 별도 타입으로 관리합니다.
       </p>
-      <CodeBlock language="tsx" code={mapSnippet} />
+      <CodeBlock language="ts" code={propsSnippet} />
+      <p className="mt-2 text-sm text-muted-foreground">
+        props 타입은 단순한 객체 형태로 유지하는 편이 좋습니다. 외부에서{' '}
+        <InlineCode>openDialog(&apos;alert&apos;, props)</InlineCode> 형태로 호출하기 때문에
+        <InlineCode>type</InlineCode> 필드를 포함시킬 필요가 없습니다.
+      </p>
     </Section>
 
-    <Section as="h2" id="tips" title="설계 팁">
-      <ul className="ml-6 list-disc space-y-2">
+    <Section as="h2" id="registry" title="2. 레지스트리 연결">
+      <p>
+        <InlineCode>createDialogApi</InlineCode>는 스토어와 레지스트리를 묶어 타입 안전한 헬퍼를 생성합니다.
+        등록된 키마다 <InlineCode>dialogApi.alert</InlineCode>처럼 전용 메서드가 생기며,
+        props/옵션 타입이 자동으로 좁혀집니다.
+      </p>
+      <CodeBlock language="ts" code={registrySnippet} />
+      <p className="mt-2 text-sm text-muted-foreground">
+        메서드 시그니처가 궁금하다면 <InlineCode>typeof dialogApi.alert</InlineCode>처럼 TypeScript 유틸리티를 활용해
+        곧바로 추론된 타입을 확인할 수 있습니다.
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        <InlineCode>mode: &apos;async&apos;</InlineCode>로 등록하면 자동으로 Promise 기반 메서드가 생성됩니다.
+        정의 시점에서 displayName을 지정해 개발자 도구에서 구분하기 쉽게 만들 수도 있습니다.
+      </p>
+    </Section>
+
+    <Section as="h2" id="async" title="3. 비동기 다이얼로그 설계">
+      <p>
+        비동기 다이얼로그는 <InlineCode>mode: &apos;async&apos;</InlineCode> 하나만 추가하면 됩니다.
+        컨트롤러 쪽에서는 <InlineCode>resolve</InlineCode>/<InlineCode>reject</InlineCode>를 호출할 수 있고,
+        호출부에서는 <InlineCode>await dialog.confirm()</InlineCode>처럼 자연스럽게 결과를 사용할 수 있습니다.
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        비동기 결과 객체에는 <InlineCode>status</InlineCode>, <InlineCode>setStatus</InlineCode>,
+        <InlineCode>update</InlineCode> 등이 포함되므로 로딩 상태와 후속 애니메이션을 쉽게 구성할 수 있습니다.
+      </p>
+    </Section>
+
+    <Section as="h2" id="tips" title="4. 설계 팁">
+      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          <b>흐름 한눈에 보기</b>: 상태 선언 → 컴포넌트 props 타입 →{' '}
-          <InlineCode>useDialogs</InlineCode> 반환값을 연결해 한 파일에서 확인하면
-          타입 계약이 깨졌을 때 빠르게 발견할 수 있습니다.
+          <b>옵션과 상태를 분리</b>: 스토어 옵션(예: <InlineCode>scrollLock</InlineCode>)과
+          컴포넌트 내부 상태(예: <InlineCode>step</InlineCode>)를 명확히 구분하면 업데이트 로직이 단순해집니다.
         </li>
         <li>
-          <b>필수 체크리스트</b>: 각 다이얼로그는 고유한 <InlineCode>type</InlineCode>을 유지하고,
-          필요한 필드만 선언하세요. <InlineCode>DialogPatch</InlineCode>를 사용할 때는
-          <InlineCode>id</InlineCode>, <InlineCode>type</InlineCode>,{' '}
-          <InlineCode>isOpen</InlineCode>을 수정하지 않는지 확인합니다.
+          <b>비동기 계약 정의</b>: <InlineCode>mode: &apos;async&apos;</InlineCode> 다이얼로그는 컨트롤러의
+          <InlineCode>resolve</InlineCode>/<InlineCode>reject</InlineCode>를 언제 호출할지 props 타입에 명시해 두면 좋습니다.
         </li>
         <li>
-          <b>세부 동작은 컴포넌트에게 맡기세요</b>. dim, 포커스, 애니메이션 등은 UI 컴포넌트가
-          직접 관리하도록 하면 테스트가 쉬워집니다.
+          <b>레이어 이름</b>: <InlineCode>type</InlineCode> 이름을 폴더 구조와 맞춰 두면 레지스트리와 컴포넌트 탐색이 단순합니다.
+          예) <InlineCode>renewal.confirm</InlineCode>, <InlineCode>marketing.modal</InlineCode>.
         </li>
         <li>
-          <b>추상화는 최소한</b>으로 유지합니다. 다이얼로그가 복잡해지면 별도 상태 머신이나
-          훅을 도입하고 매니저에는 순수 데이터를 전달하세요.
-        </li>
-        <li>
-          <b>확장 가능한 키 전략</b>: type 이름을 폴더 구조나 도메인 이름과 맞춰 두면
-          프로젝트 규모가 커져도 추적이 편합니다.
+          <b>폴더 구조와 type 이름을 일치</b>시키면 레지스트리와 컴포넌트 탐색이 쉬워집니다.
         </li>
       </ul>
     </Section>

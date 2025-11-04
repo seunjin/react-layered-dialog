@@ -26,10 +26,10 @@ pnpm add react-layered-dialog
 
 ```tsx
 import { useDialogs } from '@/lib/dialogs'; // 1. 설정된 훅 임포트
-import { DialogRenderer } from '@/components/DialogRenderer';
+import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 
 function App() {
-  const { openDialog, dialogs } = useDialogs();
+  const { openDialog, store } = useDialogs();
 
   const showAlert = () => {
     // 2. 원하는 다이얼로그를 타입과 함께 호출
@@ -44,19 +44,19 @@ function App() {
       <button onClick={showAlert}>알림 열기</button>
 
       {/* 3. 앱 최상단에 렌더러 추가 */}
-      <DialogRenderer dialogs={dialogs} />
+      <DialogRenderer store={store} />
     </>
   );
 }
 ```
 
-> 전체 설정 과정( `createDialogManager`, `createUseDialogs` 등)에 대한 자세한 내용은 [공식 문서](https://seunjin.github.io/react-layered-dialog/getting-started/quick-start)를 참고해 주세요.
+> 전체 설정 과정( `DialogStore`, `createDialogApi` 등)에 대한 자세한 내용은 [공식 문서](https://seunjin.github.io/react-layered-dialog/getting-started/quick-start)를 참고해 주세요.
 
 ---
 
 ## Why React Layered Dialog?
 
-| Feature | React Layered Dialog | 기존 Modal 라이브러리 |
+| Feature | React Layered Dialog | 일반 Modal 라이브러리 |
 | :--- | :--- | :--- |
 | **선언적 API** | ✅ `openDialog('type', props)` | ❌ 상태 끌어올리기 또는 복잡한 상태관리 |
 | **타입 안전성** | ✅ 완전한 TypeScript 지원 | ❌ 제한적 또는 없음 |

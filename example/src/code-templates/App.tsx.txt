@@ -2,7 +2,7 @@ import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 import { useDialogs } from '@/lib/dialogs';
 
 function App() {
-  const { dialogs } = useDialogs();
+  const { store } = useDialogs();
 
   return (
     <>
@@ -10,7 +10,7 @@ function App() {
       <MainLayout>{/* ... */}</MainLayout>
 
       {/* 다이얼로그를 실제 DOM에 렌더링 */}
-      <DialogRenderer dialogs={dialogs} />
+      <DialogRenderer store={store} />
     </>
   );
 }
