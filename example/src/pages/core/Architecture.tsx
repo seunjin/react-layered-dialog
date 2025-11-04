@@ -26,7 +26,7 @@ export type ConfirmDialogProps = {
   step?: 'confirm' | 'loading' | 'done';
 };
 
-export const dialogStore = new DialogStore(1200);
+export const dialogStore = new DialogStore({ baseZIndex: 1200 });
 
 const registry = {
   alert: { component: Alert },

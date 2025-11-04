@@ -5,7 +5,7 @@ import { CodeBlock } from '@/components/docs/CodeBlock';
 import dialogsTsCode from '@/code-templates/dialogs.ts.txt?raw';
 
 const signature = `class DialogStore {
-  constructor(baseZIndex?: number);
+  constructor(options?: { baseZIndex?: number });
 
   open<TProps, TOptions>(
     renderer: DialogRenderFn<TProps, TOptions>,
@@ -47,11 +47,14 @@ export const DialogStorePage = () => (
 
     <Section as="h2" id="constructor" title="생성자와 기본 상태">
       <p>
-        스토어는 클래스 인스턴스로 생성하며, 선택적으로 <InlineCode>baseZIndex</InlineCode> 값을
-        지정할 수 있습니다. 새 다이얼로그가 열릴 때마다 이 값이 자동으로 증가하므로 중첩 레이어의
-        순서를 쉽게 보장할 수 있습니다.
+        스토어는 클래스 인스턴스로 생성하며, <InlineCode>{`new DialogStore({ baseZIndex })`}</InlineCode>처럼
+        옵션 객체로 시작 z-index를 지정할 수 있습니다. 새 다이얼로그가 열릴 때마다 이 값이 자동으로
+        증가해 중첩 레이어 순서를 쉽게 보장합니다.
       </p>
-      <CodeBlock language="ts" code={`const dialogStore = new DialogStore(1200);`} />
+      <CodeBlock
+        language="ts"
+        code={`const dialogStore = new DialogStore({ baseZIndex: 1200 });`}
+      />
     </Section>
 
     <Section as="h2" id="open-close" title="열고 닫기">

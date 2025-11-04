@@ -96,4 +96,14 @@ describe('createDialogApi', () => {
     expect(result.ok).toBe(true);
     expect(result.options.zIndex).toBeDefined();
   });
+
+  it('respects baseZIndex option when provided', () => {
+    const store = new DialogStore({ baseZIndex: 5000 });
+    store.open(() => null);
+    store.open(() => null);
+
+    const entries = store.getSnapshot().entries;
+    expect(entries[0].zIndex).toBe(5000);
+    expect(entries[1].zIndex).toBe(5001);
+  });
 });

@@ -4,7 +4,7 @@ import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
 const signature = `class DialogStore {
-  constructor(baseZIndex?: number);
+  constructor(options?: { baseZIndex?: number });
 
   open<TProps, TOptions>(renderer: DialogRenderFn<TProps, TOptions>, options?: OpenDialogOptions<TOptions>): DialogOpenResult<TProps, TOptions>;
   openAsync<TProps, TOptions>(renderer: DialogRenderFn<TProps, TOptions>, options?: OpenDialogOptions<TOptions>): Promise<DialogAsyncResult<TProps, TOptions>>;
@@ -25,7 +25,7 @@ const signature = `class DialogStore {
 const example = `import { DialogStore, createDialogApi } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 
-export const dialogStore = new DialogStore(2000);
+export const dialogStore = new DialogStore({ baseZIndex: 2000 });
 
 const dialog = createDialogApi(dialogStore, {
   alert: { component: Alert },
@@ -51,8 +51,8 @@ export const CreateDialogManager = () => (
     <Section as="h2" id="signature" title="주요 메서드">
       <CodeBlock language="ts" code={signature} />
       <p className="mt-2 text-sm text-muted-foreground">
-        생성자에 <InlineCode>baseZIndex</InlineCode>를 전달하면 자동으로 증가하는 z-index
-        시작 값을 지정할 수 있습니다.
+        <InlineCode>new DialogStore({ baseZIndex })</InlineCode>처럼 옵션 객체를 전달하면 자동으로 증가하는
+        z-index 시작 값을 지정할 수 있습니다.
       </p>
     </Section>
 

@@ -1,4 +1,5 @@
 export { DialogStore } from './store';
+export type { DialogStoreOptions } from './store';
 export { DialogsRenderer, useDialogController } from './renderer';
 export {
   createDialogApi,

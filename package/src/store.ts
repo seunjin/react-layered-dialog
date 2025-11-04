@@ -17,6 +17,10 @@ const DEFAULT_BASE_Z_INDEX = 1000;
 let dialogSeq = 0;
 let componentSeq = 0;
 
+export type DialogStoreOptions = {
+  baseZIndex?: number;
+};
+
 /**
  * 다이얼로그 스택을 관리하는 핵심 스토어입니다.
  * open/close/unmount 메서드로 스택을 조작하며 외부에서 구독할 수 있습니다.
@@ -28,7 +32,8 @@ export class DialogStore {
   private nextZIndex: number;
   private snapshot: DialogStoreSnapshot;
 
-  constructor(baseZIndex: number = DEFAULT_BASE_Z_INDEX) {
+  constructor(options: DialogStoreOptions = {}) {
+    const baseZIndex = options.baseZIndex ?? DEFAULT_BASE_Z_INDEX;
     this.baseZIndex = baseZIndex;
     this.nextZIndex = baseZIndex;
     this.snapshot = { entries: this.entries };
