@@ -1,63 +1,12 @@
-import { useMemo, useSyncExternalStore } from 'react';
 import { DialogStore, createDialogApi } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
 
-export type DialogBehaviorOptions = {
-  dimmed?: boolean;
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
-};
-
-export type AlertDialogProps = {
-  title: string;
-  message: string;
-  onOk?: () => void;
-};
-
-export type ConfirmDialogProps = {
-  title: string;
-  message: string;
-  onConfirm?: () => void | false;
-  onCancel?: () => void | false;
-  step?: 'confirm' | 'loading' | 'done';
-};
-
+// 애플리케이션 전역에서 공유할 스토어 인스턴스
 export const dialogStore = new DialogStore();
 
-const registry = {
+// 컴포넌트 레지스트리를 등록하면 dialog.open / dialog.confirm 같은 헬퍼가 생성됩니다.
+export const dialog = createDialogApi(dialogStore, {
   alert: { component: Alert },
   confirm: { component: Confirm },
-} as const;
-
-const dialogApi = createDialogApi(dialogStore, registry);
-
-export const openDialog = dialogApi.open;
-export const closeDialog = dialogApi.close;
-export const closeAllDialogs = dialogApi.closeAll;
-export const unmountDialog = dialogApi.unmount;
-export const unmountAllDialogs = dialogApi.unmountAll;
-export const updateDialog = dialogApi.update;
-
-export function useDialogs() {
-  const snapshot = useSyncExternalStore(
-    dialogStore.subscribe,
-    dialogStore.getSnapshot,
-    dialogStore.getSnapshot
-  );
-
-  return useMemo(
-    () => ({
-      store: dialogStore,
-      dialogs: snapshot.entries,
-      openDialog,
-      closeDialog,
-      closeAllDialogs,
-      unmountDialog,
-      unmountAllDialogs,
-      updateDialog,
-    }),
-    [snapshot]
-  );
-}
+});

@@ -1,0 +1,6 @@
+import { DialogStore, createDialogApi } from 'react-layered-dialog';
+import { Alert } from '@/components/dialogs/Alert';
+
+export const dialog = createDialogApi(new DialogStore(), {
+  alert: { component: Alert },
+});

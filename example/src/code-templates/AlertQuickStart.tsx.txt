@@ -1,0 +1,25 @@
+import { useDialogController } from 'react-layered-dialog';
+
+type AlertDialogProps = {
+  title: string;
+  message: string;
+};
+
+export function Alert({ title, message }: AlertDialogProps) {
+  const { close, unmount } = useDialogController();
+
+  const handleOk = () => {
+    close();
+    unmount();
+  };
+
+  return (
+    <div role="alertdialog" aria-modal="true" className="rounded bg-white p-6 shadow">
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <p className="mt-3 text-sm text-muted-foreground">{message}</p>
+      <button className="mt-5 rounded bg-black px-4 py-2 text-white" onClick={handleOk}>
+        확인
+      </button>
+    </div>
+  );
+}
