@@ -4,6 +4,13 @@ import { Introduction as GettingStartedIntroduction } from '@/renewalPages/getti
 import { QuickStart as GettingStartedQuickStart } from '@/renewalPages/getting-started/QuickStart';
 import { Architecture as FundamentalsArchitecture } from '@/renewalPages/fundamentals/Architecture';
 import { DialogStorePage } from '@/renewalPages/fundamentals/DialogStore';
+import { CreateDialogApiPage } from '@/renewalPages/fundamentals/CreateDialogApi';
+import { UseDialogControllerPage } from '@/renewalPages/fundamentals/UseDialogController';
+import { DialogsRendererPage } from '@/renewalPages/fundamentals/DialogsRenderer';
+import { DefiningDialogsPage as BuildingDefiningDialogsPage } from '@/renewalPages/building-dialogs/DefiningDialogs';
+import { ComponentBasicsPage } from '@/renewalPages/building-dialogs/ComponentBasics';
+import { AsyncPatternsPage } from '@/renewalPages/building-dialogs/AsyncPatterns';
+import { BehaviorOptionsPage } from '@/renewalPages/building-dialogs/BehaviorOptions';
 
 export const routeConfig = [
   {
@@ -35,6 +42,47 @@ export const routeConfig = [
         path: 'dialog-store',
         element: <DialogStorePage />,
         name: 'DialogStore',
+      },
+      {
+        path: 'create-dialog-api',
+        element: <CreateDialogApiPage />,
+        name: 'createDialogApi',
+      },
+      {
+        path: 'use-dialog-controller',
+        element: <UseDialogControllerPage />,
+        name: 'useDialogController',
+      },
+      {
+        path: 'dialogs-renderer',
+        element: <DialogsRendererPage />,
+        name: 'DialogsRenderer',
+      },
+    ],
+  },
+  {
+    path: 'building-dialogs',
+    title: '다이얼로그 만들기',
+    children: [
+      {
+        path: 'defining',
+        element: <BuildingDefiningDialogsPage />,
+        name: '타입 설계',
+      },
+      {
+        path: 'components',
+        element: <ComponentBasicsPage />,
+        name: '컴포넌트 기본기',
+      },
+      {
+        path: 'async-patterns',
+        element: <AsyncPatternsPage />,
+        name: '비동기 패턴',
+      },
+      {
+        path: 'behavior-options',
+        element: <BehaviorOptionsPage />,
+        name: '옵션 & 동작',
       },
     ],
   },

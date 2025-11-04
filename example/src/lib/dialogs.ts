@@ -30,8 +30,8 @@ export type AlertDialogProps = {
 export type ConfirmDialogProps = {
   title: string;
   message: string;
-  onConfirm?: () => void | false;
-  onCancel?: () => void | false;
+  onConfirm?: () => void;
+  onCancel?: () => void;
   step?: 'confirm' | 'loading' | 'done';
 };
 
