@@ -50,10 +50,10 @@ export const QuickStart = () => (
         </li>
       </ol>
       <p className="mt-2">
-        샘플 코드에는 <InlineCode>AlertDialogProps</InlineCode>처럼 다이얼로그별
-        props 타입과, 공통 동작을 제어하는 <InlineCode>DialogBehaviorOptions</InlineCode>
-        타입을 함께 정의했습니다. 이후 컴포넌트에서 동일한 타입을 불러와
-        재사용할 수 있습니다.
+        샘플 코드에는 <InlineCode>AlertDialogProps</InlineCode>처럼 다이얼로그별 props
+        타입만 선언합니다. dim/ESC/scroll-lock 같은 동작도 props 필드로 포함해,
+        컴포넌트에서 <InlineCode>getStateFields</InlineCode>로 기본값을 병합하며
+        재사용하면 됩니다.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         <Link to="/core/architecture" className="text-primary underline">
@@ -71,9 +71,9 @@ export const QuickStart = () => (
           위치) 파일을 만들고 아래 코드를 붙여 넣습니다.
         </li>
         <li>
-          <InlineCode>useDialogController</InlineCode>로 props·옵션을 안전하게
-          받아오고, 컨트롤러가 제공하는 <InlineCode>stack</InlineCode> 정보를 활용해
-          ESC·외부 클릭 동작을 직접 구현합니다. 자세한 패턴은{' '}
+          <InlineCode>useDialogController</InlineCode>로 props를 안전하게 받아오고,
+          컨트롤러가 제공하는 <InlineCode>stack</InlineCode> 정보를 활용해 ESC·외부
+          클릭 동작을 직접 구현합니다. 자세한 패턴은{' '}
           <InlineCode>Guides → 컨트롤러 패턴</InlineCode>에서 다룹니다.
         </li>
         <li>
@@ -82,10 +82,9 @@ export const QuickStart = () => (
         </li>
       </ol>
       <p className="mt-2">
-        <InlineCode>AlertDialogProps</InlineCode>와{' '}
-        <InlineCode>DialogBehaviorOptions</InlineCode> 타입을 재사용하면 컴포넌트마다
-        옵션을 다시 선언할 필요가 없습니다. Quick Start 예제는 컨트롤러
-        패턴으로 ESC·외부 클릭 처리까지 직접 구현하는 방법을 보여 줍니다.
+        props 타입을 재사용하면 각 다이얼로그가 동일한 동작 플래그를 공유할 수 있습니다.
+        Quick Start 예제는 컨트롤러 패턴으로 ESC·외부 클릭 처리까지 직접 구현하는
+        방법을 보여 줍니다.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         아래 코드는 하나의 기본 예시일 뿐이며, 실제 프로젝트에서는 UI 라이브러리나
@@ -107,13 +106,14 @@ export const QuickStart = () => (
       </ol>
       <p className="mt-2">
         기본 렌더러는 스토어 스냅샷을 구독한 뒤 <InlineCode>DialogsRenderer</InlineCode>에
-        위임해 다이얼로그를 순서대로 렌더링합니다. 스토어에 직접 접근하므로
-        scroll-lock 여부 같은 부가 로직을 구현하기도 쉽습니다.
+        위임해 다이얼로그를 순서대로 렌더링합니다. scroll-lock 같은 부가 동작은
+        각 다이얼로그 컴포넌트에서 <InlineCode>useBodyScrollLock</InlineCode> 등의 커스텀
+        훅으로 처리하는 편이 가장 단순합니다.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
-        <InlineCode>scrollLock</InlineCode> 옵션을 사용할 계획이라면, 렌더러에서
-        <InlineCode>document.body</InlineCode>에 <InlineCode>scroll-locked</InlineCode> 클래스를
-        추가/제거하는 로직을 직접 구현하고, 전역 스타일에 다음 규칙을 등록하세요:
+        예제 훅은 <InlineCode>document.body</InlineCode>에{' '}
+        <InlineCode>scroll-locked</InlineCode> 클래스를 추가/제거하므로, 전역 스타일에
+        다음 규칙을 등록해 스크롤을 잠글 수 있습니다:
       </p>
       <CodeBlock language="css" code={`.scroll-locked {\n  overflow: hidden;\n}`} />
       <p className="mt-2 text-muted-foreground">

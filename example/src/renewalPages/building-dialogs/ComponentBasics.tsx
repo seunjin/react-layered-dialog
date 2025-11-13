@@ -3,13 +3,13 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
-const basicComponentSnippet = `import type { DialogComponent } from 'react-layered-dialog';
-import { useDialogController } from 'react-layered-dialog';
-import type { AlertDialogProps, DialogBehaviorOptions } from '@/lib/dialogs';
+const basicComponentSnippet = `import { useDialogController } from 'react-layered-dialog';
+import type { DialogComponent } from 'react-layered-dialog';
+import type { AlertDialogProps } from '@/lib/dialogs';
 
-export const AlertDialog: DialogComponent<AlertDialogProps, DialogBehaviorOptions> = (props) => {
-  const controller = useDialogController<AlertDialogProps, DialogBehaviorOptions>();
-  const { close, unmount, getStateField, getStateFields, options } = controller;
+export const AlertDialog: DialogComponent<AlertDialogProps> = (props) => {
+  const controller = useDialogController<AlertDialogProps>();
+  const { close, unmount, getStateField, getStateFields, zIndex } = controller;
 
   // 기본값과 props를 병합해 항상 완전한 객체를 유지합니다.
   const { title, message } = getStateFields({
@@ -26,16 +26,10 @@ export const AlertDialog: DialogComponent<AlertDialogProps, DialogBehaviorOption
   };
 
   return (
-    <section
-      role="alertdialog"
-      aria-modal="true"
-      style={{ zIndex: options.zIndex }}
-    >
+    <section role="alertdialog" aria-modal="true" style={{ zIndex }}>
       <header>{title}</header>
       <p>{message}</p>
       <button autoFocus onClick={handleConfirm}>확인</button>
-      {/* 옵션은 레지스트리/호출부에서 전달된 값입니다. */}
-      {options.closeOnEscape === false && <span>ESC로 닫을 수 없습니다.</span>}
     </section>
   );
 };`;
@@ -43,7 +37,7 @@ export const AlertDialog: DialogComponent<AlertDialogProps, DialogBehaviorOption
 export const ComponentBasicsPage = () => (
   <DocArticle title="다이얼로그 컴포넌트 기본기">
     <p className="lead">
-      다이얼로그 컴포넌트는 <InlineCode>useDialogController</InlineCode>를 통해 닫기, 언마운트, 옵션, 스택 정보를 받아
+      다이얼로그 컴포넌트는 <InlineCode>useDialogController</InlineCode>를 통해 닫기, 언마운트, 스택 정보를 받아
       UI와 상호작용을 정의합니다. props와 옵션을 안전하게 병합하고, 컨트롤러가 제공하는 제어 함수를 적극 활용하세요.
     </p>
 
@@ -57,10 +51,10 @@ export const ComponentBasicsPage = () => (
           특정 필드만 필요하다면 <InlineCode>getStateField(key, fallback)</InlineCode>를 사용해 undefined를 허용하지 않는 값을 쉽게 얻을 수 있습니다.
         </li>
         <li>
-          옵션 객체(<InlineCode>options</InlineCode>)에는 레지스트리/호출부에서 전달한 값과 자동 계산된 <InlineCode>zIndex</InlineCode>가 포함되어 있으므로, 스타일과 전역 정책을 제어할 때 활용하세요.
+          컨트롤러는 자동 계산된 <InlineCode>zIndex</InlineCode>를 제공하므로 스타일이나 포탈 전략을 제어할 때 활용하세요.
         </li>
         <li>
-          컴포넌트를 <InlineCode>DialogComponent&lt;TProps, TOptions&gt;</InlineCode>로 선언하면 레지스트리에 등록할 때 타입이 자동으로 매핑되어 호환성을 보장합니다.
+          컴포넌트를 <InlineCode>DialogComponent&lt;TProps&gt;</InlineCode>로 선언하면 레지스트리에 등록할 때 타입이 자동으로 매핑되어 호환성을 보장합니다.
         </li>
       </ul>
     </Section>
@@ -91,7 +85,7 @@ export const ComponentBasicsPage = () => (
           비동기 확인 모달을 구현하려면 <InlineCode>비동기 패턴</InlineCode> 페이지를 참고하세요.
         </li>
         <li>
-          옵션 기반 상호작용 제어는 <InlineCode>옵션 & 동작</InlineCode> 페이지에서 이어집니다.
+          동작 플래그 설계는 <InlineCode>동작 패턴</InlineCode> 페이지에서 이어집니다.
         </li>
       </ul>
     </Section>

@@ -6,31 +6,39 @@ import {
   useDialogController,
   type DialogComponent,
 } from 'react-layered-dialog';
-import type { DialogBehaviorOptions, ModalDialogProps } from '@/lib/dialogs';
+import type { ModalDialogProps } from '@/lib/dialogs';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export const Modal = ((props: ModalDialogProps) => {
-  const controller = useDialogController<
-    ModalDialogProps,
-    DialogBehaviorOptions
-  >();
-  const { id, isOpen, options, close, unmount, getStateFields, stack } =
+  const controller = useDialogController<ModalDialogProps>();
+  const { id, isOpen, zIndex, close, unmount, getStateFields, stack } =
     controller;
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  const { title, description, body, canDismiss, onClose } = getStateFields({
+  const {
+    title,
+    description,
+    body,
+    canDismiss,
+    onClose,
+    dimmed = true,
+    closeOnEscape = false,
+    closeOnOutsideClick = closeOnEscape,
+    scrollLock = true,
+  } = getStateFields({
     title: props.title,
     description: props.description,
     body: props.body,
     canDismiss: props.canDismiss ?? false,
     onClose: props.onClose,
+    dimmed: props.dimmed ?? true,
+    closeOnEscape: props.closeOnEscape ?? props.canDismiss ?? false,
+    closeOnOutsideClick:
+      props.closeOnOutsideClick ?? props.closeOnEscape ?? props.canDismiss ?? false,
+    scrollLock: props.scrollLock ?? true,
   });
 
-  const closeOnEscapeFlag = options.closeOnEscape ?? canDismiss ?? false;
-  const closeOnOutsideClickFlag =
-    options.closeOnOutsideClick ?? closeOnEscapeFlag;
-  const dimmed = options.dimmed ?? true;
-  const zIndex = options.zIndex;
   const isTop = stack.index === stack.size - 1;
 
   const handleClose = useCallback(() => {
@@ -45,7 +53,7 @@ export const Modal = ((props: ModalDialogProps) => {
   }, [canDismiss]);
 
   useEffect(() => {
-    if (!isOpen || !closeOnEscapeFlag || !isTop) return;
+    if (!isOpen || !closeOnEscape || !isTop) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleClose();
@@ -53,10 +61,10 @@ export const Modal = ((props: ModalDialogProps) => {
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [closeOnEscapeFlag, handleClose, isOpen, isTop]);
+  }, [closeOnEscape, handleClose, isOpen, isTop]);
 
   useEffect(() => {
-    if (!isOpen || !closeOnOutsideClickFlag || !isTop) return;
+    if (!isOpen || !closeOnOutsideClick || !isTop) return;
     const onMouseDown = (event: MouseEvent) => {
       if (!panelRef.current) return;
       if (!panelRef.current.contains(event.target as Node)) {
@@ -65,7 +73,9 @@ export const Modal = ((props: ModalDialogProps) => {
     };
     document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [closeOnOutsideClickFlag, handleClose, isOpen, isTop]);
+  }, [closeOnOutsideClick, handleClose, isOpen, isTop]);
+
+  useBodyScrollLock(scrollLock && isOpen);
 
   return (
     <AnimatePresence onExitComplete={unmount}>
@@ -127,4 +137,4 @@ export const Modal = ((props: ModalDialogProps) => {
       )}
     </AnimatePresence>
   );
-}) satisfies DialogComponent<ModalDialogProps, DialogBehaviorOptions>;
+}) satisfies DialogComponent<ModalDialogProps>;

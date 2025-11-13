@@ -10,20 +10,25 @@ import { DialogStore, createDialogApi } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
 
-export type DialogBehaviorOptions = {
+export type AlertDialogProps = {
+  title: string;
+  message: string;
+  onOk?: () => void;
   dimmed?: boolean;
   closeOnEscape?: boolean;
   closeOnOutsideClick?: boolean;
   scrollLock?: boolean;
 };
-
-export type AlertDialogProps = { title: string; message: string; onOk?: () => void };
 export type ConfirmDialogProps = {
   title: string;
   message: string;
   onConfirm?: () => void;
   onCancel?: () => void;
   step?: 'confirm' | 'loading' | 'done';
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 export const dialogStore = new DialogStore({ baseZIndex: 1200 });
@@ -65,30 +70,9 @@ export function useDialogs() {
 }`;
 
 const rendererSnippet = `// src/components/dialogs/DialogRenderer.tsx
-import { useEffect, useSyncExternalStore } from 'react';
 import { DialogsRenderer, type DialogStore } from 'react-layered-dialog';
 
 export const DialogRenderer = ({ store }: { store: DialogStore }) => {
-  const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
-
-  const isScrollLocked = snapshot.entries.some((entry) => {
-    if (entry.options.scrollLock === true) return true;
-    const state = entry.state as Record<string, unknown> | undefined;
-    return state?.scrollLock === true;
-  });
-
-  useEffect(() => {
-    if (isScrollLocked) {
-      document.body.classList.add('scroll-locked');
-    } else {
-      document.body.classList.remove('scroll-locked');
-    }
-
-    return () => {
-      document.body.classList.remove('scroll-locked');
-    };
-  }, [isScrollLocked]);
-
   return <DialogsRenderer store={store} />;
 };`;
 
@@ -104,19 +88,19 @@ export const Architecture = () => (
     <Section as="h2" id="system-overview" title="핵심 구성 요소">
       <ol className="ml-6 list-decimal space-y-2">
         <li>
-          <b>DialogStore</b>: 다이얼로그 스택과 옵션을 보관하는 클래스입니다.
-          <InlineCode>open</InlineCode>, <InlineCode>close</InlineCode>,
+          <b>DialogStore</b>: 다이얼로그 스택과 z-index 같은 메타데이터를 보관하는
+          클래스입니다. <InlineCode>open</InlineCode>, <InlineCode>close</InlineCode>,
           <InlineCode>update</InlineCode> 같은 저수준 메서드를 제공합니다.
         </li>
         <li>
           <b>createDialogApi</b>: 스토어와 레지스트리를 연결해 타입 안전한
           <InlineCode>openDialog</InlineCode>·<InlineCode>closeDialog</InlineCode>
-          와 같은 헬퍼를 생성합니다. 각 다이얼로그의 props/옵션 타입이 자동으로
+          와 같은 헬퍼를 생성합니다. 각 다이얼로그의 props 타입이 자동으로
           추론됩니다.
         </li>
         <li>
           <b>DialogsRenderer + useDialogController</b>: 렌더러는 스토어를 구독하고,
-          개별 컴포넌트는 컨트롤러 훅을 통해 상태·옵션·제어 함수를 받아 사용합니다.
+          개별 컴포넌트는 컨트롤러 훅을 통해 props 기반 상태와 제어 함수를 받아 사용합니다.
         </li>
       </ol>
     </Section>
@@ -129,7 +113,8 @@ export const Architecture = () => (
         </li>
         <li>
           렌더러 계층에서는 <InlineCode>DialogsRenderer</InlineCode>에 스토어를 전달해
-          컨텍스트를 주입하고, 필요 시 전역 동작(scroll lock 등)을 추가합니다.
+          컨텍스트를 주입합니다. 스크롤 잠금처럼 DOM 수준 제어가 필요하다면 각
+          다이얼로그 컴포넌트에서 훅으로 확장하거나 이 계층에서 별도 처리를 추가합니다.
         </li>
         <li>
           다이얼로그 컴포넌트 내부에서는 <InlineCode>useDialogController</InlineCode>로
@@ -152,9 +137,9 @@ export const Architecture = () => (
       </p>
       <CodeBlock language="ts" code={storeSnippet} />
       <p className="mt-4">
-        렌더러는 스토어 스냅샷을 구독해 전역 scroll-lock을 처리한 뒤,
-        <InlineCode>DialogsRenderer</InlineCode>에 위임해 다이얼로그를 실제 DOM에
-        렌더링합니다.
+        렌더러는 준비된 <InlineCode>DialogStore</InlineCode>를 그대로 전달합니다.
+        전역 scroll-lock 같은 동작은 각 다이얼로그 컴포넌트에서 props를 기준으로
+        제어하거나, 필요 시 이 래퍼에서 커스텀 훅을 추가해 확장할 수 있습니다.
       </p>
       <CodeBlock language="tsx" code={rendererSnippet} />
     </Section>
@@ -163,7 +148,7 @@ export const Architecture = () => (
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <InlineCode>DialogStoreSnapshot</InlineCode>은 현재 열린 다이얼로그
-          엔트리 배열을 제공합니다. 각 엔트리는 <InlineCode>options</InlineCode>와
+          엔트리 배열을 제공합니다. 각 엔트리는 <InlineCode>zIndex</InlineCode>,
           <InlineCode>state</InlineCode>, <InlineCode>meta.status</InlineCode> 등을 보관합니다.
         </li>
         <li>

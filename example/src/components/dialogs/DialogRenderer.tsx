@@ -1,28 +1,13 @@
-import { useEffect, useSyncExternalStore } from 'react';
 import { DialogsRenderer, type DialogStore } from 'react-layered-dialog';
-import type { DialogBehaviorOptions } from '@/lib/dialogs';
 
-export const DialogRenderer = ({ store }: { store: DialogStore }) => {
-  const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
+type DialogRendererProps = {
+  store: DialogStore;
+};
 
-  const isScrollLocked = snapshot.entries.some((entry) => {
-    const options = entry.options as DialogBehaviorOptions & { zIndex: number };
-    if (options.scrollLock === true) return true;
-    const state = entry.state as Record<string, unknown> | undefined;
-    return state?.scrollLock === true;
-  });
-
-  useEffect(() => {
-    if (isScrollLocked) {
-      document.body.classList.add('scroll-locked');
-    } else {
-      document.body.classList.remove('scroll-locked');
-    }
-
-    return () => {
-      document.body.classList.remove('scroll-locked');
-    };
-  }, [isScrollLocked]);
-
+/**
+ * 애플리케이션 전역 다이얼로그를 렌더링하는 최소 래퍼입니다.
+ * 필요에 따라 여기서 dimmed 처리나 포탈 전략 등을 확장할 수 있습니다.
+ */
+export const DialogRenderer = ({ store }: DialogRendererProps) => {
   return <DialogsRenderer store={store} />;
 };

@@ -11,9 +11,8 @@ export type DialogListener = () => void;
  * 컨트롤러 컨텍스트를 인자로 전달해 사용자 컴포넌트가 제어 메서드에 접근할 수 있게 합니다.
  */
 export type DialogRenderFn<
-  TProps extends Record<string, unknown> = Record<string, unknown>,
-  TOptions extends Record<string, unknown> = Record<string, unknown>
-> = (controller: DialogControllerContextValue<TProps, TOptions>) => ReactNode;
+  TProps extends Record<string, unknown> = Record<string, unknown>
+> = (controller: DialogControllerContextValue<TProps>) => ReactNode;
 
 /**
  * 다이얼로그 고유 식별자 타입.
@@ -41,8 +40,6 @@ export interface DialogEntry {
   zIndex: number;
   /** 사용자 정의 상태. `update`를 통해 변경되며 컨트롤러를 통해 노출됩니다. */
   state: Record<string, unknown>;
-  /** 사용자 지정 옵션. 다이얼로그 선언 시 함께 전달됩니다. */
-  options: Record<string, unknown> & { zIndex: number };
   /** 비동기 다이얼로그 제어를 위한 핸들러 */
   asyncHandlers?: DialogAsyncEntryHandlers;
   /** 내부 메타 데이터 (로딩 등) */
@@ -86,8 +83,7 @@ export type DialogAsyncResolvePayload = {
  * 비동기 다이얼로그 호출 결과입니다.
  */
 export type DialogOpenResult<
-  TProps extends Record<string, unknown> = Record<string, unknown>,
-  TOptions extends Record<string, unknown> = Record<string, unknown>
+  TProps extends Record<string, unknown> = Record<string, unknown>
 > = {
   dialog: OpenDialogResult;
   close: () => void;
@@ -96,13 +92,12 @@ export type DialogOpenResult<
   setStatus: (status: DialogStatus) => void;
   status: DialogStatus;
   getStatus: () => DialogStatus;
-  options: TOptions & { zIndex: number };
+  zIndex: number;
 };
 
 export type DialogAsyncResult<
-  TProps extends Record<string, unknown> = Record<string, unknown>,
-  TOptions extends Record<string, unknown> = Record<string, unknown>
-> = DialogOpenResult<TProps, TOptions> & {
+  TProps extends Record<string, unknown> = Record<string, unknown>
+> = DialogOpenResult<TProps> & {
   ok: boolean;
 };
 
@@ -118,8 +113,7 @@ export interface DialogAsyncEntryHandlers {
  * 컨텍스트 훅으로 노출되는 컨트롤러 값의 형태입니다.
  */
 export interface DialogControllerContextValue<
-  TProps extends Record<string, unknown> = Record<string, unknown>,
-  TOptions extends Record<string, unknown> = Record<string, unknown>
+  TProps extends Record<string, unknown> = Record<string, unknown>
 > {
   /** 다이얼로그 ID */
   id: DialogId;
@@ -127,10 +121,12 @@ export interface DialogControllerContextValue<
   isOpen: boolean;
   /** 현재 다이얼로그의 사용자 정의 상태 */
   state: TProps;
-  /** 다이얼로그에 전달된 옵션 객체 */
-  options: TOptions & { zIndex: number };
+  /** 다이얼로그의 z-index 메타 */
+  zIndex: number;
   /** 다이얼로그 핸들 (id, componentKey) */
   handle: OpenDialogResult;
+  /** 현재 스택 정보 */
+  stack: DialogStackInfo;
   /** 현재 다이얼로그를 닫음. (isOpen=false) */
   close: () => void;
   /** 애니메이션 종료 후 다이얼로그를 완전히 제거 */
@@ -154,8 +150,6 @@ export interface DialogControllerContextValue<
    * state가 비어 있으면 기본 객체가 그대로 반환됩니다.
    */
   getStateFields: <T extends Record<string, unknown>>(base: T) => T;
-  /** 현재 스택 정보 */
-  stack: DialogStackInfo;
   /** Promise 기반 컨트롤러에서 결과를 resolve */
   resolve?: (payload: DialogAsyncResolvePayload) => void;
   /** Promise 기반 컨트롤러에서 Promise를 reject */
@@ -178,7 +172,7 @@ export interface DialogStoreSnapshot {
 /**
  * 다이얼로그를 열 때 전달할 수 있는 옵션입니다.
  */
-export type OpenDialogOptions<TOptions extends Record<string, unknown> = Record<string, unknown>> = TOptions & {
+export type OpenDialogOptions = {
   /** 직접 ID를 지정하고 싶을 때 사용 */
   id?: DialogId;
   /** z-index를 강제로 지정할 때 사용 */

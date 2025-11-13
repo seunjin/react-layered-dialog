@@ -1,4 +1,3 @@
-import { useEffect, useSyncExternalStore } from 'react';
 import { DialogsRenderer, type DialogStore } from 'react-layered-dialog';
 
 type DialogRendererProps = {
@@ -6,26 +5,5 @@ type DialogRendererProps = {
 };
 
 export const DialogRenderer = ({ store }: DialogRendererProps) => {
-  // 스토어 스냅샷을 직접 구독해 scrollLock 상태를 파악합니다.
-  const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
-
-  const isScrollLocked = snapshot.entries.some((entry) => {
-    if (entry.options.scrollLock === true) return true;
-    const state = entry.state as Record<string, unknown> | undefined;
-    return state?.scrollLock === true;
-  });
-
-  useEffect(() => {
-    if (isScrollLocked) {
-      document.body.classList.add('scroll-locked');
-    } else {
-      document.body.classList.remove('scroll-locked');
-    }
-
-    return () => {
-      document.body.classList.remove('scroll-locked');
-    };
-  }, [isScrollLocked]);
-
   return <DialogsRenderer store={store} />;
 };

@@ -4,36 +4,57 @@ import {
   useDialogController,
   type DialogComponent,
 } from 'react-layered-dialog';
-import type { ConfirmDialogProps, DialogBehaviorOptions } from '@/lib/dialogs';
+import type { ConfirmDialogProps } from '@/lib/dialogs';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export const Confirm = ((props: ConfirmDialogProps) => {
-  const controller = useDialogController<ConfirmDialogProps, DialogBehaviorOptions>();
-  const { id, options, close, unmount, getStateFields, stack } = controller;
+  const controller = useDialogController<ConfirmDialogProps>();
+  const { id, isOpen, zIndex, close, unmount, getStateFields, stack } =
+    controller;
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const { title, message, onConfirm, onCancel } = getStateFields({
+  const {
+    title,
+    message,
+    onConfirm,
+    onCancel,
+    dimmed = true,
+    closeOnEscape = true,
+    closeOnOutsideClick = true,
+    scrollLock = true,
+  } = getStateFields({
     title: props.title,
     message: props.message,
     onConfirm: props.onConfirm,
     onCancel: props.onCancel,
+    dimmed: props.dimmed ?? true,
+    closeOnEscape: props.closeOnEscape ?? true,
+    closeOnOutsideClick: props.closeOnOutsideClick ?? true,
+    scrollLock: props.scrollLock ?? true,
   });
 
-  const closeOnEscape = options.closeOnEscape ?? true;
-  const closeOnOutsideClick = options.closeOnOutsideClick ?? true;
-  const dimmed = options.dimmed ?? true;
-  const zIndex = options.zIndex;
   const isTop = stack.index === stack.size - 1;
 
   const handleCancel = useCallback(() => {
-    onCancel?.();
-    close();
-    unmount();
+    if (!onCancel) return;
+    const shouldClose = onCancel();
+    if (shouldClose !== false) {
+      close();
+      unmount();
+    }
   }, [close, onCancel, unmount]);
 
   const handleConfirm = useCallback(() => {
-    onConfirm?.();
-    close();
-    unmount();
+    if (!onConfirm) {
+      close();
+      unmount();
+      return;
+    }
+    const shouldClose = onConfirm();
+    if (shouldClose !== false) {
+      close();
+      unmount();
+    }
   }, [close, onConfirm, unmount]);
 
   useEffect(() => {
@@ -59,9 +80,11 @@ export const Confirm = ((props: ConfirmDialogProps) => {
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [closeOnOutsideClick, handleCancel, isTop]);
 
+  useBodyScrollLock(scrollLock && isOpen);
+
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center ${
+      className={`fixed inset-0 flex items-center justify-center transition-none ${
         dimmed ? 'bg-black/40 pointer-events-auto' : 'bg-transparent pointer-events-none'
       }`}
       style={{ zIndex }}
@@ -72,7 +95,7 @@ export const Confirm = ((props: ConfirmDialogProps) => {
     >
       <div
         ref={panelRef}
-        className="pointer-events-auto relative min-w-[320px] rounded-lg border border-border bg-white p-6 shadow-xl"
+        className="pointer-events-auto relative min-w-[320px] rounded-lg border border-border bg-white p-6 shadow-lg"
       >
         <h3 id={`confirm-${id}-title`} className="text-lg font-semibold">
           {title}
@@ -84,9 +107,11 @@ export const Confirm = ((props: ConfirmDialogProps) => {
           {message}
         </p>
         <div className="mt-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={handleCancel}>
-            취소
-          </Button>
+          {onCancel ? (
+            <Button variant="outline" onClick={handleCancel}>
+              취소
+            </Button>
+          ) : null}
           <Button autoFocus onClick={handleConfirm}>
             확인
           </Button>
@@ -94,4 +119,4 @@ export const Confirm = ((props: ConfirmDialogProps) => {
       </div>
     </div>
   );
-}) satisfies DialogComponent<ConfirmDialogProps, DialogBehaviorOptions>;
+}) satisfies DialogComponent<ConfirmDialogProps>;

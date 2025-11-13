@@ -4,11 +4,11 @@ import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
 const controllerBasics = `import { useDialogController } from 'react-layered-dialog';
-import type { ConfirmDialogProps, DialogBehaviorOptions } from '@/lib/dialogs';
+import type { ConfirmDialogProps } from '@/lib/dialogs';
 
 export const ConfirmDialog = (props: ConfirmDialogProps) => {
-  const controller = useDialogController<ConfirmDialogProps, DialogBehaviorOptions>();
-  const { getStateFields, close, unmount, options, setStatus } = controller;
+  const controller = useDialogController<ConfirmDialogProps>();
+  const { getStateFields, close, unmount, setStatus, zIndex } = controller;
 
   const { title, message, onConfirm, onCancel } = getStateFields({
     title: props.title,
@@ -36,10 +36,7 @@ export const ConfirmDialog = (props: ConfirmDialogProps) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center">
-      <div
-        className="rounded-lg bg-white p-6 shadow-xl"
-        style={{ zIndex: options.zIndex }}
-      >
+      <div className="rounded-lg bg-white p-6 shadow-xl" style={{ zIndex }}>
         <h3 className="text-lg font-semibold">{title}</h3>
         <p className="mt-2 text-sm text-muted-foreground">{message}</p>
         <div className="mt-4 flex justify-end gap-2">
@@ -105,7 +102,7 @@ export const ControllerPatterns = () => (
 
     <Section as="h2" id="basic" title="1. 컨트롤러 기본 사용">
       <p>
-        컨트롤러는 props와 옵션을 안전하게 병합할 수 있도록{' '}
+        컨트롤러는 props와 사용자 상태를 안전하게 병합할 수 있도록{' '}
         <InlineCode>getStateFields</InlineCode> 헬퍼를 제공합니다. 또한{' '}
         <InlineCode>close</InlineCode>, <InlineCode>unmount</InlineCode>, <InlineCode>setStatus</InlineCode> 등
         스택을 제어하는 메서드를 직접 노출합니다.
@@ -136,8 +133,9 @@ export const ControllerPatterns = () => (
           중첩 다이얼로그의 우선순위를 쉽게 제어할 수 있습니다.
         </li>
         <li>
-          <b>옵션 기본값</b>: 컨트롤러는 다이얼로그 열 때 전달한 옵션을 그대로 노출합니다.
-          기본값을 지정하고 싶다면 <InlineCode>DialogStore</InlineCode> 호출부나 컴포넌트 내부에서 병합하세요.
+          <b>동작 기본값</b>: dim/ESC/scroll-lock 같은 동작은 props 기본값으로 정의하고
+          <InlineCode>getStateFields</InlineCode>로 병합하세요. 필요하다면 커스텀 훅을 만들어
+          여러 컴포넌트에서 재사용할 수 있습니다.
         </li>
         <li>
           <b>비동기 흐름</b>: <InlineCode>openAsync</InlineCode>의 결과 객체와 컨트롤러를 함께 사용하면

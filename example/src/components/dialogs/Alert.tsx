@@ -5,33 +5,41 @@ import {
   useDialogController,
   type DialogComponent,
 } from 'react-layered-dialog';
-import type { AlertDialogProps, DialogBehaviorOptions } from '@/lib/dialogs';
+import type { AlertDialogProps } from '@/lib/dialogs';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export const Alert = ((props: AlertDialogProps) => {
-  const controller = useDialogController<
-    AlertDialogProps,
-    DialogBehaviorOptions
-  >();
-  const { id, isOpen, options, close, unmount, getStateFields, stack } =
+  const controller = useDialogController<AlertDialogProps>();
+  const { id, isOpen, zIndex, close, unmount, getStateFields, stack } =
     controller;
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const closeOnEscape = options.closeOnEscape ?? true;
-  const closeOnOutsideClick = options.closeOnOutsideClick ?? true;
-  const dimmed = options.dimmed ?? true;
-  const zIndex = options.zIndex;
-  const isTop = stack.index === stack.size - 1;
-
-  const { title, message, onOk } = getStateFields({
+  const {
+    title,
+    message,
+    onOk,
+    dimmed = true,
+    closeOnEscape = true,
+    closeOnOutsideClick = true,
+    scrollLock = true,
+  } = getStateFields({
     title: props.title,
     message: props.message,
     onOk: props.onOk,
+    dimmed: props.dimmed ?? true,
+    closeOnEscape: props.closeOnEscape ?? true,
+    closeOnOutsideClick: props.closeOnOutsideClick ?? true,
+    scrollLock: props.scrollLock ?? true,
   });
+
+  const isTop = stack.index === stack.size - 1;
 
   const handleClose = useCallback(() => {
     onOk?.();
     close();
   }, [onOk, close]);
+
+  useBodyScrollLock(scrollLock && isOpen);
 
   useEffect(() => {
     if (!isOpen || !closeOnEscape || !isTop) return;
@@ -107,4 +115,4 @@ export const Alert = ((props: AlertDialogProps) => {
       )}
     </AnimatePresence>
   );
-}) satisfies DialogComponent<AlertDialogProps, DialogBehaviorOptions>;
+}) satisfies DialogComponent<AlertDialogProps>;

@@ -4,14 +4,13 @@ import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
 const controllerSignature = `function useDialogController<
-  TProps extends Record<string, unknown> = Record<string, unknown>,
-  TOptions extends Record<string, unknown> = Record<string, unknown>
->(): DialogControllerContextValue<TProps, TOptions>;`;
+  TProps extends Record<string, unknown> = Record<string, unknown>
+>(): DialogControllerContextValue<TProps>;`;
 
 const rendererSignature = `function DialogsRenderer({ store }: { store: DialogStore }): JSX.Element;`;
 
-const controllerExample = `const controller = useDialogController<AlertDialogProps, DialogBehaviorOptions>();
-const { close, unmount, setStatus, getStateFields, options } = controller;
+const controllerExample = `const controller = useDialogController<AlertDialogProps>();
+const { close, unmount, setStatus, getStateFields, stack } = controller;
 
 const { title, message, onOk } = getStateFields({
   title: props.title,
@@ -49,7 +48,7 @@ export const ControllerRenderer = () => (
 
     <Section as="h2" id="controller" title="useDialogController">
       <p>
-        컨트롤러 훅은 제네릭으로 props/옵션 타입을 지정할 수 있으며,
+        컨트롤러 훅은 제네릭으로 props 타입을 지정할 수 있으며,
         <InlineCode>close</InlineCode>, <InlineCode>unmount</InlineCode>, <InlineCode>update</InlineCode>,{' '}
         <InlineCode>setStatus</InlineCode> 등을 포함한 컨텍스트 값을 반환합니다.
       </p>

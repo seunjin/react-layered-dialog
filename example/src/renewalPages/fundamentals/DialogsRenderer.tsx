@@ -15,27 +15,13 @@ export function AppShell() {
   );
 }`;
 
-const customRenderer = `import { useSyncExternalStore, useEffect } from 'react';
-import { DialogsRenderer, type DialogStore } from 'react-layered-dialog';
+const customRenderer = `import { DialogsRenderer, type DialogStore } from 'react-layered-dialog';
 
 type DialogRendererProps = {
   store: DialogStore;
 };
 
 export function DialogRenderer({ store }: DialogRendererProps) {
-  const snapshot = useSyncExternalStore(
-    store.subscribe,
-    store.getSnapshot,
-    store.getSnapshot
-  );
-
-  const hasScrollLock = snapshot.entries.some((entry) => entry.options.scrollLock === true);
-
-  useEffect(() => {
-    document.body.classList.toggle('scroll-locked', hasScrollLock);
-    return () => document.body.classList.remove('scroll-locked');
-  }, [hasScrollLock]);
-
   return <DialogsRenderer store={store} />;
 }`;
 
@@ -61,8 +47,8 @@ export const DialogsRendererPage = () => (
 
     <Section as="h2" id="custom-renderer" title="커스텀 렌더러 패턴">
       <p>
-        scroll lock, 포커스 트랩, 애니메이션 같은 전역 동작은 렌더러 위에서 직접 구현합니다. 아래 예시는{' '}
-        <InlineCode>useSyncExternalStore</InlineCode>로 스토어를 구독해 scroll lock을 제어하는 래퍼 컴포넌트입니다.
+        scroll lock, 포커스 트랩, 애니메이션 같은 전역 동작은 대개 개별 다이얼로그의 커스텀 훅에서 구현합니다.
+        그래도 필요하다면 렌더러를 래핑해 로깅이나 포털 이동 등 공통 로직을 추가할 수 있습니다.
       </p>
       <CodeBlock language="tsx" code={customRenderer} />
       <p className="mt-2 text-sm text-muted-foreground">

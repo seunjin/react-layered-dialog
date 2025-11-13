@@ -3,11 +3,14 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
-const propsSnippet = `// TProps: 다이얼로그 UI를 구성하는 데이터와 콜백
+const propsSnippet = `// 다이얼로그 UI를 구성하는 데이터와 콜백 + 동작 플래그
 export type AlertDialogProps = {
   title: string;
   message: string;
   onOk?: () => void;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 export type ConfirmDialogProps = {
@@ -15,10 +18,7 @@ export type ConfirmDialogProps = {
   message: string;
   onConfirm?: () => void;
   onCancel?: () => void;
-};
-
-// TOptions: 선택적으로 분리한 행동 옵션 (간단한 경우 props에 포함해도 됩니다)
-export type DialogBehaviorOptions = {
+  step?: 'confirm' | 'loading' | 'done';
   closeOnEscape?: boolean;
   closeOnOutsideClick?: boolean;
   scrollLock?: boolean;
@@ -36,18 +36,16 @@ const dialog = createDialogApi(new DialogStore(), {
 export const DefiningDialogsPage = () => (
   <DocArticle title="다이얼로그 타입 설계">
     <p className="lead">
-      다이얼로그마다 필요한 데이터 구조(<InlineCode>TProps</InlineCode>)와 동작
-      옵션(<InlineCode>TOptions</InlineCode>)을 명확히 분리해 두면, 레지스트리와
-      컨트롤러/렌더러 전반에서 타입 안전한 계약을 유지할 수 있습니다.
+      다이얼로그마다 필요한 데이터 구조(<InlineCode>TProps</InlineCode>)를 명확히 정의해 두면,
+      레지스트리와 컨트롤러/렌더러 전반에서 타입 안전한 계약을 유지할 수 있습니다.
+      동작 플래그도 props 안에서 함께 관리해 <InlineCode>getStateFields</InlineCode>로 병합하세요.
     </p>
 
-    <Section as="h2" id="props" title="Props & 옵션 정의">
+    <Section as="h2" id="props" title="Props 정의">
       <p>
         다이얼로그 UI에 필요한 데이터(<InlineCode>TProps</InlineCode>)와 행동을
-        제어하는 옵션(<InlineCode>TOptions</InlineCode>)을 분리해 두면
-        컨트롤러/렌더러 전반에서 계약이 선명해집니다. 물론 규칙상 반드시
-        분리해야 하는 것은 아니며, 단순한 경우라면 옵션 필드를{' '}
-        <InlineCode>TProps</InlineCode>에 포함시켜도 됩니다.
+        제어하는 플래그를 한 타입 안에서 관리하면 컨트롤러/렌더러 전반에서 계약이 선명해집니다.
+        dim/ESC/scroll-lock 같은 값도 props 필드로 포함시켜 <InlineCode>getStateFields</InlineCode>로 병합하세요.
       </p>
       <CodeBlock language="ts" code={propsSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
@@ -58,18 +56,10 @@ export const DefiningDialogsPage = () => (
           됩니다.
         </li>
         <li>
-          옵션 타입을 따로 두면 컨트롤러의 <InlineCode>options</InlineCode> 값이
-          명확해지고, 렌더러에서 전역 동작을 분기하기 쉬워집니다. 필요 없다면
-          옵션 필드를 <InlineCode>TProps</InlineCode>에 포함시켜{' '}
-          <InlineCode>getStateFields</InlineCode>로 다뤄도 됩니다.
-        </li>
-        <li>
           제네릭 관점에서 <InlineCode>AlertDialogProps</InlineCode>가{' '}
-          <InlineCode>TProps</InlineCode>,{' '}
-          <InlineCode>DialogBehaviorOptions</InlineCode>가{' '}
-          <InlineCode>TOptions</InlineCode>의 역할을 수행합니다. 이후{' '}
-          <InlineCode>DialogComponent&lt;TProps, TOptions&gt;</InlineCode>,{' '}
-          <InlineCode>useDialogController&lt;TProps, TOptions&gt;</InlineCode>
+          <InlineCode>TProps</InlineCode>의 역할을 수행합니다. 이후{' '}
+          <InlineCode>DialogComponent&lt;TProps&gt;</InlineCode>,{' '}
+          <InlineCode>useDialogController&lt;TProps&gt;</InlineCode>
           에서 동일한 조합으로 사용됩니다.
         </li>
       </ul>
@@ -105,21 +95,10 @@ export const DefiningDialogsPage = () => (
       title="DialogComponent 제네릭과 컨트롤러"
     >
       <p>
-        컴포넌트를 만들 때{' '}
-        <InlineCode>DialogComponent&lt;TProps, TOptions&gt;</InlineCode> 형태로
-        선언하면 레지스트리와 컨트롤러가 동일한 타입 정보를 공유합니다. 컨트롤러
-        훅도{' '}
-        <InlineCode>useDialogController&lt;TProps, TOptions&gt;</InlineCode>처럼
-        같은 제네릭을 사용해 <InlineCode>getStateFields</InlineCode>,{' '}
-        <InlineCode>options</InlineCode> 등에서 정확한 자동 완성을 받을 수
-        있습니다.
-      </p>
-      <p className="mt-2 text-sm text-muted-foreground">
-        옵션을 분리하지 않는 경우라면{' '}
-        <InlineCode>DialogComponent&lt;AlertDialogProps, void&gt;</InlineCode>
-        처럼 <InlineCode>TOptions</InlineCode> 자리에
-        <InlineCode>void</InlineCode> 또는 <InlineCode>undefined</InlineCode>를
-        넣어도 됩니다.
+        컴포넌트를 만들 때 <InlineCode>DialogComponent&lt;TProps&gt;</InlineCode>{' '}
+        형태로 선언하면 레지스트리와 컨트롤러가 동일한 타입 정보를 공유합니다.
+        컨트롤러 훅도 <InlineCode>useDialogController&lt;TProps&gt;</InlineCode>처럼
+        같은 제네릭을 사용해 <InlineCode>getStateFields</InlineCode> 등에서 정확한 자동 완성을 받을 수 있습니다.
       </p>
     </Section>
 
@@ -128,16 +107,13 @@ export const DefiningDialogsPage = () => (
         대부분의 경우 레지스트리 정보만으로 타입이 추론되지만, 필요하다면{' '}
         <InlineCode>dialog.store.open</InlineCode> /
         <InlineCode>openAsync</InlineCode> 호출 시{' '}
-        <InlineCode>
-          open&lt;AlertDialogProps, DialogBehaviorOptions&gt;(...)
-        </InlineCode>
-        처럼 제네릭을 명시해 컨트롤러 메서드(
-        <InlineCode>getStateFields</InlineCode>,{' '}
-        <InlineCode>options</InlineCode>)의 타입을 정확히 고정할 수 있습니다.
+        <InlineCode>open&lt;AlertDialogProps&gt;(...)</InlineCode> 처럼 제네릭을
+        명시해 컨트롤러 메서드(
+        <InlineCode>getStateFields</InlineCode> 등)의 타입을 정확히 고정할 수 있습니다.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         특히 커스텀 <InlineCode>DialogRenderFn</InlineCode>을 구성하거나
-        레지스트리 밖에서 스토어를 직접 사용할 때는 제네릭을 명시해 props/옵션
+        레지스트리 밖에서 스토어를 직접 사용할 때는 제네릭을 명시해 props
         타입이 의도대로 추론되는지 확인하세요.
       </p>
     </Section>
@@ -179,10 +155,7 @@ export const DefiningDialogsPage = () => (
         </li>
         <li>
           컨트롤러 메서드에서 타입 추론이 필요할 경우{' '}
-          <InlineCode>
-            dialog.store.open&lt;AlertDialogProps,
-            DialogBehaviorOptions&gt;(...)
-          </InlineCode>
+          <InlineCode>dialog.store.open&lt;AlertDialogProps&gt;(...)</InlineCode>{' '}
           처럼 제네릭을 명시해 정확도를 높일 수 있습니다.
         </li>
       </ul>

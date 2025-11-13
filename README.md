@@ -63,13 +63,30 @@ function App() {
 ```tsx
 import { useEffect, useRef } from 'react';
 import { useDialogController } from 'react-layered-dialog';
-import type { AlertDialogProps, DialogBehaviorOptions } from '@/lib/dialogs';
+import type { AlertDialogProps } from '@/lib/dialogs';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export const AlertDialog = (props: AlertDialogProps) => {
-  const controller = useDialogController<AlertDialogProps, DialogBehaviorOptions>();
-  const { close, unmount, getStateFields, options, stack } = controller;
+  const controller = useDialogController<AlertDialogProps>();
+  const { close, unmount, getStateFields, stack, isOpen } = controller;
   const panelRef = useRef<HTMLDivElement>(null);
-  const { title, message, onOk } = getStateFields({ ...props });
+  const {
+    title,
+    message,
+    onOk,
+    dimmed = true,
+    closeOnEscape = true,
+    closeOnOutsideClick = true,
+    scrollLock = true,
+  } = getStateFields({
+    title: props.title,
+    message: props.message,
+    onOk: props.onOk,
+    dimmed: props.dimmed ?? true,
+    closeOnEscape: props.closeOnEscape ?? true,
+    closeOnOutsideClick: props.closeOnOutsideClick ?? true,
+    scrollLock: props.scrollLock ?? true,
+  });
 
   const handleClose = () => {
     onOk?.();
@@ -78,23 +95,25 @@ export const AlertDialog = (props: AlertDialogProps) => {
   };
 
   useEffect(() => {
-    if (stack.index !== stack.size - 1 || options.closeOnEscape === false) return;
+    if (stack.index !== stack.size - 1 || !closeOnEscape) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') handleClose();
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [handleClose, options.closeOnEscape, stack.index, stack.size]);
+  }, [closeOnEscape, handleClose, stack.index, stack.size]);
 
   useEffect(() => {
-    if (stack.index !== stack.size - 1 || options.closeOnOutsideClick === false) return;
+    if (stack.index !== stack.size - 1 || !closeOnOutsideClick) return;
     const onMouseDown = (event: MouseEvent) => {
       if (!panelRef.current) return;
       if (!panelRef.current.contains(event.target as Node)) handleClose();
     };
     document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [handleClose, options.closeOnOutsideClick, stack.index, stack.size]);
+  }, [closeOnOutsideClick, handleClose, stack.index, stack.size]);
+
+  useBodyScrollLock(scrollLock && isOpen);
 
   return (
     <div role="alertdialog" aria-modal="true" ref={panelRef}>

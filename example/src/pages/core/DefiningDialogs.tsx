@@ -4,17 +4,14 @@ import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
 const propsSnippet = `// dialog-types.ts
-export type DialogBehaviorOptions = {
-  dimmed?: boolean;
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
-};
-
 export type AlertDialogProps = {
   title: string;
   message: string;
   onOk?: () => void;
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 export type ConfirmDialogProps = {
@@ -23,6 +20,10 @@ export type ConfirmDialogProps = {
   onConfirm?: () => void;
   onCancel?: () => void;
   step?: 'confirm' | 'loading' | 'done';
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 export type ModalDialogProps = {
@@ -30,6 +31,10 @@ export type ModalDialogProps = {
   description?: string;
   canDismiss?: boolean;
   onClose?: () => void;
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };`;
 
 const registrySnippet = `// dialogs.ts (일부)
@@ -41,7 +46,6 @@ import type {
   AlertDialogProps,
   ConfirmDialogProps,
   ModalDialogProps,
-  DialogBehaviorOptions,
 } from './dialog-types';
 
 export const dialogStore = new DialogStore();
@@ -60,7 +64,7 @@ export const dialogApi = createDialogApi(dialogStore, registry);
 
 // 구체적인 타입이 필요한 경우
 type AlertMethod = typeof dialogApi.alert;
-type AlertOptions = Parameters<AlertMethod>[1]; // OpenDialogOptions<DialogBehaviorOptions>`;
+type AlertProps = Parameters<AlertMethod>[0];`;
 
 export const DefiningDialogs = () => (
   <DocArticle title="다이얼로그 타입 설계">
@@ -70,10 +74,11 @@ export const DefiningDialogs = () => (
       각 다이얼로그가 받아야 할 데이터에 집중할 수 있습니다.
     </p>
 
-    <Section as="h2" id="props" title="1. Props & 옵션 정의">
+    <Section as="h2" id="props" title="1. Props 정의">
       <p>
-        다이얼로그별로 필요한 필드를 명시적으로 선언하고, dim/ESC/스크롤락 같이
-        공통으로 다룰 동작은 <InlineCode>DialogBehaviorOptions</InlineCode>처럼 별도 타입으로 관리합니다.
+        다이얼로그별로 필요한 데이터와 동작 플래그를 모두 props로 선언합니다.
+        dim 처리, ESC/외부 클릭 허용 여부, scroll-lock 같은 값도 props 안에 포함해
+        <InlineCode>getStateFields</InlineCode>로 기본값을 병합하면 됩니다.
       </p>
       <CodeBlock language="ts" code={propsSnippet} />
       <p className="mt-2 text-sm text-muted-foreground">
@@ -115,8 +120,9 @@ export const DefiningDialogs = () => (
     <Section as="h2" id="tips" title="4. 설계 팁">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          <b>옵션과 상태를 분리</b>: 스토어 옵션(예: <InlineCode>scrollLock</InlineCode>)과
-          컴포넌트 내부 상태(예: <InlineCode>step</InlineCode>)를 명확히 구분하면 업데이트 로직이 단순해집니다.
+          <b>동작 플래그와 상태를 분리</b>: props로 받은 동작 플래그(예:
+          <InlineCode>scrollLock</InlineCode>)와 컴포넌트 내부 상태(예:{' '}
+          <InlineCode>step</InlineCode>)를 명확히 구분하면 업데이트 로직이 단순해집니다.
         </li>
         <li>
           <b>비동기 계약 정의</b>: <InlineCode>mode: &apos;async&apos;</InlineCode> 다이얼로그는 컨트롤러의

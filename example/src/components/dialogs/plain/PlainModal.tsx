@@ -5,33 +5,39 @@ import {
   useDialogController,
   type DialogComponent,
 } from 'react-layered-dialog';
-import type {
-  DialogBehaviorOptions,
-  PlainModalDialogProps,
-} from '@/lib/dialogs';
+import type { PlainModalDialogProps } from '@/lib/dialogs';
 import { cn } from '@/lib/utils';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export const PlainModal = ((props: PlainModalDialogProps) => {
-  const controller = useDialogController<
-    PlainModalDialogProps,
-    DialogBehaviorOptions
-  >();
-  const { id, options, close, unmount, getStateFields, stack } = controller;
+  const controller = useDialogController<PlainModalDialogProps>();
+  const { id, isOpen, zIndex, close, unmount, getStateFields, stack } =
+    controller;
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const { title, description, body, canDismiss, onClose } = getStateFields({
+  const {
+    title,
+    description,
+    body,
+    canDismiss,
+    onClose,
+    dimmed = true,
+    closeOnEscape = canDismiss ?? false,
+    closeOnOutsideClick = closeOnEscape,
+    scrollLock = true,
+  } = getStateFields({
     title: props.title,
     description: props.description,
     body: props.body,
     canDismiss: props.canDismiss ?? true,
     onClose: props.onClose,
+    dimmed: props.dimmed ?? true,
+    closeOnEscape: props.closeOnEscape ?? props.canDismiss ?? false,
+    closeOnOutsideClick:
+      props.closeOnOutsideClick ?? props.closeOnEscape ?? props.canDismiss ?? false,
+    scrollLock: props.scrollLock ?? true,
   });
 
-  const closeOnEscape = options.closeOnEscape ?? canDismiss ?? false;
-  const closeOnOutsideClick =
-    options.closeOnOutsideClick ?? closeOnEscape;
-  const dimmed = options.dimmed ?? true;
-  const zIndex = options.zIndex;
   const isTop = stack.index === stack.size - 1;
 
   const handleClose = useCallback(() => {
@@ -62,6 +68,8 @@ export const PlainModal = ((props: PlainModalDialogProps) => {
     document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [closeOnOutsideClick, handleClose, isTop]);
+
+  useBodyScrollLock(scrollLock && isOpen);
 
   return (
     <div
@@ -117,4 +125,4 @@ export const PlainModal = ((props: PlainModalDialogProps) => {
       </div>
     </div>
   );
-}) satisfies DialogComponent<PlainModalDialogProps, DialogBehaviorOptions>;
+}) satisfies DialogComponent<PlainModalDialogProps>;

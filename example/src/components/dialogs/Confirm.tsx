@@ -6,31 +6,38 @@ import {
   useDialogController,
   type DialogComponent,
 } from 'react-layered-dialog';
-import type { ConfirmDialogProps, DialogBehaviorOptions } from '@/lib/dialogs';
+import type { ConfirmDialogProps } from '@/lib/dialogs';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export const Confirm = ((props: ConfirmDialogProps) => {
-  const controller = useDialogController<
-    ConfirmDialogProps,
-    DialogBehaviorOptions
-  >();
-  const { id, isOpen, options, close, unmount, getStateFields, stack } =
+  const controller = useDialogController<ConfirmDialogProps>();
+  const { id, isOpen, zIndex, close, unmount, getStateFields, stack } =
     controller;
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const closeOnEscape = options.closeOnEscape ?? true;
-  const closeOnOutsideClick = options.closeOnOutsideClick ?? true;
-  const dimmed = options.dimmed ?? true;
-  const zIndex = options.zIndex;
-  const isTop = stack.index === stack.size - 1;
-
-  const { title, message, onConfirm, onCancel, step } = getStateFields({
+  const {
+    title,
+    message,
+    onConfirm,
+    onCancel,
+    step,
+    dimmed = true,
+    closeOnEscape = true,
+    closeOnOutsideClick = true,
+    scrollLock = true,
+  } = getStateFields({
     title: props.title,
     message: props.message,
     onConfirm: props.onConfirm,
     onCancel: props.onCancel,
     step: props.step ?? 'confirm',
+    dimmed: props.dimmed ?? true,
+    closeOnEscape: props.closeOnEscape ?? true,
+    closeOnOutsideClick: props.closeOnOutsideClick ?? true,
+    scrollLock: props.scrollLock ?? true,
   });
 
+  const isTop = stack.index === stack.size - 1;
   const safeStep = step ?? 'confirm';
   const isLoading = safeStep === 'loading';
   const isDone = safeStep === 'done';
@@ -77,6 +84,8 @@ export const Confirm = ((props: ConfirmDialogProps) => {
     document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [closeOnOutsideClick, handleCancel, isOpen, isTop]);
+
+  useBodyScrollLock(scrollLock && isOpen);
 
   return (
     <AnimatePresence onExitComplete={unmount}>
@@ -143,4 +152,4 @@ export const Confirm = ((props: ConfirmDialogProps) => {
       )}
     </AnimatePresence>
   );
-}) satisfies DialogComponent<ConfirmDialogProps, DialogBehaviorOptions>;
+}) satisfies DialogComponent<ConfirmDialogProps>;

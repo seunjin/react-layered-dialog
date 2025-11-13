@@ -4,10 +4,10 @@ import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
 const asyncComponentSnippet = `import { useDialogController } from 'react-layered-dialog';
-import type { ConfirmDialogProps, DialogBehaviorOptions } from '@/lib/dialogs';
+import type { ConfirmDialogProps } from '@/lib/dialogs';
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
-  const controller = useDialogController<ConfirmDialogProps, DialogBehaviorOptions>();
+  const controller = useDialogController<ConfirmDialogProps>();
   const { close, unmount, setStatus, getStateFields } = controller;
   const { title, message, onConfirm, onCancel } = getStateFields(props);
 
@@ -68,7 +68,7 @@ export const AsyncPatternsPage = () => (
       <CodeBlock language="ts" code={asyncOpenSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          반환된 결과 객체에는 <InlineCode>dialog</InlineCode>, <InlineCode>options</InlineCode>, <InlineCode>status</InlineCode> 등이 포함됩니다. 필요한 경우 호출부에서 상태를 확인해 후속 로직을 분기할 수 있습니다.
+          반환된 결과 객체에는 <InlineCode>dialog</InlineCode>, <InlineCode>zIndex</InlineCode>, <InlineCode>status</InlineCode> 등이 포함됩니다. 필요한 경우 호출부에서 상태를 확인해 후속 로직을 분기할 수 있습니다.
         </li>
         <li>
           비동기 호출이 중첩될 수 있다면 <InlineCode>update</InlineCode>로 UI에 로딩 표시를 추가하고, 완료 후 <InlineCode>close</InlineCode>/<InlineCode>unmount</InlineCode>를 호출하세요.
@@ -79,7 +79,7 @@ export const AsyncPatternsPage = () => (
     <Section as="h2" id="next" title="다음 단계">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          사용자 정의 옵션과 전역 동작 제어는 <InlineCode>옵션 & 동작</InlineCode> 페이지에서 다룹니다.
+          동작 플래그 설계는 <InlineCode>동작 패턴</InlineCode> 페이지에서 이어집니다.
         </li>
       </ul>
     </Section>

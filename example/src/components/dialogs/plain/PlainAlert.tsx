@@ -4,30 +4,34 @@ import {
   useDialogController,
   type DialogComponent,
 } from 'react-layered-dialog';
-import type {
-  DialogBehaviorOptions,
-  PlainAlertDialogProps,
-} from '@/lib/dialogs';
+import type { PlainAlertDialogProps } from '@/lib/dialogs';
 import { cn } from '@/lib/utils';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export const PlainAlert = ((props: PlainAlertDialogProps) => {
-  const controller = useDialogController<
-    PlainAlertDialogProps,
-    DialogBehaviorOptions
-  >();
-  const { id, options, close, unmount, getStateFields, stack } = controller;
+  const controller = useDialogController<PlainAlertDialogProps>();
+  const { id, isOpen, zIndex, close, unmount, getStateFields, stack } =
+    controller;
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const { title, message, onOk } = getStateFields({
+  const {
+    title,
+    message,
+    onOk,
+    dimmed = true,
+    closeOnEscape = true,
+    closeOnOutsideClick = true,
+    scrollLock = true,
+  } = getStateFields({
     title: props.title,
     message: props.message,
     onOk: props.onOk,
+    dimmed: props.dimmed ?? true,
+    closeOnEscape: props.closeOnEscape ?? true,
+    closeOnOutsideClick: props.closeOnOutsideClick ?? true,
+    scrollLock: props.scrollLock ?? true,
   });
 
-  const closeOnEscape = options.closeOnEscape ?? true;
-  const closeOnOutsideClick = options.closeOnOutsideClick ?? true;
-  const dimmed = options.dimmed ?? true;
-  const zIndex = options.zIndex;
   const isTop = stack.index === stack.size - 1;
 
   const handleClose = useCallback(() => {
@@ -58,6 +62,8 @@ export const PlainAlert = ((props: PlainAlertDialogProps) => {
     document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [closeOnOutsideClick, handleClose, isTop]);
+
+  useBodyScrollLock(scrollLock && isOpen);
 
   return (
     <div
@@ -94,4 +100,4 @@ export const PlainAlert = ((props: PlainAlertDialogProps) => {
       </div>
     </div>
   );
-}) satisfies DialogComponent<PlainAlertDialogProps, DialogBehaviorOptions>;
+}) satisfies DialogComponent<PlainAlertDialogProps>;

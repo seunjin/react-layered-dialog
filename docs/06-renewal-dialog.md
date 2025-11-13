@@ -18,7 +18,6 @@
 - 시그니처: `dialog.open(node: React.ReactNode): DialogOpenResult`.
 - JSX를 직접 받아 렌더링하며, 컴포넌트는 비즈니스 props(`isPending`, `onConfirm` 등)를 그대로 사용할 수 있다.
 - 반환된 객체에는 `close()`, `unmount()`, `update()`, `setStatus()` 등 동일 ID를 제어할 수 있는 메서드가 포함된다.
-- 옵션 객체를 함께 넘겨 추가 정책을 선언적으로 지정할 수 있다. (`{ zIndex, useDim, scrollLock, ... }`)
 
 ## 4. `dialog.openAsync`
 - Promise 기반으로 결과를 반환하는 API.
@@ -28,7 +27,6 @@
   - `dialog`: `{ id, componentKey }` 형태의 다이얼로그 핸들
   - `close()`, `unmount()`, `update()`, `setStatus(status)`: 동일 ID를 대상으로 한 제어 함수
   - `status`: `'idle' | 'loading' | 'done' | 'error'` 중 현재 상태
-  - `options`: 최종 옵션 (`zIndex` 포함)
 - 호출부에서는 보통 `dialog.openAsync()`처럼 호출하며, 옵션 타입은 전달한 객체 리터럴로 자동 추론된다.
 - 컨트롤러에서 `resolve({ ok })`를 호출하면 Promise가 resolve되며, 다이얼로그를 닫는 시점은 호출부 또는 컨트롤러가 선택한다.
 - `reject(error)`는 Promise를 reject시키므로 네트워크 오류 등 예외 상황에서만 사용하고, 일반 취소 흐름은 `resolve({ ok: false })` 패턴을 권장한다.
@@ -53,7 +51,7 @@
 - 사용자가 dim, ESC, 스크롤락 등 모든 동작을 직접 구현하고 필요 시 헬퍼 훅으로 확장하는 방향을 권장한다.
 - `update`는 객체를 전달하면 기존 상태와 병합하며, 초기에 state가 비어 있어도 자동으로 생성된다.
 - `getStateField(key, fallback)` / `getStateFields(base)` 헬퍼를 제공해 `state`와 props를 손쉽게 병합할 수 있다.
-- `options` 객체에는 호출 시 넘긴 값과 함께 최종 z-index가 항상 포함된다 (`options.zIndex`).
+- 컨트롤러에서 직접 `zIndex`를 제공하므로 스타일 제어에 활용할 수 있다.
 - 렌더러 함수에서 컨트롤러 메서드를 직접 props로 내려 공용 컴포넌트를 구성할 수 있다.
   ```tsx
   openDialog(({ update, unmount }) => (
@@ -168,27 +166,32 @@ const handleDelete = async () => {
 
 위 예시는 `example/src/lib/renewalDialogs.ts` 헬퍼(`renewalDialog.confirm`, `renewalDialog.open`, `renewalDialog.update`)로 그대로 재현할 수 있다. 향후 정식 API (`dialog.confirm`, `dialog.open`)에서도 동일한 패턴이 유지될 예정이다.
 
-## 9. 옵션 기반 제어
+## 9. Props 기반 동작 제어
 
-`dialog.open` 호출 시 옵션 객체를 함께 넘기고, 다이얼로그 내부에서는 `useDialogController<State, Options>()`로 옵션을 안전하게 사용할 수 있다.
+동작 플래그를 props에 포함시키고 <InlineCode>getStateFields</InlineCode>로 기본값을 병합하면 컨트롤러가 동일한 형태를 보장한다.
 
 ```tsx
-type CounterOptions = { zIndex?: number; useDim?: boolean; scrollLock?: boolean };
+type CounterProps = {
+  count: number;
+  useDim?: boolean;
+  scrollLock?: boolean;
+};
 
-openDialog<CounterState, CounterOptions>(
-  () => <CounterDialog count={0} />,
-  { zIndex: 1200, useDim: true, scrollLock: true }
-);
+openDialog(() => <CounterDialog count={0} useDim />);
 
-function CounterDialog() {
-  const { options, getStateFields } = useDialogController<CounterState, CounterOptions>();
-  const { count } = getStateFields({ count: 0 });
-  const dimmed = options.useDim ?? true;
+function CounterDialog(props: CounterProps) {
+  const { getStateFields, zIndex } = useDialogController<CounterProps>();
+  const { count, useDim = true } = getStateFields({
+    count: props.count,
+    useDim: props.useDim ?? true,
+  });
 
   return (
     <div
-      className={`fixed inset-0 ${dimmed ? 'bg-black/40' : 'bg-transparent'} flex items-center justify-center`}
-      style={{ zIndex: options.zIndex ?? 0 }}
+      className={`fixed inset-0 ${
+        useDim ? 'bg-black/40' : 'bg-transparent'
+      } flex items-center justify-center`}
+      style={{ zIndex }}
     >
       {/* ... */}
     </div>
@@ -200,13 +203,13 @@ function CounterDialog() {
 
 | 항목 | `dialog.open` | `dialog.openAsync` |
 | --- | --- | --- |
-| 반환값 | `DialogOpenResult<TProps, TOptions>` | `Promise<DialogAsyncResult<TProps, TOptions>>` |
+| 반환값 | `DialogOpenResult<TProps>` | `Promise<DialogAsyncResult<TProps>>` |
 | 주 사용처 | 단순 알림, 설정 UI 등 결과가 필요 없는 경우 | 확인 모달, 입력 후 후속 로직 등 결과가 필요한 비동기 흐름 |
 | 다이얼로그 제어 | `dialog.close(handle.id)`, `dialog.update(handle.id, patch)` 등 전역 API 사용 | `result.close()`, `result.unmount()`, `result.update(patch)`을 결과 객체에서 직접 사용 |
 | 컨트롤러 메서드 | `update`, `close`, `unmount` | `resolve`, `reject`, `update`, `handle` (reject는 예외 상황에서만 사용 권장) |
-| 추가 데이터 | - | `result.dialog`(핸들), `result.options.zIndex` 등 후속 로직에 필요한 정보 제공 |
+| 추가 데이터 | - | `result.dialog`(핸들), `result.zIndex` 등 후속 로직에 필요한 정보 제공 |
 
-두 API 모두 동일한 옵션 제네릭과 상태 헬퍼(`useDialogController<State, Options>()`)를 공유하므로, 상황에 맞춰 필요한 형태만 선택해서 사용하면 된다.
+두 API 모두 동일한 props 제네릭과 상태 헬퍼(`useDialogController<State>()`)를 공유하므로, 상황에 맞춰 필요한 형태만 선택해서 사용하면 된다.
 
 ---
 

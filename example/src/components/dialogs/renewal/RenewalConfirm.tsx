@@ -7,10 +7,10 @@ import {
 } from 'react-layered-dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { AnimatePresence } from 'motion/react';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export type RenewalConfirmController = DialogControllerContextValue<
-  RenewalConfirmProps,
-  RenewalConfirmOptions
+  RenewalConfirmProps
 >;
 
 export type RenewalConfirmProps = {
@@ -20,9 +20,6 @@ export type RenewalConfirmProps = {
   cancelLabel?: string;
   onConfirm?: () => void | Promise<void>;
   onCancel?: () => void | Promise<void>;
-};
-
-export type RenewalConfirmOptions = {
   dimmed?: boolean;
   scrollLock?: boolean;
 };
@@ -33,10 +30,7 @@ export type RenewalConfirmOptions = {
  * 기본 동작과 `resolve` 기반 비동기 제어를 함께 지원합니다.
  */
 const RenewalConfirm = ((props: RenewalConfirmProps) => {
-  const controller = useDialogController<
-    RenewalConfirmProps,
-    RenewalConfirmOptions
-  >();
+  const controller = useDialogController<RenewalConfirmProps>();
 
   const {
     isOpen,
@@ -46,30 +40,30 @@ const RenewalConfirm = ((props: RenewalConfirmProps) => {
     unmount,
     status,
     getStateFields,
-    options,
+    zIndex,
   } = controller;
 
   const isLoading = status === 'loading';
 
-  const { title, message, confirmLabel, cancelLabel, onConfirm, onCancel } =
-    getStateFields({
-      title: props.title ?? '',
-      message: props.message ?? '',
-      confirmLabel: props.confirmLabel ?? '확인',
-      cancelLabel: props.cancelLabel ?? '취소',
-      onConfirm: props.onConfirm,
-      onCancel: props.onCancel,
-    });
-
-  // 옵션 기본값을 병합해 렌더링/스타일 로직에서 바로 사용
-  const mergeOptions = {
-    dimmed: options.dimmed ?? true,
-    scrollLock: options.scrollLock ?? true,
-    zIndex: options.zIndex,
-  };
-
-  const dimmed = mergeOptions.dimmed;
-  const zIndex = mergeOptions.zIndex;
+  const {
+    title,
+    message,
+    confirmLabel,
+    cancelLabel,
+    onConfirm,
+    onCancel,
+    dimmed = true,
+    scrollLock = true,
+  } = getStateFields({
+    title: props.title ?? '',
+    message: props.message ?? '',
+    confirmLabel: props.confirmLabel ?? '확인',
+    cancelLabel: props.cancelLabel ?? '취소',
+    onConfirm: props.onConfirm,
+    onCancel: props.onCancel,
+    dimmed: props.dimmed ?? true,
+    scrollLock: props.scrollLock ?? true,
+  });
 
   const handleConfirm = async () => {
     if (isLoading) return;
@@ -102,6 +96,8 @@ const RenewalConfirm = ((props: RenewalConfirmProps) => {
     resolve?.({ ok: false });
     close();
   };
+
+  useBodyScrollLock(scrollLock && isOpen);
 
   return (
     <AnimatePresence onExitComplete={unmount}>
@@ -157,6 +153,6 @@ const RenewalConfirm = ((props: RenewalConfirmProps) => {
       )}
     </AnimatePresence>
   );
-}) satisfies DialogComponent<RenewalConfirmProps, RenewalConfirmOptions>;
+}) satisfies DialogComponent<RenewalConfirmProps>;
 
 export default RenewalConfirm;

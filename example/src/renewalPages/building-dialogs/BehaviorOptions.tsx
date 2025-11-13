@@ -5,16 +5,22 @@ import { CodeBlock } from '@/components/docs/CodeBlock';
 
 const optionsUsageSnippet = `import { useEffect, useRef } from 'react';
 import { useDialogController } from 'react-layered-dialog';
-import type { DialogBehaviorOptions, ModalDialogProps } from '@/lib/dialogs';
+import type { ModalDialogProps } from '@/lib/dialogs';
 
 export function ModalDialog(props: ModalDialogProps) {
-  const controller = useDialogController<ModalDialogProps, DialogBehaviorOptions>();
-  const { getStateFields, options, stack, close, unmount } = controller;
-  const { title, description, onClose } = getStateFields(props);
+  const controller = useDialogController<ModalDialogProps>();
+  const { getStateFields, stack, close, unmount } = controller;
+  const { title, description, onClose, closeOnEscape, closeOnOutsideClick } = getStateFields({
+    title: props.title,
+    description: props.description,
+    onClose: props.onClose,
+    closeOnEscape: props.closeOnEscape ?? true,
+    closeOnOutsideClick: props.closeOnOutsideClick ?? true,
+  });
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (options.closeOnOutsideClick === false) return;
+    if (!closeOnOutsideClick) return;
     const handlePointer = (event: MouseEvent) => {
       if (!panelRef.current || !panelRef.current.contains(event.target as Node)) {
         onClose?.();
@@ -24,11 +30,10 @@ export function ModalDialog(props: ModalDialogProps) {
     };
     document.addEventListener('mousedown', handlePointer);
     return () => document.removeEventListener('mousedown', handlePointer);
-  }, [options.closeOnOutsideClick, close, unmount, onClose]);
+  }, [closeOnOutsideClick, close, unmount, onClose]);
 
   useEffect(() => {
-    if (options.closeOnEscape === false) return;
-    if (stack.index !== stack.size - 1) return;
+    if (!closeOnEscape || stack.index !== stack.size - 1) return;
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose?.();
@@ -38,7 +43,7 @@ export function ModalDialog(props: ModalDialogProps) {
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [options.closeOnEscape, stack.index, stack.size, close, unmount, onClose]);
+  }, [closeOnEscape, stack.index, stack.size, close, unmount, onClose]);
 
   return (
     <div role="dialog" aria-modal="true" ref={panelRef}>
@@ -49,19 +54,12 @@ export function ModalDialog(props: ModalDialogProps) {
   );
 }`;
 
-const optionPresetSnippet = `const dialog = createDialogApi(new DialogStore(), {
-  alert: { component: Alert, options: { closeOnEscape: true, scrollLock: true } },
-  modal: {
-    component: ModalDialog,
-    options: { closeOnEscape: true, closeOnOutsideClick: false, scrollLock: true },
-  },
-});`;
-
 export const BehaviorOptionsPage = () => (
-  <DocArticle title="옵션 & 커스텀 동작">
+  <DocArticle title="동작 플래그 & 커스텀 동작">
     <p className="lead">
-      <InlineCode>DialogBehaviorOptions</InlineCode>처럼 정의한 옵션은 컨트롤러와 렌더러에서 행동을 제어하는 데 활용됩니다.
-      가장 상위 컴포넌트에서 전역 동작을 구현하거나 레지스트리에서 기본 옵션을 지정해 일관된 경험을 제공하세요.
+      ESC, 외부 클릭, scroll-lock처럼 UX를 좌우하는 동작은 모두 다이얼로그 props에 포함시키고
+      <InlineCode>getStateFields</InlineCode>로 기본값을 병합해 사용합니다.
+      필요하다면 커스텀 훅을 만들어 전역 동작을 조합하세요.
     </p>
 
     <Section as="h2" id="component" title="컴포넌트에서 옵션 활용">
@@ -76,21 +74,25 @@ export const BehaviorOptionsPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="defaults" title="레지스트리에서 기본 옵션 지정">
-      <CodeBlock language="ts" code={optionPresetSnippet} />
+    <Section as="h2" id="defaults" title="기본값과 전역 훅">
+      <p>
+        props에서 기본값을 지정한 뒤 <InlineCode>getStateFields</InlineCode>에 동일한 구조를 전달하면,
+        <InlineCode>update</InlineCode> 이후에도 안정적으로 동작 플래그를 유지할 수 있습니다.
+      </p>
       <p className="mt-2 text-sm text-muted-foreground">
-        레지스트리의 <InlineCode>options</InlineCode> 필드에 값을 지정하면 컨트롤러의 <InlineCode>options</InlineCode>에서 동일한 값이 제공됩니다.
-        상황에 따라 호출부가 옵션을 덮어쓸 수도 있습니다.
+        scroll-lock처럼 전역 DOM을 제어해야 한다면 <InlineCode>useBodyScrollLock</InlineCode> 같은 훅으로
+        클래스를 토글하고, 전역 CSS에 <InlineCode>overflow: hidden;</InlineCode> 규칙을 등록하세요.
       </p>
     </Section>
 
     <Section as="h2" id="tips" title="팁">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          scroll lock 같은 전역 동작은 렌더러에서 감지해 적용하고, 옵션 값을 기준으로 토글하면 재사용이 쉽습니다.
+          scroll lock 같은 전역 동작은 렌더러보다 컴포넌트 레벨 훅에서 제어하는 편이 예측 가능합니다.
         </li>
         <li>
-          옵션이 많아질 경우 <InlineCode>Partial&lt;DialogBehaviorOptions&gt;</InlineCode> 형태로 받아서 기본값을 병합하는 패턴을 사용하세요.
+          플래그가 많아질 경우 <InlineCode>Partial&lt;ModalDialogProps&gt;</InlineCode>처럼
+          부분 타입을 받아 기본값을 병합하세요.
         </li>
       </ul>
     </Section>

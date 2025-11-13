@@ -58,18 +58,16 @@ export class DialogStore {
    * 새 다이얼로그 엔트리를 생성하고 공통 전처리를 수행합니다.
    */
   private createEntry = <
-    TProps extends Record<string, unknown> = Record<string, unknown>,
-    TOptions extends Record<string, unknown> = Record<string, unknown>,
+    TProps extends Record<string, unknown> = Record<string, unknown>
   >(
-    renderer: DialogRenderFn<TProps, TOptions>,
-    options: OpenDialogOptions<TOptions> = {} as OpenDialogOptions<TOptions>,
+    renderer: DialogRenderFn<TProps>,
+    options: OpenDialogOptions = {},
     extras: Partial<DialogEntry> = {}
   ) => {
     const {
       id: providedId,
       componentKey: providedComponentKey,
       zIndex: providedZIndex,
-      ...rest
     } = options;
     const id = providedId ?? `dialog-${dialogSeq++}`;
     const componentKey =
@@ -88,11 +86,6 @@ export class DialogStore {
       this.nextZIndex = Math.max(this.nextZIndex, zIndex + 1);
     }
 
-    const normalizedOptions = {
-      ...(rest as Record<string, unknown>),
-      zIndex,
-    } as TOptions & { zIndex: number };
-
     const baseEntry: DialogEntry = {
       id,
       renderer: renderer as DialogRenderFn,
@@ -101,7 +94,6 @@ export class DialogStore {
       isMounted: true,
       zIndex,
       state: {},
-      options: normalizedOptions,
       meta: {
         status: 'idle',
       },
@@ -115,16 +107,15 @@ export class DialogStore {
     return {
       entry,
       handle: { id, componentKey } as OpenDialogResult,
-      options: normalizedOptions,
+      zIndex,
     };
   };
 
   private createOpenResult = <
-    TProps extends Record<string, unknown> = Record<string, unknown>,
-    TOptions extends Record<string, unknown> = Record<string, unknown>
+    TProps extends Record<string, unknown> = Record<string, unknown>
   >(
     handle: OpenDialogResult,
-    options: TOptions & { zIndex: number }
+    zIndex: number
   ) => {
     const close = () => this.close(handle.id);
     const unmount = () => this.unmount(handle.id);
@@ -136,7 +127,7 @@ export class DialogStore {
     };
     const getStatus = () => this.getStatus(handle.id);
 
-    const result: DialogOpenResult<TProps, TOptions> = {
+    const result: DialogOpenResult<TProps> = {
       dialog: handle,
       close,
       unmount,
@@ -146,7 +137,7 @@ export class DialogStore {
       get status() {
         return getStatus();
       },
-      options,
+      zIndex,
     };
 
     return result;
@@ -159,37 +150,35 @@ export class DialogStore {
    * @param options ID, z-index 등의 초기 옵션
    */
   open = <
-    TProps extends Record<string, unknown> = Record<string, unknown>,
-    TOptions extends Record<string, unknown> = Record<string, unknown>,
+    TProps extends Record<string, unknown> = Record<string, unknown>
   >(
-    renderer: DialogRenderFn<TProps, TOptions>,
-    options: OpenDialogOptions<TOptions> = {} as OpenDialogOptions<TOptions>
-  ): DialogOpenResult<TProps, TOptions> => {
-    const { entry, handle, options: optionsSnapshot } = this.createEntry(renderer, options);
+    renderer: DialogRenderFn<TProps>,
+    options: OpenDialogOptions = {}
+  ): DialogOpenResult<TProps> => {
+    const { entry, handle, zIndex } = this.createEntry(renderer, options);
     this.entries = [...this.entries, entry];
     this.updateSnapshot();
     this.emitChange();
 
-    return this.createOpenResult<TProps, TOptions>(handle, optionsSnapshot);
+    return this.createOpenResult<TProps>(handle, zIndex);
   };
 
   /**
    * Promise 기반 다이얼로그를 열고 결과를 반환합니다.
    */
   openAsync = <
-    TProps extends Record<string, unknown> = Record<string, unknown>,
-    TOptions extends Record<string, unknown> = Record<string, unknown>,
+    TProps extends Record<string, unknown> = Record<string, unknown>
   >(
-    renderer: DialogRenderFn<TProps, TOptions>,
-    options: OpenDialogOptions<TOptions> = {} as OpenDialogOptions<TOptions>
-  ): Promise<DialogAsyncResult<TProps, TOptions>> => {
+    renderer: DialogRenderFn<TProps>,
+    options: OpenDialogOptions = {}
+  ): Promise<DialogAsyncResult<TProps>> => {
     const {
       entry,
       handle,
-      options: optionsSnapshot,
+      zIndex,
     } = this.createEntry(renderer, options);
 
-    let settle: ((value: DialogAsyncResult<TProps, TOptions>) => void) | null =
+    let settle: ((value: DialogAsyncResult<TProps>) => void) | null =
       null;
     let rejectPromiseRef: ((reason?: unknown) => void) | null = null;
     let settled = false;
@@ -197,7 +186,7 @@ export class DialogStore {
     const resolveController = (payload: DialogAsyncResolvePayload) => {
       if (settled) return;
       settled = true;
-      const base = this.createOpenResult<TProps, TOptions>(handle, optionsSnapshot);
+      const base = this.createOpenResult<TProps>(handle, zIndex);
       settle?.(Object.assign(base, { ok: payload.ok }));
     };
 
@@ -207,7 +196,7 @@ export class DialogStore {
       rejectPromiseRef?.(reason);
     };
 
-    const promise = new Promise<DialogAsyncResult<TProps, TOptions>>(
+    const promise = new Promise<DialogAsyncResult<TProps>>(
       (resolvePromise, rejectPromise) => {
         settle = resolvePromise;
         rejectPromiseRef = rejectPromise;

@@ -14,17 +14,14 @@ import { PlainAlert } from '@/components/dialogs/plain/PlainAlert';
 import { PlainConfirm } from '@/components/dialogs/plain/PlainConfirm';
 import { PlainModal } from '@/components/dialogs/plain/PlainModal';
 
-export type DialogBehaviorOptions = {
-  dimmed?: boolean;
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
-};
-
 export type AlertDialogProps = {
   title: string;
   message: string;
   onOk?: () => void;
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 export type ConfirmDialogProps = {
@@ -33,6 +30,10 @@ export type ConfirmDialogProps = {
   onConfirm?: () => void;
   onCancel?: () => void;
   step?: 'confirm' | 'loading' | 'done';
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 export type ModalDialogProps = {
@@ -41,12 +42,20 @@ export type ModalDialogProps = {
   body: ReactNode;
   canDismiss?: boolean;
   onClose?: () => void;
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 export type PlainAlertDialogProps = {
   title: string;
   message: string;
   onOk?: () => void;
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 export type PlainConfirmDialogProps = {
@@ -54,6 +63,10 @@ export type PlainConfirmDialogProps = {
   message: string;
   onConfirm?: () => void;
   onCancel?: () => void;
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 export type PlainModalDialogProps = {
@@ -62,6 +75,10 @@ export type PlainModalDialogProps = {
   body: ReactNode;
   canDismiss?: boolean;
   onClose?: () => void;
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
 };
 
 /** 애플리케이션 다이얼로그 스토어 인스턴스 */
@@ -88,10 +105,6 @@ export type AppDialogType = keyof AppDialogRegistry;
 
 type DialogMethod<K extends AppDialogType> = typeof dialogApi[K];
 type DialogInput<K extends AppDialogType> = Parameters<DialogMethod<K>>[0];
-type DialogMethodParams<K extends AppDialogType> = Parameters<DialogMethod<K>>;
-type DialogOptions<K extends AppDialogType> = DialogMethodParams<K> extends [unknown, infer O]
-  ? O
-  : undefined;
 type DialogResult<K extends AppDialogType> = ReturnType<DialogMethod<K>>;
 type DialogResultUnion = {
   [K in AppDialogType]: DialogResult<K>;
@@ -104,63 +117,8 @@ type DialogIdentifier =
   | DialogOpenResult
   | DialogResultUnion;
 
-const BEHAVIOR_OPTION_KEYS: Array<keyof DialogBehaviorOptions> = [
-  'dimmed',
-  'closeOnEscape',
-  'closeOnOutsideClick',
-  'scrollLock',
-];
-
-const behaviorOptionKeySet = new Set<keyof DialogBehaviorOptions>(BEHAVIOR_OPTION_KEYS);
-
-const isPlainObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
-
-const extractBehaviorOptions = (input: Record<string, unknown>) => {
-  const props: Record<string, unknown> = {};
-  const options: DialogBehaviorOptions = {};
-
-  for (const [key, value] of Object.entries(input)) {
-    if (behaviorOptionKeySet.has(key as keyof DialogBehaviorOptions)) {
-      options[key as keyof DialogBehaviorOptions] = value as never;
-    } else {
-      props[key] = value;
-    }
-  }
-
-  return { props, options };
-};
-
-const mergeOptions = <K extends AppDialogType>(
-  derived: Partial<DialogBehaviorOptions>,
-  provided?: DialogOptions<K>
-): DialogOptions<K> | undefined => {
-  if (!provided && Object.keys(derived).length === 0) {
-    return undefined;
-  }
-
-  if (!provided || typeof provided !== 'object' || provided === null) {
-    return Object.keys(derived).length === 0 ? provided : (derived as DialogOptions<K>);
-  }
-
-  return {
-    ...(derived as Record<string, unknown>),
-    ...(provided as Record<string, unknown>),
-  } as DialogOptions<K>;
-};
-
-const callOpen = <K extends AppDialogType>(
-  type: K,
-  input: DialogInput<K>,
-  options?: DialogOptions<K>
-): DialogResult<K> => {
-  if (!isPlainObject(input)) {
-    return dialogApi[type](input, options);
-  }
-
-  const { props, options: derivedOptions } = extractBehaviorOptions(input);
-  const mergedOptions = mergeOptions<K>(derivedOptions, options);
-  return dialogApi[type](props as DialogInput<K>, mergedOptions);
+const callOpen = <K extends AppDialogType>(type: K, input: DialogInput<K>): DialogResult<K> => {
+  return dialogApi[type](input);
 };
 
 const resolveDialogId = (target?: DialogIdentifier | null) => {
@@ -175,34 +133,17 @@ const resolveDialogId = (target?: DialogIdentifier | null) => {
   return null;
 };
 
+export function openDialog<K extends AppDialogType>(type: K, input: DialogInput<K>): DialogResult<K>;
 export function openDialog<K extends AppDialogType>(
-  type: K,
-  input: DialogInput<K>,
-  options?: DialogOptions<K>
+  payload: { type: K } & (DialogInput<K> extends Record<string, unknown> ? DialogInput<K> : never)
 ): DialogResult<K>;
-export function openDialog<K extends AppDialogType>(
-  payload: { type: K } & (DialogInput<K> extends Record<string, unknown> ? DialogInput<K> : never),
-  options?: DialogOptions<K>
-): DialogResult<K>;
-export function openDialog(
-  typeOrPayload: AppDialogType | { type: AppDialogType },
-  inputOrOptions?: unknown,
-  maybeOptions?: unknown
-) {
+export function openDialog(typeOrPayload: AppDialogType | { type: AppDialogType }, input?: unknown) {
   if (typeof typeOrPayload === 'string') {
-    return callOpen(
-      typeOrPayload,
-      inputOrOptions as DialogInput<typeof typeOrPayload>,
-      maybeOptions as DialogOptions<typeof typeOrPayload>
-    );
+    return callOpen(typeOrPayload, input as DialogInput<typeof typeOrPayload>);
   }
 
   const { type, ...rest } = typeOrPayload;
-  return callOpen(
-    type,
-    rest as DialogInput<typeof type>,
-    inputOrOptions as DialogOptions<typeof type>
-  );
+  return callOpen(type, rest as DialogInput<typeof type>);
 }
 
 export const closeAllDialogs = () => {

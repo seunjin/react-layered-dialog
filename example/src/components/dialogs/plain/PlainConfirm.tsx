@@ -4,31 +4,35 @@ import {
   useDialogController,
   type DialogComponent,
 } from 'react-layered-dialog';
-import type {
-  DialogBehaviorOptions,
-  PlainConfirmDialogProps,
-} from '@/lib/dialogs';
+import type { PlainConfirmDialogProps } from '@/lib/dialogs';
 import { cn } from '@/lib/utils';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export const PlainConfirm = ((props: PlainConfirmDialogProps) => {
-  const controller = useDialogController<
-    PlainConfirmDialogProps,
-    DialogBehaviorOptions
-  >();
-  const { id, options, close, unmount, getStateFields, stack } = controller;
+  const controller = useDialogController<PlainConfirmDialogProps>();
+  const { id, isOpen, zIndex, close, unmount, getStateFields, stack } =
+    controller;
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const { title, message, onConfirm, onCancel } = getStateFields({
+  const {
+    title,
+    message,
+    onConfirm,
+    onCancel,
+    dimmed = true,
+    closeOnEscape = true,
+    closeOnOutsideClick = true,
+    scrollLock = true,
+  } = getStateFields({
     title: props.title,
     message: props.message,
     onConfirm: props.onConfirm,
     onCancel: props.onCancel,
+    dimmed: props.dimmed ?? true,
+    closeOnEscape: props.closeOnEscape ?? true,
+    closeOnOutsideClick: props.closeOnOutsideClick ?? true,
+    scrollLock: props.scrollLock ?? true,
   });
-
-  const closeOnEscape = options.closeOnEscape ?? true;
-  const closeOnOutsideClick = options.closeOnOutsideClick ?? true;
-  const dimmed = options.dimmed ?? true;
-  const zIndex = options.zIndex;
   const isTop = stack.index === stack.size - 1;
 
   const handleCancel = useCallback(() => {
@@ -65,6 +69,8 @@ export const PlainConfirm = ((props: PlainConfirmDialogProps) => {
     document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [closeOnOutsideClick, handleCancel, isTop]);
+
+  useBodyScrollLock(scrollLock && isOpen);
 
   return (
     <div
@@ -104,4 +110,4 @@ export const PlainConfirm = ((props: PlainConfirmDialogProps) => {
       </div>
     </div>
   );
-}) satisfies DialogComponent<PlainConfirmDialogProps, DialogBehaviorOptions>;
+}) satisfies DialogComponent<PlainConfirmDialogProps>;

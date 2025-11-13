@@ -94,7 +94,7 @@ describe('createDialogApi', () => {
     const result = await promise;
 
     expect(result.ok).toBe(true);
-    expect(result.options.zIndex).toBeDefined();
+    expect(result.zIndex).toBeDefined();
   });
 
   it('respects baseZIndex option when provided', () => {

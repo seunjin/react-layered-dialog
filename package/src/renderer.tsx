@@ -47,21 +47,21 @@ type DialogInstanceProps = {
  * 스토어 엔트리 하나를 렌더링하며 컨트롤러 컨텍스트를 주입합니다.
  */
 function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
-  const controller: DialogControllerContextValue = useMemo(
-    () => ({
+  const controller: DialogControllerContextValue = useMemo(() => {
+    const getStatus = () => store.getStatus(entry.id);
+
+    return {
       id: entry.id,
       isOpen: entry.isOpen,
       state: entry.state,
-      options: entry.options as Record<string, unknown> & { zIndex: number },
+      zIndex: entry.zIndex,
       handle: { id: entry.id, componentKey: entry.componentKey },
+      stack: computeStackInfo(allEntries, entry.id),
       close: () => store.close(entry.id),
       unmount: () => store.unmount(entry.id),
       closeAll: store.closeAll,
       unmountAll: store.unmountAll,
       update: (updater) => store.updateState(entry.id, updater),
-      setStatus: (status) => store.setStatus(entry.id, status),
-      getStatus: () => store.getStatus(entry.id),
-      status: entry.meta?.status ?? 'idle',
       getStateField: <V,>(key: PropertyKey, fallback: V) => {
         const current = entry.state as Record<PropertyKey, unknown> | undefined;
         if (current && Object.prototype.hasOwnProperty.call(current, key)) {
@@ -74,22 +74,13 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
         if (!current) return base;
         return { ...base, ...current };
       },
-      stack: computeStackInfo(allEntries, entry.id),
       resolve: entry.asyncHandlers?.resolve,
       reject: entry.asyncHandlers?.reject,
-    }),
-    [
-      allEntries,
-      entry.asyncHandlers,
-      entry.componentKey,
-      entry.id,
-      entry.isOpen,
-      entry.meta?.status,
-      entry.options,
-      entry.state,
-      store,
-    ]
-  );
+      status: entry.meta?.status ?? 'idle',
+      getStatus,
+      setStatus: (status) => store.setStatus(entry.id, status),
+    };
+  }, [allEntries, entry, store]);
 
   return <DialogControllerProvider value={controller}>{entry.renderer(controller)}</DialogControllerProvider>;
 }
@@ -99,12 +90,8 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
  * 제네릭을 통해 상태 타입을 지정할 수 있습니다.
  */
 export function useDialogController<
-  TProps extends Record<string, unknown> = Record<string, unknown>,
-  TOptions extends Record<string, unknown> = Record<string, unknown>
+  TProps extends Record<string, unknown> = Record<string, unknown>
 >() {
   const controller = useDialogControllerInternal();
-  return controller as DialogControllerContextValue<TProps, TOptions> & {
-    getStateField: <V>(key: PropertyKey, fallback: V) => V;
-    getStateFields: <B extends Record<string, unknown>>(base: B) => B & Partial<TProps>;
-  };
+  return controller as DialogControllerContextValue<TProps>;
 }
