@@ -1,16 +1,17 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Introduction as GettingStartedIntroduction } from '@/renewalPages/getting-started/Introduction';
-import { QuickStart as GettingStartedQuickStart } from '@/renewalPages/getting-started/QuickStart';
-import { Architecture as FundamentalsArchitecture } from '@/renewalPages/fundamentals/Architecture';
-import { DialogStorePage } from '@/renewalPages/fundamentals/DialogStore';
-import { CreateDialogApiPage } from '@/renewalPages/fundamentals/CreateDialogApi';
-import { UseDialogControllerPage } from '@/renewalPages/fundamentals/UseDialogController';
-import { DialogsRendererPage } from '@/renewalPages/fundamentals/DialogsRenderer';
-import { DefiningDialogsPage as BuildingDefiningDialogsPage } from '@/renewalPages/building-dialogs/DefiningDialogs';
-import { ComponentBasicsPage } from '@/renewalPages/building-dialogs/ComponentBasics';
-import { AsyncPatternsPage } from '@/renewalPages/building-dialogs/AsyncPatterns';
-import { BehaviorOptionsPage } from '@/renewalPages/building-dialogs/BehaviorOptions';
+import { Introduction as GettingStartedIntroduction } from '@/pages/getting-started/Introduction';
+import { QuickStart as GettingStartedQuickStart } from '@/pages/getting-started/QuickStart';
+import { Architecture as FundamentalsArchitecture } from '@/pages/fundamentals/Architecture';
+import { DialogStorePage } from '@/pages/fundamentals/DialogStore';
+import { CreateDialogApiPage } from '@/pages/fundamentals/CreateDialogApi';
+import { UseDialogControllerPage } from '@/pages/fundamentals/UseDialogController';
+import { DialogsRendererPage } from '@/pages/fundamentals/DialogsRenderer';
+import { DefiningDialogsPage as BuildingDefiningDialogsPage } from '@/pages/building-dialogs/DefiningDialogs';
+import { ComponentBasicsPage } from '@/pages/building-dialogs/ComponentBasics';
+import { AsyncPatternsPage } from '@/pages/building-dialogs/AsyncPatterns';
+import { BehaviorOptionsPage } from '@/pages/building-dialogs/BehaviorOptions';
+import RenewalDemoPage from '@/pages/renewal/Renewal';
 
 export const routeConfig = [
   {
@@ -83,6 +84,17 @@ export const routeConfig = [
         path: 'behavior-options',
         element: <BehaviorOptionsPage />,
         name: '옵션 & 동작',
+      },
+    ],
+  },
+  {
+    path: 'renewal',
+    title: '라이브 데모',
+    children: [
+      {
+        path: 'live-showcase',
+        element: <RenewalDemoPage />,
+        name: '라이브 쇼케이스',
       },
     ],
   },

@@ -1,9 +1,0 @@
-import { DialogsRenderer, type DialogStore } from 'react-layered-dialog';
-
-type DialogRendererProps = {
-  store: DialogStore;
-};
-
-export const DialogRenderer = ({ store }: DialogRendererProps) => {
-  return <DialogsRenderer store={store} />;
-};

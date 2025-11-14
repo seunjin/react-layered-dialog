@@ -1,78 +1,57 @@
+import { Link } from 'react-router-dom';
 import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
-import { Link } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
 
+const pnpmInstallSnippet = `pnpm add react-layered-dialog`;
 const npmInstallSnippet = `npm add react-layered-dialog`;
 const yarnInstallSnippet = `yarn add react-layered-dialog`;
-const pnpmInstallSnippet = `pnpm add react-layered-dialog`;
 
 export const Introduction = () => (
   <DocArticle title="React Layered Dialog 소개">
     <p className="lead">
-      React Layered Dialog는 React 18 <InlineCode>useSyncExternalStore</InlineCode>를
-      기반으로 하는 초경량 다이얼로그 매니저입니다. 전역 상태 라이브러리 없이도
-      다이얼로그를 배열 스택으로 추적하고, 타입 정의만으로 선언적
-      <InlineCode>openDialog</InlineCode> 경험을 제공합니다.
+      React Layered Dialog는 <InlineCode>DialogStore</InlineCode>와{' '}
+      <InlineCode>createDialogApi</InlineCode> 기반으로 다이얼로그 스택을 선언적으로
+      제어할 수 있게 해 주는 경량 라이브러리입니다. React 18의{' '}
+      <InlineCode>useSyncExternalStore</InlineCode>를 활용해 별도 전역 상태 없이도
+      안전한 타입과 일관된 렌더링을 제공합니다.
     </p>
     <p className="mt-4 text-muted-foreground">
-      1KB 남짓한 코어가 레이어 <InlineCode>z-index</InlineCode>와 상태 동기화를 담당하고,
-      UI·애니메이션·포커스 전략은 애플리케이션이 자유롭게 선택하도록 설계되어 있습니다.
+      코어는 다이얼로그 스택과 z-index, 비동기 상태만 관리하고, UI 구현과 접근성 전략은
+      애플리케이션 코드에 맡겨둡니다. 이 문서는 새 API 흐름을 기준으로 다양한 컴포넌트와
+      패턴을 단계적으로 안내합니다.
     </p>
 
-    <Section as="h2" id="why-unique" title="React Layered Dialog가 특별한 이유">
+    <Section as="h2" id="why-unique" title="어떤 점이 특별한가요?">
       <ul className="ml-6 list-disc space-y-2">
         <li>
-          <b>자동 스택 관리</b>: 다이얼로그를 배열로 관리하며 중첩 순서에 따라{' '}
-          <InlineCode>z-index</InlineCode>를 자동으로 계산합니다.
+          <b>스토어 중심 설계</b>: 단일 <InlineCode>DialogStore</InlineCode> 인스턴스가 모든
+          다이얼로그를 관리해 어디서나 동일한 컨텍스트를 공유할 수 있습니다.
         </li>
         <li>
-          <b>타입 안전한 API</b>: 상태 타입과 컴포넌트를 매핑하면
-          <InlineCode>openDialog(&apos;confirm&apos;, …)</InlineCode> 같은 호출부터 타입 검증이
-          적용됩니다.
+          <b>타입 안전성</b>: <InlineCode>createDialogApi</InlineCode>로 타입과 컴포넌트를
+          등록하면 <InlineCode>openDialog(&apos;confirm&apos;, props)</InlineCode> 호출부터 자동으로
+          타입 검증을 거칩니다.
         </li>
         <li>
-          <b>미니멀 코어</b>: 전역 스토어나 UI 프레임워크에 종속되지 않아 기존 디자인
-          시스템과 쉽게 통합됩니다.
+          <b>컨트롤러 패턴</b>: <InlineCode>useDialogController</InlineCode> 훅이 다이얼로그
+          내부에서 닫기(close), 언마운트(unmount), 상태 업데이트(update)를 일관되게 제공합니다.
         </li>
         <li>
-          <b>선택적 동작</b>: ESC, 외부 클릭 등은 컨트롤러 패턴이나 커스텀 훅으로
-          필요한 만큼만 opt-in 할 수 있습니다.
+          <b>필요한 동작만 opt-in</b>: ESC, 외부 클릭, 스크롤 락 같은 동작은 옵션이나 사용자
+          코드로 구현해 최소한의 코어를 유지합니다.
         </li>
       </ul>
     </Section>
 
-    <Section as="h2" id="philosophy" title="핵심 철학">
+    <Section as="h2" id="scenarios" title="이런 상황에서 유용합니다">
       <ul className="ml-6 list-disc space-y-2">
-        <li>
-          <b>얇은 전역 스토어</b>:{' '}
-          <InlineCode>useSyncExternalStore</InlineCode> 기반 매니저가 다이얼로그 배열만
-          추적하고 나머지 정책은 호출자에게 위임합니다.
-        </li>
-        <li>
-          <b>타입-구동 매핑</b>: <InlineCode>type</InlineCode> 필드와 컴포넌트를 상관된
-          유니온으로 연결해 상태·UI 관계를 정적 타이핑으로 보장합니다.
-        </li>
-        <li>
-          <b>선언적 옵션</b>: <InlineCode>BaseState</InlineCode> 패턴으로 dim, ESC,
-          <InlineCode>z-index</InlineCode> 등을 옵션화해 필요한 동작만 명시합니다.
-        </li>
-        <li>
-          <b>확장 가능한 동작</b>: 포커스, 애니메이션, 접근성 전략은 사용자 코드나 애드온으로
-          구성하되 코어는 이를 방해하지 않습니다.
-        </li>
-      </ul>
-    </Section>
-
-    <Section as="h2" id="scenarios" title="언제 도움이 되나요?">
-      <ul className="ml-6 list-disc space-y-2">
-        <li>여러 개의 다이얼로그를 중첩해도 상태 끌어올리기 없이 관리하고 싶은 경우</li>
-        <li>디자인 시스템이 다른 프로젝트에서 공통 다이얼로그 매니저가 필요한 경우</li>
-        <li>전역 상태 라이브러리를 추가하지 않고도 다이얼로그 상태를 제어하려는 경우</li>
-        <li>테스트 가능한 선언적 API로 비즈니스 로직과 UI를 분리하고 싶은 경우</li>
+        <li>디자인 시스템마다 다른 UI를 유지하면서도 공통 다이얼로그 매니저를 사용하고 싶을 때</li>
+        <li>복잡한 상태 끌어올리기를 피하고 선언적 API로 비즈니스 로직을 분리하고 싶을 때</li>
+        <li>중첩 다이얼로그를 안전하게 관리하거나 비동기 확인 모달 패턴을 표준화하고 싶을 때</li>
       </ul>
     </Section>
 
@@ -94,7 +73,8 @@ export const Introduction = () => (
         </TabsContent>
       </Tabs>
       <p className="mt-2 text-sm text-muted-foreground">
-        애니메이션이나 포커스 트랩 등은 선호하는 라이브러리를 자유롭게 선택하여 조합하세요.
+        애플리케이션에 맞는 접근성, 포커스 제어, 스타일링은 별도 라이브러리나 유틸리티와
+        조합해 구현할 수 있습니다.
       </p>
     </Section>
 
@@ -102,22 +82,11 @@ export const Introduction = () => (
       <ol className="ml-6 list-decimal space-y-2">
         <li>
           <Link to="/getting-started/quick-start" className="text-primary underline">
-            Quick Start
+            빠르게 시작하기
           </Link>
-          에서 필수 파일을 설정합니다.
+          에서 <InlineCode>DialogStore</InlineCode> 설정과 렌더러 배치를 익혀 보세요.
         </li>
-        <li>
-          <Link to="/core/architecture" className="text-primary underline">
-            코어 아키텍처
-          </Link>
-          를 읽고 매니저/훅/렌더러의 역할을 이해합니다.
-        </li>
-        <li>
-          <Link to="/examples/live-showcase" className="text-primary underline">
-            Live Showcase
-          </Link>
-          에서 다양한 옵션을 실험하며 자신만의 다이얼로그 시스템을 구축하세요.
-        </li>
+        <li>핵심 개념과 다이얼로그 제작 가이드는 순차적으로 추가될 예정입니다.</li>
       </ol>
     </Section>
   </DocArticle>
