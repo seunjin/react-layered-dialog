@@ -164,7 +164,7 @@ const handleDelete = async () => {
 };
 ```
 
-위 예시는 `example/src/lib/renewalDialogs.ts` 헬퍼(`renewalDialog.confirm`, `renewalDialog.open`, `renewalDialog.update`)로 그대로 재현할 수 있다. 향후 정식 API (`dialog.confirm`, `dialog.open`)에서도 동일한 패턴이 유지될 예정이다.
+위 예시는 `example/src/lib/dialogs.ts` 헬퍼(`renewalDialog.confirm`, `renewalDialog.open`, `renewalDialog.update`)로 그대로 재현할 수 있다. 향후 정식 API (`dialog.confirm`, `dialog.open`)에서도 동일한 패턴이 유지될 예정이다.
 
 ## 9. Props 기반 동작 제어
 

@@ -1,19 +1,21 @@
-import { dialog } from '@/lib/dialogs';
+import { dialog, dialogStore } from '@/lib/dialogs';
 import { DialogsRenderer } from 'react-layered-dialog';
-import { Alert } from '@/components/dialogs/Alert';
 
 export function App() {
-  const showAlert = () => {
-    dialog.open(() => <Alert title="안내" message="새로운 DialogStore 기반 API를 사용 중입니다." />);
+  const showConfirm = () => {
+    dialog.confirm({
+      title: '안내',
+      message: '새로운 DialogStore 기반 API를 사용 중입니다.',
+    });
   };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <button className="rounded bg-black px-4 py-2 text-white" onClick={showAlert}>
-        알림 열기
+      <button className="rounded bg-black px-4 py-2 text-white" onClick={showConfirm}>
+        확인 열기
       </button>
 
-      <DialogsRenderer store={dialog.store} />
+      <DialogsRenderer store={dialogStore} />
     </div>
   );
 }

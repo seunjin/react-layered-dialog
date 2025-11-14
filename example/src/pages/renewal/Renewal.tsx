@@ -1,28 +1,19 @@
-import RenewalConfirm, {
-  type RenewalConfirmOptions,
-  type RenewalConfirmProps,
-} from '@/components/dialogs/renewal/RenewalConfirm';
+import Confirm, { type ConfirmProps } from '@/components/dialogs/Confirm';
 import { DocArticle } from '@/components/docs/DocArticle';
 import { Button } from '@/components/ui/button';
-import { renewalDialog } from '@/lib/renewalDialogs';
+import { dialog } from '@/lib/dialogs';
 import type { DialogRenderFn } from 'react-layered-dialog';
 
 const Renewal = () => {
   const handleSingleDialogOpen = () => {
-    renewalDialog.open(() => (
-      <RenewalConfirm
-        title="단일 Confirm"
-        message="단일 Confirm 테스트입니다."
-      />
+    dialog.open(() => (
+      <Confirm title="단일 Confirm" message="단일 Confirm 테스트입니다." />
     ));
   };
 
   const handleMultiDialogOpen = () => {
-    const secondRenderer: DialogRenderFn<
-      RenewalConfirmProps,
-      RenewalConfirmOptions
-    > = ({ closeAll }) => (
-      <RenewalConfirm
+    const secondRenderer: DialogRenderFn<ConfirmProps> = ({ closeAll }) => (
+      <Confirm
         title="멀티 Confirm"
         message="두 번째 Confirm입니다."
         confirmLabel="모두 닫기"
@@ -30,8 +21,8 @@ const Renewal = () => {
       />
     );
 
-    const firstResult = renewalDialog.open<RenewalConfirmProps>(() => (
-      <RenewalConfirm
+    const firstResult = dialog.open<ConfirmProps>(() => (
+      <Confirm
         title="멀티 Confirm"
         message="첫 번째 Confirm입니다."
         confirmLabel="두 번째 Confirm 열기"
@@ -40,13 +31,13 @@ const Renewal = () => {
 
     firstResult.update({
       onConfirm() {
-        renewalDialog.open(secondRenderer); // 같은 렌더러를 재사용해 필요할 때 다시 연다.
+        dialog.open(secondRenderer); // 같은 렌더러를 재사용해 필요할 때 다시 연다.
       },
     });
   };
 
   const handleAsyncConfirmDialogOpen = async () => {
-    const result = await renewalDialog.confirm((controller) => ({
+    const result = await dialog.confirm((controller) => ({
       title: '정말로 삭제할까요?',
       message: '이 동작은 되돌릴 수 없습니다.',
       confirmLabel: '삭제',

@@ -22,18 +22,16 @@ pnpm add react-layered-dialog
 
 ### 기본 사용법
 
-`react-layered-dialog`는 `useDialogs` 훅을 통해 매우 간단하게 다이얼로그를 열고 관리할 수 있습니다.
+`react-layered-dialog`는 전역 `DialogStore`와 `createDialogApi`로 구성한 `dialog` 헬퍼를 통해 다이얼로그를 제어합니다.
 
 ```tsx
-import { useDialogs } from '@/lib/dialogs'; // 1. 설정된 훅 임포트
-import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
+import { dialog, dialogStore } from '@/lib/dialogs';
+import { DialogsRenderer } from 'react-layered-dialog';
 
 function App() {
-  const { openDialog, store } = useDialogs();
-
-  const showAlert = () => {
-    // 2. 원하는 다이얼로그를 타입과 함께 호출
-    openDialog('alert', {
+  const showConfirm = () => {
+    // 1. 레지스트리에 등록된 다이얼로그 메서드를 호출
+    dialog.confirm({
       title: '알림',
       message: '안녕하세요! React Layered Dialog 입니다.',
     });
@@ -41,10 +39,10 @@ function App() {
 
   return (
     <>
-      <button onClick={showAlert}>알림 열기</button>
+      <button onClick={showConfirm}>알림 열기</button>
 
-      {/* 3. 앱 최상단에 렌더러 추가 */}
-      <DialogRenderer store={store} />
+      {/* 2. 앱 최상단에 렌더러 추가 */}
+      <DialogsRenderer store={dialogStore} />
     </>
   );
 }
@@ -63,8 +61,17 @@ function App() {
 ```tsx
 import { useEffect, useRef } from 'react';
 import { useDialogController } from 'react-layered-dialog';
-import type { AlertDialogProps } from '@/lib/dialogs';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+
+type AlertDialogProps = {
+  title: string;
+  message: string;
+  onOk?: () => void;
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
+};
 
 export const AlertDialog = (props: AlertDialogProps) => {
   const controller = useDialogController<AlertDialogProps>();
