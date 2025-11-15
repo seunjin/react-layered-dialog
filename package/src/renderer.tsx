@@ -61,7 +61,7 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
       unmount: () => store.unmount(entry.id),
       closeAll: store.closeAll,
       unmountAll: store.unmountAll,
-      update: (updater) => store.updateState(entry.id, updater),
+      update: (updater) => store.update(entry.id, updater),
       getStateField: <V,>(key: PropertyKey, fallback: V) => {
         const current = entry.state as Record<PropertyKey, unknown> | undefined;
         if (current && Object.prototype.hasOwnProperty.call(current, key)) {

@@ -120,7 +120,7 @@ export class DialogStore {
     const close = () => this.close(handle.id);
     const unmount = () => this.unmount(handle.id);
     const update = (updater: DialogStateUpdater<TProps>) => {
-      this.updateState(handle.id, updater);
+      this.update(handle.id, updater);
     };
     const setStatus = (status: DialogStatus) => {
       this.setStatus(handle.id, status);
@@ -298,7 +298,7 @@ export class DialogStore {
    * 다이얼로그 상태를 갱신합니다.
    * 객체 또는 updater 함수를 받아 이전 상태 기반으로 계산할 수 있습니다.
    */
-  updateState = <TProps extends Record<string, unknown>>(
+  update = <TProps extends Record<string, unknown>>(
     id: DialogId,
     updater: DialogStateUpdater<TProps>
   ) => {

@@ -21,7 +21,7 @@ const signature = `class DialogStore {
   closeAll(): void;
   unmountAll(): void;
 
-  updateState<TProps>(id: DialogId, updater: DialogStateUpdater<TProps>): void;
+  update<TProps>(id: DialogId, updater: DialogStateUpdater<TProps>): void;
   setStatus(id: DialogId, status: DialogStatus): void;
   getStatus(id: DialogId): DialogStatus;
 
@@ -85,7 +85,7 @@ export const DialogStorePage = () => (
     <Section as="h2" id="state-management" title="상태 업데이트와 메타 정보">
       <ul className="ml-6 list-disc space-y-2">
         <li>
-          <InlineCode>updateState</InlineCode>는 다이얼로그가 보유한 사용자 정의 상태를 부분 업데이트할 때
+          <InlineCode>update</InlineCode>는 다이얼로그가 보유한 사용자 정의 상태를 부분 업데이트할 때
           사용합니다.
         </li>
         <li>

@@ -155,7 +155,7 @@ type DialogApiBase = {
   unmount: DialogStore['unmount'];
   closeAll: DialogStore['closeAll'];
   unmountAll: DialogStore['unmountAll'];
-  update: DialogStore['updateState'];
+  update: DialogStore['update'];
 };
 
 export type DialogApi<TRegistry extends Record<string, AnyRegistryEntry>> = {
@@ -166,7 +166,7 @@ export type DialogApi<TRegistry extends Record<string, AnyRegistryEntry>> = {
   unmount: DialogStore['unmount'];
   closeAll: DialogStore['closeAll'];
   unmountAll: DialogStore['unmountAll'];
-  update: DialogStore['updateState'];
+  update: DialogStore['update'];
 } & {
   [K in keyof TRegistry]: DialogMethodFromDefinition<NormalizeRegistry<TRegistry>[K]>;
 };
@@ -188,7 +188,7 @@ export function createDialogApi<
   const unmount: DialogStore['unmount'] = (id) => store.unmount(id);
   const closeAll: DialogStore['closeAll'] = () => store.closeAll();
   const unmountAll: DialogStore['unmountAll'] = () => store.unmountAll();
-  const update: DialogStore['updateState'] = (id, updater) => store.updateState(id, updater);
+  const update: DialogStore['update'] = (id, updater) => store.update(id, updater);
 
   const baseApi: DialogApiBase = {
     store,
