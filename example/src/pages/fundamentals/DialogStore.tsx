@@ -7,21 +7,24 @@ import dialogsTsCode from '@/code-templates/dialogs.ts.txt?raw';
 const signature = `class DialogStore {
   constructor(options?: { baseZIndex?: number });
 
-  open<TProps, TOptions>(
-    renderer: DialogRenderFn<TProps, TOptions>,
-    options?: OpenDialogOptions<TOptions>
-  ): DialogOpenResult<TProps, TOptions>;
-  openAsync<TProps, TOptions>(
-    renderer: DialogRenderFn<TProps, TOptions>,
-    options?: OpenDialogOptions<TOptions>
-  ): Promise<DialogAsyncResult<TProps, TOptions>>;
+  open<TProps extends Record<string, unknown> = Record<string, unknown>>(
+    renderer: DialogRenderFn<TProps>,
+    options?: OpenDialogOptions
+  ): DialogOpenResult<TProps>;
+  openAsync<TProps extends Record<string, unknown> = Record<string, unknown>>(
+    renderer: DialogRenderFn<TProps>,
+    options?: OpenDialogOptions
+  ): Promise<DialogAsyncResult<TProps>>;
 
   close(id?: DialogId): void;
   unmount(id?: DialogId): void;
   closeAll(): void;
   unmountAll(): void;
 
-  update<TProps>(id: DialogId, updater: DialogStateUpdater<TProps>): void;
+  update<TProps extends Record<string, unknown> = Record<string, unknown>>(
+    id: DialogId,
+    updater: DialogStateUpdater<TProps>
+  ): void;
   setStatus(id: DialogId, status: DialogStatus): void;
   getStatus(id: DialogId): DialogStatus;
 
