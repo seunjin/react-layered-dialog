@@ -143,6 +143,8 @@ export class DialogStore {
     return result;
   };
 
+  
+  
   /**
    * 새 다이얼로그를 스택에 추가합니다.
    *

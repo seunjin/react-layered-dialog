@@ -28,13 +28,12 @@ export const QuickStart = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="define" title="1. 스토어와 API 만들기">
+    <Section as="h2" id="define" title="1. 스토어 만들기">
       <p>
         <InlineCode>src/lib/dialogs.ts</InlineCode> 파일에 아래 코드를 붙여 넣습니다.
-        단일 <InlineCode>DialogStore</InlineCode> 인스턴스를 만들고{' '}
-        <InlineCode>createDialogApi</InlineCode>로 <InlineCode>dialog</InlineCode> 헬퍼를 생성합니다.
-        이 헬퍼에는 스토어(<InlineCode>dialog.store</InlineCode>)와 기본 메서드(
-        <InlineCode>open</InlineCode>, <InlineCode>close</InlineCode> 등)가 모두 포함됩니다.
+        단일 <InlineCode>DialogStore</InlineCode> 인스턴스를 만들어 앱 전역에서 공유합니다.
+        기본 사용법은 <InlineCode>dialog.open</InlineCode>으로 컴포넌트를 직접 렌더링하는
+        방식입니다.
       </p>
       <CodeBlock language="ts" code={dialogsTsCode} />
     </Section>
@@ -52,13 +51,14 @@ export const QuickStart = () => (
     <Section as="h2" id="entry" title="3. 애플리케이션에 연결">
       <p>
         엔트리 파일(<InlineCode>src/App.tsx</InlineCode> 등)에서{' '}
-        <InlineCode>DialogsRenderer</InlineCode>에 <InlineCode>dialog.store</InlineCode>를 전달하고,
+        <InlineCode>DialogsRenderer</InlineCode>에 <InlineCode>dialog</InlineCode>를 전달하고,
         버튼 클릭 시 <InlineCode>dialog.open</InlineCode>으로 컴포넌트를 직접 렌더링합니다.
       </p>
       <CodeBlock language="tsx" code={appTsxCode} />
       <p className="mt-2 text-sm text-muted-foreground">
-        동일한 레지스트리 키를 활용해 <InlineCode>dialog.alert({`{ title, message }`})</InlineCode>처럼
-        props 기반 호출로 확장할 수도 있습니다.
+        추가로, 레지스트리를 등록해 <InlineCode>createDialogApi</InlineCode> 기반의
+        <InlineCode>dialog.alert({`{ title, message }`})</InlineCode> 같은 헬퍼 메서드로 확장할 수도
+        있습니다.
       </p>
     </Section>
   </DocArticle>

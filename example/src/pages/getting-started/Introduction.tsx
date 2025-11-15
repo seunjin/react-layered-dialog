@@ -33,16 +33,18 @@ export const Introduction = () => (
         </li>
         <li>
           <b>타입 안전성</b>: <InlineCode>createDialogApi</InlineCode>로 타입과 컴포넌트를
-          등록하면 <InlineCode>openDialog(&apos;confirm&apos;, props)</InlineCode> 호출부터 자동으로
-          타입 검증을 거칩니다.
+          등록하면 <InlineCode>dialog.confirm(props)</InlineCode> 또는
+          <InlineCode>dialog.confirm((c) =&gt; props)</InlineCode> 호출부터 자동으로 타입 검증을
+          거칩니다.
         </li>
         <li>
           <b>컨트롤러 패턴</b>: <InlineCode>useDialogController</InlineCode> 훅이 다이얼로그
           내부에서 닫기(close), 언마운트(unmount), 상태 업데이트(update)를 일관되게 제공합니다.
         </li>
         <li>
-          <b>필요한 동작만 opt-in</b>: ESC, 외부 클릭, 스크롤 락 같은 동작은 옵션이나 사용자
-          코드로 구현해 최소한의 코어를 유지합니다.
+          <b>필요한 동작만 구현</b>: 라이브러리는 다이얼로그 스택(z-index, 상태)만 관리합니다.
+          ESC, 외부 클릭, 스크롤 락, 포커스 트랩 등은 사용자 코드(유틸/컴포넌트)로 직접
+          구성하세요.
         </li>
       </ul>
     </Section>

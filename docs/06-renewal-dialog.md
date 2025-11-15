@@ -3,7 +3,7 @@
 이 문서는 `react-layered-dialog`의 최신 다이얼로그 스펙과 설계 결정을 요약합니다.
 
 ## 1. 상태 스토어
-- 단일 스택 배열을 중앙에서 관리하며, 각 엔트리는 `id`, `component`, `isOpen`, `isMounted`, `controllerRefs` 등을 가진다.
+- 단일 스택 배열을 중앙에서 관리하며, 각 엔트리는 `id`, `renderer`, `componentKey`, `isOpen`, `isMounted`, `zIndex`, `state`, `meta.status`, `asyncHandlers` 등을 가진다.
 - `close(id)`는 `isOpen=false`만 표시하고, 실제 제거는 `unmount(id)`가 수행한다.
 - `closeAll()` / `unmountAll()`을 제공해 전체 다이얼로그 제어를 지원한다.
 - 외부 구독은 `useSyncExternalStore` 기반으로 유지한다.
@@ -14,15 +14,17 @@
 - `isOpen`과 `isMounted` 분리 정책을 반영해 제거 타이밍을 제어한다.
 - 각 엔트리에 컨트롤러 컨텍스트를 주입해 하위 컴포넌트가 `useDialogController()`로 제어 함수에 접근할 수 있게 한다.
 
-## 3. `dialog.open`
-- 시그니처: `dialog.open(node: React.ReactNode): DialogOpenResult`.
-- JSX를 직접 받아 렌더링하며, 컴포넌트는 비즈니스 props(`isPending`, `onConfirm` 등)를 그대로 사용할 수 있다.
-- 반환된 객체에는 `close()`, `unmount()`, `update()`, `setStatus()` 등 동일 ID를 제어할 수 있는 메서드가 포함된다.
+## 3. `DialogStore.open` / `dialog.<registryKey>()`
+- 저수준 시그니처: `store.open(renderer: DialogRenderFn<TProps>, options?: OpenDialogOptions): DialogOpenResult<TProps>`.
+- `renderer`는 컨트롤러를 인자로 받아 JSX를 반환하는 함수이며, 컨트롤러를 사용하지 않을 경우 무시해도 된다.
+- `OpenDialogOptions`는 `id`, `componentKey`, `zIndex`를 직접 지정할 때 사용한다.
+- 반환값(`DialogOpenResult`)에는 `dialog` 핸들, `close`, `unmount`, `update`, `setStatus`, `getStatus`, `status`, `zIndex`가 포함된다.
+- `createDialogApi`로 생성된 고수준 메서드(`dialog.confirm(...)`)는 등록된 컴포넌트 정의를 이용해 내부적으로 `store.open` 또는 `store.openAsync`를 호출한다. 입력값은 `props` 객체 또는 `(controller) => props` 팩토리 형태를 지원한다.
 
 ## 4. `dialog.openAsync`
-- Promise 기반으로 결과를 반환하는 API.
+- 시그니처: `store.openAsync(renderer: DialogRenderFn<TProps>, options?: OpenDialogOptions): Promise<DialogAsyncResult<TProps>>`.
 - 컨트롤러에는 `resolve`, `reject`, `handle`이 주입되어 패널 내부에서 비동기 흐름을 직접 제어할 수 있다.
-- `await` 결과는 `DialogAsyncResult<TProps, TOptions>` 형태이며 다음 필드를 포함한다.
+- `await` 결과는 `DialogAsyncResult<TProps>` 형태이며 다음 필드를 포함한다.
   - `ok`: 컨트롤러에서 전달한 승인 여부 (true/false)
   - `dialog`: `{ id, componentKey }` 형태의 다이얼로그 핸들
   - `close()`, `unmount()`, `update()`, `setStatus(status)`: 동일 ID를 대상으로 한 제어 함수
