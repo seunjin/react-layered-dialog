@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
-import { dialogStore } from '@/lib/dialogs';
+import { dialog } from '@/lib/dialogs';
 import { ReactLayeredDialogRenderer } from './components/dialogs/ReactLayeredDialogRenderer';
 function App() {
   useEffect(() => {
-    const unsubscribe = dialogStore.subscribe(() => {
-      const snapshot = dialogStore.getSnapshot();
+    const unsubscribe = dialog.store.subscribe(() => {
+      const snapshot = dialog.store.getSnapshot();
       console.log('[renewal dialogs]', snapshot.entries);
     });
     return unsubscribe;
@@ -15,7 +15,7 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
-      <ReactLayeredDialogRenderer store={dialogStore} />
+      <ReactLayeredDialogRenderer store={dialog.store} />
     </>
   );
 }

@@ -21,7 +21,7 @@ export const Architecture = () => (
           <InlineCode>update</InlineCode> 같은 저수준 메서드를 제공합니다.
         </li>
         <li>
-          <b>createDialogApi</b>: 스토어와 레지스트리를 연결해 <InlineCode>dialog.open</InlineCode>,
+          <b>createDialogApi</b> (선택): 스토어와 레지스트리를 연결해 <InlineCode>dialog.open</InlineCode>,
           <InlineCode>dialog.alert</InlineCode>처럼 재사용할 헬퍼를 만들어 줍니다.
         </li>
         <li>
@@ -38,7 +38,7 @@ export const Architecture = () => (
     <Section as="h2" id="flow" title="상호 작용 흐름">
       <ol className="ml-6 list-decimal space-y-2">
         <li>
-          애플리케이션이 <InlineCode>DialogStore</InlineCode> 인스턴스를 생성하고{' '}
+          애플리케이션이 <InlineCode>DialogStore</InlineCode> 인스턴스를 생성합니다. 필요하면{' '}
           <InlineCode>createDialogApi</InlineCode>로 헬퍼 객체를 만듭니다.
         </li>
         <li>
@@ -49,7 +49,8 @@ export const Architecture = () => (
           업데이트, 스택 정보를 받아 UI와 상호작용을 정의합니다.
         </li>
         <li>
-          임의의 위치에서 <InlineCode>dialog.open(() =&gt; &lt;Alert /&gt;)</InlineCode> 또는{' '}
+          임의의 위치에서 <InlineCode>dialog.open(() =&gt; &lt;Alert /&gt;)</InlineCode>{' '}
+          (또는 스토어 직접 사용 시 <InlineCode>dialogStore.open(...)</InlineCode>), 레지스트리 기반이면{' '}
           <InlineCode>dialog.alert({`{ title, message }`})</InlineCode>처럼 호출하면 스토어가 새 엔트리를
           추가하고 렌더러가 이를 즉시 반영합니다.
         </li>
