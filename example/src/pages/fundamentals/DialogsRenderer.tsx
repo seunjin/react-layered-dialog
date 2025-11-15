@@ -4,13 +4,13 @@ import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
 const rendererUsage = `import { DialogsRenderer } from 'react-layered-dialog';
-import { dialogStore } from '@/lib/dialogs';
+import { dialog } from '@/lib/dialogs';
 
 export function AppShell() {
   return (
     <>
       <AppLayout />
-      <DialogsRenderer store={dialogStore} />
+      <DialogsRenderer store={dialog.store} />
     </>
   );
 }`;
@@ -23,6 +23,45 @@ type DialogRendererProps = {
 
 export function DialogRenderer({ store }: DialogRendererProps) {
   return <DialogsRenderer store={store} />;
+}`;
+
+const rendererWrapperExample = `import { useEffect } from 'react';
+import { DialogsRenderer, type DialogStore } from 'react-layered-dialog';
+import { useSyncExternalStore } from 'react';
+
+export function AppRenderer({ store }: { store: DialogStore }) {
+  const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
+  const openEntries = snapshot.entries.filter((e) => e.isOpen);
+  const topId = openEntries.length ? openEntries[openEntries.length - 1].id : null;
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && topId) store.close(topId);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [topId, store]);
+
+  return <DialogsRenderer store={store} />;
+}`;
+
+const storeDecoratorExample = `import { type DialogStore } from 'react-layered-dialog';
+
+export function decorateStore(store: DialogStore) {
+  const origOpen = store.open;
+  store.open = (renderer, options) => {
+    console.info('[dialog] open', options);
+    const result = origOpen(renderer, options);
+    return result;
+  };
+
+  const origClose = store.close;
+  store.close = (id) => {
+    console.info('[dialog] close', id);
+    origClose(id);
+  };
+
+  return store;
 }`;
 
 export const DialogsRendererPage = () => (
@@ -42,6 +81,11 @@ export const DialogsRendererPage = () => (
       <p className="mt-2 text-sm text-muted-foreground">
         동일한 스토어를 공유하는 모든 다이얼로그는 이 렌더러를 통해 컨트롤러 컨텍스트를 전달받습니다.
         여러 스토어를 사용한다면 렌더러도 각각 배치해야 합니다.
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        참고: 스택 메타(최상단, 개수, 인덱스)는 <InlineCode>isOpen=true</InlineCode>인 항목만 기준으로 계산됩니다.
+        <InlineCode>isOpen=false</InlineCode>지만 DOM에 남아 있는(퇴장 애니메이션 중) 다이얼로그는 보이는 상태가 아니므로
+        최상단 판정이나 ESC 처리 등에 참여하지 않습니다.
       </p>
     </Section>
 
@@ -66,9 +110,25 @@ export const DialogsRendererPage = () => (
           테스트 환경에서는 스토어와 렌더러를 함께 마운트해야 컨트롤러 훅이 올바르게 동작합니다.
         </li>
         <li>
-          전역 scroll lock을 사용할 때는 <InlineCode>.scroll-locked</InlineCode> 같은 클래스를 전역 스타일에 미리 정의해 두세요.
+          ESC/배경 클릭 같은 전역 동작은 보통 최상단 다이얼로그(<InlineCode>stack.index === stack.size - 1</InlineCode>)에만
+          적용하세요. 닫힘 전환(<InlineCode>close()</InlineCode>)과 제거(<InlineCode>unmount()</InlineCode>) 타이밍은 컴포넌트에서
+          명시적으로 제어하는 것이 안전합니다.
+        </li>
+        <li>
+          전역 정책을 &quot;렌더러에 넣기 전&quot; 하이재킹하려면, 렌더러를 래핑해 같은 <InlineCode>store</InlineCode>의 스냅샷을
+          구독하고 필요한 로직(ESC, dim 클릭 등)을 처리한 뒤 <InlineCode>{`<DialogsRenderer store={store} />`}</InlineCode>만
+          반환하는 패턴이 간단합니다.
+        </li>
+        <li>
+          또 다른 방법은 스토어 메서드 데코레이션입니다. 원본 <InlineCode>store.open</InlineCode>/<InlineCode>close</InlineCode>를
+          변수에 보관해 두고, 호출 전/후 로깅·정책을 삽입한 뒤 원본을 호출하도록 재할당할 수 있습니다.
+          동일 인스턴스를 사용해야 하며, 반환값(핸들/Promise)은 그대로 전달해야 일관성이 유지됩니다.
         </li>
       </ul>
+      <p className="mt-4 text-sm text-muted-foreground">예시 1) 렌더러 래퍼에서 전역 ESC 처리</p>
+      <CodeBlock language="tsx" code={rendererWrapperExample} />
+      <p className="mt-4 text-sm text-muted-foreground">예시 2) 스토어 메서드 데코레이션으로 프리/포스트 훅 추가</p>
+      <CodeBlock language="ts" code={storeDecoratorExample} />
     </Section>
 
     <Section as="h2" id="next" title="다음 읽을 거리">

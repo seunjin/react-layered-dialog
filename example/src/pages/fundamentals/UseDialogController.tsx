@@ -144,12 +144,6 @@ export const UseDialogControllerPage = () => (
       <CodeBlock language="tsx" code={exitAnimationExample} />
     </Section>
 
-    <Section as="h2" id="next" title="다음 읽을 거리">
-      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>
-          렌더러 배치와 전역 동작 확장은 <InlineCode>DialogsRenderer</InlineCode> 문서에서 이어집니다.
-        </li>
-      </ul>
-    </Section>
+    {/* 다음 읽을 거리 섹션 제거: 문서 흐름 간소화 */}
   </DocArticle>
 );

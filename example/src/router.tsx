@@ -50,14 +50,14 @@ export const routeConfig = [
         name: 'createDialogApi',
       },
       {
-        path: 'use-dialog-controller',
-        element: <UseDialogControllerPage />,
-        name: 'useDialogController',
-      },
-      {
         path: 'dialogs-renderer',
         element: <DialogsRendererPage />,
         name: 'DialogsRenderer',
+      },
+      {
+        path: 'use-dialog-controller',
+        element: <UseDialogControllerPage />,
+        name: 'useDialogController',
       },
     ],
   },
