@@ -53,20 +53,18 @@ export const CreateDialogApiPage = () => (
         레지스트리는 다이얼로그 타입과 컴포넌트를 매핑하는 단순 객체입니다.
         값으로 <InlineCode>{'{ component, mode }'}</InlineCode> 형태를 전달하면
         즉시 사용 가능하며,
-        <InlineCode>mode</InlineCode> 기본값은{' '}
-        <InlineCode>&apos;sync&lsquo;</InlineCode>입니다.
+        <InlineCode>mode</InlineCode> 기본값은 <InlineCode>&apos;sync&apos;</InlineCode>입니다.
       </p>
       <CodeBlock language="ts" code={registryExample} />
       <ul className="ml-6 mt-2 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          <InlineCode>mode: &apos;async&lsquo;</InlineCode>로 지정하면 Promise를
-          반환하는 메서드가 생성됩니다.
+          <InlineCode>mode: &apos;async&apos;</InlineCode>로 지정하면 Promise를 반환하는 메서드가 생성됩니다.
         </li>
         <li>
-          반환된 <InlineCode>dialog</InlineCode> 객체에는{' '}
-          <InlineCode>open</InlineCode>, <InlineCode>close</InlineCode>,
-          <InlineCode>closeAll</InlineCode>, <InlineCode>update</InlineCode>{' '}
-          같은 기본 제어 함수도 함께 포함됩니다.
+          반환된 <InlineCode>dialog</InlineCode> 객체에는 <InlineCode>open</InlineCode>,
+          <InlineCode>openAsync</InlineCode>, <InlineCode>close</InlineCode>,
+          <InlineCode>unmount</InlineCode>, <InlineCode>closeAll</InlineCode>,
+          <InlineCode>unmountAll</InlineCode>, <InlineCode>update</InlineCode> 같은 기본 제어 함수도 함께 포함됩니다.
         </li>
       </ul>
     </Section>
