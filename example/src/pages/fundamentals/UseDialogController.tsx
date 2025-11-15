@@ -4,9 +4,8 @@ import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
 const controllerSignature = `function useDialogController<
-  TProps extends Record<string, unknown> = Record<string, unknown>,
-  TOptions extends Record<string, unknown> = Record<string, unknown>
->(): DialogControllerContextValue<TProps, TOptions>;`;
+  TProps extends Record<string, unknown> = Record<string, unknown>
+>(): DialogControllerContextValue<TProps>;`;
 
 const controllerUsage = `import { useDialogController } from 'react-layered-dialog';
 
@@ -15,13 +14,9 @@ type AlertDialogProps = {
   message: string;
 };
 
-type AlertOptions = {
-  closeOnEscape?: boolean;
-};
-
 export function Alert(props: AlertDialogProps) {
-  const controller = useDialogController<AlertDialogProps, AlertOptions>();
-  const { close, unmount, update, options, stack } = controller;
+  const controller = useDialogController<AlertDialogProps>();
+  const { close, unmount, update, stack, zIndex, getStateFields } = controller;
 
   const handleConfirm = () => {
     close();
@@ -29,12 +24,32 @@ export function Alert(props: AlertDialogProps) {
   };
 
   const isTopMost = stack.index === stack.size - 1;
+  const { title, message } = getStateFields({ title: props.title, message: props.message });
 
   return (
-    <div role="alertdialog" aria-modal="true" data-topmost={isTopMost}>
-      <h3>{props.title}</h3>
-      <p>{props.message}</p>
+    <div role="alertdialog" aria-modal="true" data-topmost={isTopMost} style={{ zIndex }}>
+      <h3>{title}</h3>
+      <p>{message}</p>
       <button onClick={handleConfirm}>확인</button>
+    </div>
+  );
+}`;
+
+const exitAnimationExample = `export function Alert(props: AlertDialogProps) {
+  const { isOpen, close, unmount, zIndex } = useDialogController<AlertDialogProps>();
+
+  // 예: 상태 기반 퇴장 이후 정리. 실제 타이밍은 프로젝트 정책에 맞춰 결정하세요.
+  useEffect(() => {
+    if (!isOpen) {
+      const id = setTimeout(() => unmount(), 200);
+      return () => clearTimeout(id);
+    }
+  }, [isOpen, unmount]);
+
+  return (
+    <div className={isOpen ? 'animate-in' : 'animate-out'} style={{ zIndex }}>
+      {/* ...content... */}
+      <button onClick={close}>닫기</button>
     </div>
   );
 }`;
@@ -62,8 +77,8 @@ export const UseDialogControllerPage = () => (
           방식을 모두 지원합니다.
         </li>
         <li>
-          비동기 다이얼로그에서는 <InlineCode>setStatus</InlineCode>, <InlineCode>resolve</InlineCode>,{' '}
-          <InlineCode>reject</InlineCode>를 활용해 로딩 → 완료 단계 전환을 일관되게 관리할 수 있습니다.
+          비동기 다이얼로그에서는 <InlineCode>setStatus</InlineCode>, <InlineCode>getStatus</InlineCode>,{' '}
+          <InlineCode>resolve</InlineCode>, <InlineCode>reject</InlineCode>를 활용해 로딩 → 완료 단계 전환을 일관되게 관리할 수 있습니다.
         </li>
       </ul>
     </Section>
@@ -71,29 +86,43 @@ export const UseDialogControllerPage = () => (
     <Section as="h2" id="api" title="컨트롤러가 제공하는 항목">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          <InlineCode>close()</InlineCode>, <InlineCode>unmount()</InlineCode>: 현재 다이얼로그를 닫거나 DOM에서 제거합니다.
+          <InlineCode>close()</InlineCode>: 현재 다이얼로그의 <InlineCode>isOpen</InlineCode>을 <InlineCode>false</InlineCode>로 바꿉니다.
+          DOM에는 남아 있으므로 퇴장 애니메이션을 실행시키기에 적합합니다.
+        </li>
+        <li>
+          <InlineCode>unmount()</InlineCode>: 현재 다이얼로그를 스택(배열)에서 즉시 제거합니다. 퇴장 애니메이션을
+          사용한다면 <InlineCode>close()</InlineCode>로 상태 전환 후, 프로젝트 정책에 맞는 시점에 호출해 DOM에서
+          제거하세요.
+        </li>
+        <li>
+          <InlineCode>closeAll()</InlineCode>: 열린 모든 다이얼로그의 <InlineCode>isOpen</InlineCode>을 일괄로 <InlineCode>false</InlineCode>로 바꿉니다.
+          각 패널이 자체 퇴장 애니메이션을 수행할 수 있도록 DOM은 유지됩니다.
+        </li>
+        <li>
+          <InlineCode>unmountAll()</InlineCode>: 모든 다이얼로그를 즉시 스택에서 제거합니다. 애니메이션을 기다리지 않고 정리할 때 사용합니다.
         </li>
         <li>
           <InlineCode>update(next)</InlineCode>: 상태 객체를 교체하거나 함수형 업데이트로 일부 필드를 수정합니다.
         </li>
         <li>
-          <InlineCode>setStatus(status)</InlineCode>, <InlineCode>status</InlineCode>: 비동기 진행 상태를 설정하거나 조회합니다.
+          <InlineCode>setStatus(status)</InlineCode>, <InlineCode>getStatus()</InlineCode>, <InlineCode>status</InlineCode>: 비동기 진행 상태를 설정하거나 조회합니다.
         </li>
         <li>
           <InlineCode>resolve(payload)</InlineCode>, <InlineCode>reject(reason)</InlineCode>:{' '}
           <InlineCode>openAsync</InlineCode> 호출에서 반환된 Promise를 완료하거나 거부합니다.
         </li>
-        <li>
-          <InlineCode>options</InlineCode>: <InlineCode>createDialogApi</InlineCode> 등록 시 전달한 옵션 객체.
-        </li>
+        
         <li>
           <InlineCode>stack</InlineCode>: <InlineCode>index</InlineCode>와 <InlineCode>size</InlineCode> 정보를 포함한 스택 메타 데이터.
         </li>
         <li>
-          <InlineCode>dialog</InlineCode>: 현재 다이얼로그의 ID와 componentKey를 담은 핸들.
+          <InlineCode>handle</InlineCode>: 현재 다이얼로그의 ID와 componentKey를 담은 핸들.
         </li>
         <li>
           <InlineCode>getStateFields</InlineCode>, <InlineCode>getStateField</InlineCode>: props와 사용자 정의 상태를 병합해 안전하게 추출합니다.
+        </li>
+        <li>
+          <InlineCode>zIndex</InlineCode>, <InlineCode>isOpen</InlineCode>, <InlineCode>state</InlineCode>: 스타일 제어나 렌더 조건 분기에 활용할 수 있는 메타와 상태입니다.
         </li>
       </ul>
     </Section>
@@ -105,10 +134,14 @@ export const UseDialogControllerPage = () => (
           지정할 수 있습니다.
         </li>
         <li>
-          컨트롤러가 제공하는 <InlineCode>options</InlineCode>는 <InlineCode>createDialogApi</InlineCode> 호출 시
-          전달한 옵션과 동일합니다. 공통 옵션을 정의해 반복적인 로직을 줄이세요.
+          <InlineCode>zIndex</InlineCode>를 활용해 레이어 우선순위를 스타일에서 직접 제어하세요.
         </li>
       </ul>
+      <p className="mt-2 text-sm text-muted-foreground">
+        퇴장 애니메이션 패턴: 먼저 <InlineCode>close()</InlineCode>로 <InlineCode>isOpen=false</InlineCode>를 설정해
+        CSS 퇴장을 트리거하고, 애니메이션 종료 시점에 <InlineCode>unmount()</InlineCode>로 정리합니다.
+      </p>
+      <CodeBlock language="tsx" code={exitAnimationExample} />
     </Section>
 
     <Section as="h2" id="next" title="다음 읽을 거리">
