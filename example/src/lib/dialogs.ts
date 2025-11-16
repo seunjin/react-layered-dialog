@@ -24,3 +24,4 @@ export const openDialogAsync = dialog.openAsync;
 export const closeDialog = dialog.close;
 export const unmountDialog = dialog.unmount;
 export const updateDialog = dialog.update;
+export const openConfirm = dialog.confirm;
