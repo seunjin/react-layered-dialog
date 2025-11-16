@@ -48,10 +48,12 @@ export const ConfirmDialog: DialogComponent<ConfirmDialogProps> = (props) => {
   );
 };`;
 
-const asyncOpenSnippet = `const result = await dialog.confirm({
-  title: '정말 삭제할까요?',
-  message: '이 작업은 되돌릴 수 없습니다.',
-});
+const asyncOpenSnippet = `import { dialog } from '@/lib/dialogs';
+
+// 기본 openAsync 메서드를 사용해 비동기 다이얼로그 열기
+const result = await dialog.store.openAsync(() => (
+  <ConfirmDialog title='정말 삭제할까요?' message='이 작업은 되돌릴 수 없습니다.' />
+));
 
 if (!result.ok) return; // 사용자가 취소
 
