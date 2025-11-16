@@ -10,6 +10,7 @@ import { DialogsRendererPage } from '@/pages/fundamentals/DialogsRenderer';
 import { DefiningDialogsPage as BuildingDefiningDialogsPage } from '@/pages/building-dialogs/DefiningDialogs';
 import { ComponentBasicsPage } from '@/pages/building-dialogs/ComponentBasics';
 import { AsyncPatternsPage } from '@/pages/building-dialogs/AsyncPatterns';
+import { SyncPatternsPage } from '@/pages/building-dialogs/SyncPatterns';
 import RenewalDemoPage from '@/pages/renewal/Renewal';
 
 export const routeConfig = [
@@ -73,6 +74,11 @@ export const routeConfig = [
         path: 'components',
         element: <ComponentBasicsPage />,
         name: '컴포넌트 기본기',
+      },
+      {
+        path: 'sync-patterns',
+        element: <SyncPatternsPage />,
+        name: '동기 패턴',
       },
       {
         path: 'async-patterns',

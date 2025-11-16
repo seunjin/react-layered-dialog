@@ -115,7 +115,7 @@ export const ComponentBasicsPage = () => (
     <Section as="h2" id="next" title="다음 단계">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          비동기 확인 모달을 구현하려면 <InlineCode>비동기 패턴</InlineCode> 페이지를 참고하세요.
+          동기 흐름 레시피는 <InlineCode>동기 패턴</InlineCode> 페이지에서 이어집니다.
         </li>
       </ul>
     </Section>
