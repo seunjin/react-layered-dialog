@@ -3,25 +3,13 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 
-const propsSnippet = `// 다이얼로그 UI를 구성하는 데이터와 콜백 + 동작 플래그
+const propsSnippet = `// AlertDialogProps가 TProps 역할을 수행합니다.
+// 팀 컨벤션에 맞게 자유롭게 설계하세요.
 export type AlertDialogProps = {
   title: string;
-  message: string;
-  onOk?: () => void;
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
-};
-
-export type ConfirmDialogProps = {
-  title: string;
-  message: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  step?: 'confirm' | 'loading' | 'done';
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
+  message?: string;
+  // 필요 시 동작/표시 플래그 및 콜백을 선택적으로 추가
+  // e.g. onOk?: () => void; useDim?: boolean; scrollLock?: boolean;
 };`;
 
 const registrySnippet = `import { DialogStore, createDialogApi } from 'react-layered-dialog';
@@ -43,17 +31,22 @@ export const DefiningDialogsPage = () => (
 
     <Section as="h2" id="props" title="Props 정의">
       <p>
-        다이얼로그 UI에 필요한 데이터(<InlineCode>TProps</InlineCode>)와 행동을
-        제어하는 플래그를 한 타입 안에서 관리하면 컨트롤러/렌더러 전반에서 계약이 선명해집니다.
-        dim/ESC/scroll-lock 같은 값도 props 필드로 포함시켜 <InlineCode>getStateFields</InlineCode>로 병합하세요.
+        다이얼로그 UI에 필요한 데이터(<InlineCode>TProps</InlineCode>)를 한 타입으로 묶어두면 컨트롤러/렌더러 전반에서
+        계약이 선명해집니다. 표시/동작 관련 플래그가 필요하다면 함께 정의하고, 컴포넌트 내부에서 컨트롤러 도우미(
+        <InlineCode>getStateFields</InlineCode> 등)로 조합해 사용하세요.
       </p>
       <CodeBlock language="ts" code={propsSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           다이얼로그 유형은 레지스트리 키나{' '}
-          <InlineCode>store.open&lt;TProps, TOptions&gt;()</InlineCode>{' '}
+          <InlineCode>store.open&lt;TProps&gt;()</InlineCode>{' '}
           호출부에서 결정되므로 props 타입에는 UI에 필요한 데이터만 선언하면
           됩니다.
+        </li>
+        <li>
+          <InlineCode>AlertDialogProps</InlineCode>가 <InlineCode>TProps</InlineCode> 역할을 수행합니다. 이후
+          <InlineCode>DialogComponent&lt;TProps&gt;</InlineCode>, <InlineCode>useDialogController&lt;TProps&gt;</InlineCode>
+          에서 동일한 제네릭을 사용해 타입 일관성을 유지하세요.
         </li>
         <li>
           제네릭 관점에서 <InlineCode>AlertDialogProps</InlineCode>가{' '}
@@ -73,9 +66,10 @@ export const DefiningDialogsPage = () => (
       <CodeBlock language="ts" code={registrySnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          <InlineCode>mode: &apos;async&lsquo;</InlineCode>를 지정하면 Promise
-          기반 메서드가 만들어져 <InlineCode>await dialog.confirm()</InlineCode>{' '}
-          흐름을 바로 사용할 수 있습니다.
+          <InlineCode>mode: &apos;async&apos;</InlineCode>를 지정하면 Promise 기반 메서드가 생성되어
+          내부적으로 <InlineCode>store.openAsync</InlineCode>에 대응합니다. 반환 타입은
+          <InlineCode>Promise&lt;DialogAsyncResult&lt;TProps&gt;&gt;</InlineCode>이며,
+          기본값인 <InlineCode>mode: &apos;sync&apos;</InlineCode>는 <InlineCode>store.open</InlineCode>에 대응합니다.
         </li>
         <li>
           필요한 경우 <InlineCode>displayName</InlineCode>을 지정해 개발자
@@ -105,8 +99,7 @@ export const DefiningDialogsPage = () => (
     <Section as="h2" id="generics" title="열기 메서드에서의 제네릭 명시">
       <p>
         대부분의 경우 레지스트리 정보만으로 타입이 추론되지만, 필요하다면{' '}
-        <InlineCode>dialog.store.open</InlineCode> /
-        <InlineCode>openAsync</InlineCode> 호출 시{' '}
+        <InlineCode>dialog.store.open</InlineCode> / <InlineCode>dialog.store.openAsync</InlineCode> 호출 시{' '}
         <InlineCode>open&lt;AlertDialogProps&gt;(...)</InlineCode> 처럼 제네릭을
         명시해 컨트롤러 메서드(
         <InlineCode>getStateFields</InlineCode> 등)의 타입을 정확히 고정할 수 있습니다.
@@ -121,7 +114,7 @@ export const DefiningDialogsPage = () => (
     <Section as="h2" id="async" title="비동기 계약 설계">
       <p>
         비동기 다이얼로그는 레지스트리에서{' '}
-        <InlineCode>mode: &apos;async&lsquo;</InlineCode>만 추가하면 됩니다.
+        <InlineCode>mode: &apos;async&apos;</InlineCode>만 추가하면 됩니다.
         컨트롤러에서는 <InlineCode>resolve</InlineCode>/
         <InlineCode>reject</InlineCode>를 호출해 Promise를 종료하고, 호출자는
         자연스럽게 <InlineCode>await</InlineCode>로 결과를 다룰 수 있습니다.
@@ -143,20 +136,31 @@ export const DefiningDialogsPage = () => (
     <Section as="h2" id="tips" title="설계 팁">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          옵션(예: <InlineCode>scrollLock</InlineCode>)과 컴포넌트 내부 상태(예:{' '}
-          <InlineCode>step</InlineCode>)를 명확히 구분하면 업데이트 로직이
-          단순해집니다. 옵션은 <InlineCode>TOptions</InlineCode>로 정의해
-          컨트롤러 <InlineCode>options</InlineCode>로 전달하거나, 필요하다면
-          props에 포함해 <InlineCode>getStateFields</InlineCode>로 다룰 수도
-          있습니다.
+          입력과 상태를 구분하세요. props는 열기 시점의 입력, 컨트롤러 <InlineCode>update</InlineCode>로 바뀌는 값은
+          내부 상태로 다룹니다. 기본값이 필요하다면 읽을 때 <InlineCode>getStateFields</InlineCode>로 합치면 됩니다.
         </li>
         <li>
-          레지스트리 키를 폴더 구조와 일관되게 유지하면 탐색이 쉬워집니다.
+          한 다이얼로그는 한 가지 역할에 집중하세요. 여러 단계를 표현할 때는 <InlineCode>step</InlineCode> 같은 필드로
+          전이를 명시하거나, 역할이 다르면 별도 다이얼로그로 분리하는 편이 명확합니다.
         </li>
         <li>
-          컨트롤러 메서드에서 타입 추론이 필요할 경우{' '}
-          <InlineCode>dialog.store.open&lt;AlertDialogProps&gt;(...)</InlineCode>{' '}
-          처럼 제네릭을 명시해 정확도를 높일 수 있습니다.
+          비동기 UX는 상태를 드러내세요. 진행 중에는 <InlineCode>setStatus(&apos;loading&apos;)</InlineCode> 대신 상태 플래그를
+          사용하거나, 컨트롤러의 <InlineCode>status</InlineCode>/<InlineCode>getStatus</InlineCode>를 활용해 로딩/완료/오류
+          표기를 일관되게 유지합니다. 닫기와 제거는 <InlineCode>close()</InlineCode> → 퇴장 → <InlineCode>unmount()</InlineCode>
+          순서를 권장합니다.
+        </li>
+        <li>
+          레이어 규칙을 일관되게 유지하세요. 컨트롤러의 <InlineCode>zIndex</InlineCode>를 사용하면 디자인 시스템과 충돌 없이
+          스타일 우선순위를 제어할 수 있습니다.
+        </li>
+        <li>
+          접근성 속성(예: <InlineCode>role</InlineCode>, <InlineCode>aria-modal</InlineCode>)을 명시하고, 포커스 관리는
+          프로젝트의 훅/유틸로 보완하세요. 라이브러리는 전역 정책을 강제하지 않습니다.
+        </li>
+        <li>
+          레지스트리 키와 <InlineCode>displayName</InlineCode>은 탐색/디버깅 편의를 위해 안정적으로 유지하세요. 동일한
+          <InlineCode>TProps</InlineCode>를 <InlineCode>DialogComponent&lt;TProps&gt;</InlineCode>와{' '}
+          <InlineCode>useDialogController&lt;TProps&gt;</InlineCode>에서 재사용하면 타입 일관성이 높아집니다.
         </li>
       </ul>
     </Section>

@@ -32,6 +32,36 @@ const signature = `class DialogStore {
   getSnapshot(): DialogStoreSnapshot;
 }`;
 
+const syncAsyncSnippet = `// 동기(open): 즉시 제어 핸들을 반환합니다.
+const sync = dialog.store.open(() => <Alert title="안내" message="완료되었습니다" />);
+sync.update({ message: '다시 시도해 주세요' });
+sync.setStatus('done');
+sync.close();
+
+// 비동기(openAsync): Promise를 반환하며 ok 플래그를 제공합니다.
+const asyncResult = await dialog.store.openAsync(() => (
+  <Confirm title="삭제" message="정말 삭제할까요?" />
+));
+if (asyncResult.ok) {
+  asyncResult.setStatus('loading');
+  // ...작업 후
+  asyncResult.close();
+}`;
+
+const openResultSignature = `type DialogOpenResult<
+  TProps extends Record<string, unknown> = Record<string, unknown>
+> = {
+  dialog: OpenDialogResult; // { id, componentKey }
+  close(): void;
+  unmount(): void;
+  update(updater: DialogStateUpdater<TProps>): void;
+  setStatus(status: DialogStatus): void;
+  // status는 게터이며, getStatus()는 호출 시점의 값을 반환합니다.
+  readonly status: DialogStatus;
+  getStatus(): DialogStatus;
+  zIndex: number;
+};`;
+
 export const DialogStorePage = () => (
   <DocArticle title="DialogStore">
     <p className="lead">
@@ -46,6 +76,34 @@ export const DialogStorePage = () => (
         생성자에 전달할 수 있는 <InlineCode>baseZIndex</InlineCode>는 선택 사항입니다. 지정하지
         않으면 기본값(1000)에서 시작하며, 다이얼로그가 열릴 때마다 1씩 증가합니다.
       </p>
+    </Section>
+
+    <Section as="h2" id="sync-async" title="동기/비동기 한눈에">
+      <ul className="ml-6 list-disc space-y-2">
+        <li>
+          <InlineCode>open</InlineCode>은 즉시 <InlineCode>DialogOpenResult&lt;TProps&gt;</InlineCode>를 반환해
+          제어 메서드(<InlineCode>close</InlineCode>, <InlineCode>unmount</InlineCode>, <InlineCode>update</InlineCode>,
+          <InlineCode>setStatus</InlineCode>)와 메타(<InlineCode>status</InlineCode>, <InlineCode>getStatus()</InlineCode>,
+          <InlineCode>zIndex</InlineCode>)를 제공합니다.
+        </li>
+        <li>
+          <InlineCode>openAsync</InlineCode>는 <InlineCode>Promise&lt;DialogAsyncResult&lt;TProps&gt;&gt;</InlineCode>를
+          반환하며, 호출부에서 <InlineCode>await</InlineCode>로 <InlineCode>ok</InlineCode> 결과를 분기합니다.
+        </li>
+        <li>
+          선택 기준: 간단한 알림/폼 등은 <InlineCode>open</InlineCode>, 확인/승인 흐름은
+          <InlineCode>openAsync</InlineCode>가 사용하기 편합니다.
+        </li>
+      </ul>
+      <CodeBlock language="tsx" code={syncAsyncSnippet} />
+    </Section>
+
+    <Section as="h2" id="return-shape" title="반환 타입 요약">
+      <p>
+        아래는 <InlineCode>open/openAsync</InlineCode>가 반환하는 객체의 핵심 필드입니다. 스토어 메서드 목록에는 포함되지
+        않지만, 호출 결과에서 <InlineCode>status</InlineCode>/<InlineCode>getStatus()</InlineCode>를 함께 사용할 수 있습니다.
+      </p>
+      <CodeBlock language="ts" code={openResultSignature} />
     </Section>
 
     <Section as="h2" id="constructor" title="생성자와 기본 상태">
@@ -96,8 +154,14 @@ export const DialogStorePage = () => (
           <InlineCode>openAsync</InlineCode> 플로우에서 로딩·완료 같은 진행 상태를 추적할 때 유용합니다.
         </li>
         <li>
+          <InlineCode>open/openAsync</InlineCode>의 반환값에는 <InlineCode>status</InlineCode> 게터와
+          <InlineCode>getStatus()</InlineCode>가 함께 제공됩니다. <InlineCode>status</InlineCode>는 현재 값에
+          접근하기 쉽고, 비동기 콜백 등 최신 값이 필요한 경우에는 <InlineCode>getStatus()</InlineCode>를 사용하세요.
+        </li>
+        <li>
           다이얼로그 컴포넌트 내부에서는 <InlineCode>useDialogController</InlineCode>가 이 메서드를
-          래핑한 <InlineCode>update</InlineCode>, <InlineCode>setStatus</InlineCode> 함수를 제공합니다.
+          래핑한 <InlineCode>update</InlineCode>, <InlineCode>setStatus</InlineCode> 함수와 함께
+          <InlineCode>status</InlineCode>/<InlineCode>getStatus()</InlineCode> 값을 제공합니다.
         </li>
       </ul>
     </Section>

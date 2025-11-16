@@ -63,7 +63,7 @@ export const routeConfig = [
   },
   {
     path: 'building-dialogs',
-    title: '다이얼로그 만들기',
+    title: '다이얼로그 구현 가이드',
     children: [
       {
         path: 'defining',
