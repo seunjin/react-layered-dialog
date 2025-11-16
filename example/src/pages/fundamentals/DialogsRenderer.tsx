@@ -2,7 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
-import { Link } from 'react-router-dom';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const rendererUsage = `import { DialogsRenderer } from 'react-layered-dialog';
 import { dialog } from '@/lib/dialogs';
@@ -140,11 +140,7 @@ export const DialogsRendererPage = () => (
       </ul>
     </Section>
     <Section as="h2" id="api-links" title="API 문서">
-      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>
-          자세한 시그니처는 <Link to="/api/dialogs-renderer">API → DialogsRenderer</Link>를 참조하세요.
-        </li>
-      </ul>
+      <DocLinks links={[{ to: '/api/dialogs-renderer', label: 'API → DialogsRenderer' }]} />
     </Section>
   </DocArticle>
 );

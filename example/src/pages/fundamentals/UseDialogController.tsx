@@ -2,7 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
-import { Link } from 'react-router-dom';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const controllerUsage = `import { useDialogController } from 'react-layered-dialog';
 
@@ -141,12 +141,12 @@ export const UseDialogControllerPage = () => (
 
     {/* 다음 읽을 거리 섹션 제거: 문서 흐름 간소화 */}
     <Section as="h2" id="api-links" title="API 문서">
-      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>
-          자세한 시그니처는 <Link to="/api/use-dialog-controller">API → useDialogController</Link>와{' '}
-          <Link to="/api/types">API → 타입 모음</Link>을 참조하세요.
-        </li>
-      </ul>
+      <DocLinks
+        links={[
+          { to: '/api/use-dialog-controller', label: 'API → useDialogController' },
+          { to: '/api/types', label: 'API → 타입 모음' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );

@@ -2,7 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
-import { Link } from 'react-router-dom';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const registryExample = `import { DialogStore, createDialogApi } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
@@ -136,12 +136,12 @@ export const CreateDialogApiPage = () => (
       </ul>
     </Section>
     <Section as="h2" id="api-links" title="API 문서">
-      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>
-          자세한 시그니처는 <Link to="/api/create-dialog-api">API → createDialogApi</Link>와{' '}
-          <Link to="/api/define-dialog">API → defineDialog</Link>를 참조하세요.
-        </li>
-      </ul>
+      <DocLinks
+        links={[
+          { to: '/api/create-dialog-api', label: 'API → createDialogApi' },
+          { to: '/api/define-dialog', label: 'API → defineDialog' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );
