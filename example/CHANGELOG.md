@@ -1,5 +1,13 @@
 # example
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [45b04d6]
+- Updated dependencies [45b04d6]
+  - react-layered-dialog@0.5.0
+
 ## 0.0.5
 
 ### Patch Changes
