@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const propsSnippet = `// AlertDialogProps가 TProps 역할을 수행합니다.
 // 팀 컨벤션에 맞게 자유롭게 설계하세요.
@@ -184,6 +185,15 @@ export const AlertB = ((props: AlertDialogProps) => null) satisfies DialogCompon
           페이지에서 이어집니다.
         </li>
       </ul>
+    </Section>
+    <Section as="h2" id="api-links" title="API 문서">
+      <DocLinks
+        links={[
+          { to: '/api/create-dialog-api', label: 'API → createDialogApi' },
+          { to: '/api/define-dialog', label: 'API → defineDialog' },
+          { to: '/api/types', label: 'API → 타입 모음' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );

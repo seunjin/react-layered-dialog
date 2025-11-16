@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const syncComponentSnippet = `import { useDialogController } from 'react-layered-dialog';
 import type { DialogComponent } from 'react-layered-dialog';
@@ -73,6 +74,9 @@ export const SyncPatternsPage = () => (
           확인/승인 흐름은 <InlineCode>비동기 &amp; 상태 패턴</InlineCode> 페이지에서 이어집니다.
         </li>
       </ul>
+    </Section>
+    <Section as="h2" id="api-links" title="API 문서">
+      <DocLinks links={[{ to: '/api/dialog-store', label: 'API → DialogStore' }]} />
     </Section>
   </DocArticle>
 );

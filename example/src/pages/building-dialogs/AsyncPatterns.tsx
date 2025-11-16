@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const asyncComponentSnippet = `import { useDialogController } from 'react-layered-dialog';
 import type { DialogComponent } from 'react-layered-dialog';
@@ -94,6 +95,14 @@ export const AsyncPatternsPage = () => (
       </ul>
     </Section>
 
-    {/* 다음 단계 섹션 제거: 레시피는 각 문서에서 단독으로 자급자족합니다. */}
+    <Section as="h2" id="api-links" title="API 문서">
+      <DocLinks
+        links={[
+          { to: '/api/use-dialog-controller', label: 'API → useDialogController' },
+          { to: '/api/types', label: 'API → 타입 모음' },
+          { to: '/api/advanced/async-status', label: 'API(고급) → 비동기 상태' },
+        ]}
+      />
+    </Section>
   </DocArticle>
 );

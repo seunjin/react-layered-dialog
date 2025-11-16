@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const basicComponentSnippet = `import { useDialogController } from 'react-layered-dialog';
 import type { DialogComponent } from 'react-layered-dialog';
@@ -118,6 +119,14 @@ export const ComponentBasicsPage = () => (
           동기 흐름 레시피는 <InlineCode>동기 패턴</InlineCode> 페이지에서 이어집니다.
         </li>
       </ul>
+    </Section>
+    <Section as="h2" id="api-links" title="API 문서">
+      <DocLinks
+        links={[
+          { to: '/api/use-dialog-controller', label: 'API → useDialogController' },
+          { to: '/api/types', label: 'API → 타입 모음' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );
