@@ -24,27 +24,27 @@ const withRenderer = `export function AppShell({ store }: { store: DialogStore }
 }`;
 
 export const ApiAdvancedMultiStoreSSRPage = () => (
-  <DocArticle title="고급: 멀티 스토어/SSR">
+  <DocArticle title="Advanced: Multi-store/SSR">
     <p className="lead">요청 단위 스토어를 생성하고 렌더러를 연결해 격리된 다이얼로그 스택을 운용합니다.</p>
 
-    <Section as="h2" id="definition" title="정의/시그니처">
+    <Section as="h2" id="definition" title="Definition/Signature">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>스토어는 전역 싱글턴일 필요가 없습니다.</li>
         <li>스토어별로 렌더러를 연결해야 컨트롤러 컨텍스트가 올바르게 주입됩니다.</li>
       </ul>
     </Section>
 
-    <Section as="h2" id="example" title="간단 예시">
+    <Section as="h2" id="example" title="Examples">
       <CodeBlock language="ts" code={guideline} />
       <CodeBlock language="tsx" code={withRenderer} />
     </Section>
 
-    <Section as="h2" id="notes" title="주의점">
+    <Section as="h2" id="notes" title="Notes">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>요청 스코프 외부 공유를 피하고 필요한 범위에서만 주입하세요.</li>
       </ul>
     </Section>
-    <Section as="h2" id="related" title="관련 문서">
+    <Section as="h2" id="related" title="Related">
       <DocLinks
         links={[
           { to: '/fundamentals/architecture', label: '핵심 개념 → 아키텍처 개요' },

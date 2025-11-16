@@ -59,13 +59,13 @@ export const AlertB = ((props: AlertDialogProps) => {
 // (접근성 예시는 섹션 간소화에 따라 제거되었습니다)
 
 export const ComponentBasicsPage = () => (
-  <DocArticle title="다이얼로그 컴포넌트 기본기">
+  <DocArticle title="Dialog Component Basics">
     <p className="lead">
       다이얼로그 컴포넌트는 <InlineCode>useDialogController</InlineCode>를 통해 닫기, 언마운트, 스택 정보를 받아
       UI와 상호작용을 정의합니다. props를 안전하게 병합하고, 컨트롤러가 제공하는 제어 함수를 적극 활용하세요.
     </p>
 
-    <Section as="h2" id="controller" title="컨트롤러와 props 병합">
+    <Section as="h2" id="controller" title="Controller and Props">
       <CodeBlock language="tsx" code={basicComponentSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
@@ -84,7 +84,7 @@ export const ComponentBasicsPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="typing" title="타입 안정화">
+    <Section as="h2" id="typing" title="Type Stabilization">
       <p>
         레지스트리/컨트롤러에서 일관된 제네릭(<InlineCode>TProps</InlineCode>)을 유지하려면 컴포넌트를 명시적으로
         annotate하거나 <InlineCode>satisfies</InlineCode>를 사용해 형태 검증을 수행하는 방법이 가장 안전합니다.
@@ -96,7 +96,7 @@ export const ComponentBasicsPage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="lifecycle" title="닫기와 언마운트">
+    <Section as="h2" id="lifecycle" title="Closing and Unmounting">
       <p>
         <InlineCode>close()</InlineCode>는 다이얼로그를 닫고 <InlineCode>isOpen</InlineCode> 상태를 false로 전환합니다. <InlineCode>unmount()</InlineCode>는 스택에서 엔트리를 제거하고 DOM에서 완전히 사라지게 합니다. 대부분의 경우 두 메서드를 연달아 호출해 UI 잔상을 방지합니다.
       </p>
@@ -105,7 +105,7 @@ export const ComponentBasicsPage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="focus" title="포커스와 접근성">
+    <Section as="h2" id="focus" title="Focus and Accessibility">
       <p>
         이 라이브러리는 포커스 이동/트랩이나 접근성 보조를 제공하지 않습니다. 다이얼로그 컨테이너의 역할과 ARIA 속성은
         컴포넌트에서 명시하고, 초기 포커스 이동과 최상단 판단(컨트롤러의 <InlineCode>stack</InlineCode> 활용) 등 구체 동작은
@@ -113,14 +113,14 @@ export const ComponentBasicsPage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="next" title="다음 단계">
+    <Section as="h2" id="next" title="Next Steps">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           동기 흐름 레시피는 <InlineCode>동기 패턴</InlineCode> 페이지에서 이어집니다.
         </li>
       </ul>
     </Section>
-    <Section as="h2" id="api-links" title="API 문서">
+    <Section as="h2" id="api-links" title="API Docs">
       <DocLinks
         links={[
           { to: '/api/use-dialog-controller', label: 'API → useDialogController' },

@@ -25,11 +25,11 @@ export const ApiDefineDialogPage = () => (
   <DocArticle title="defineDialog (API)">
     <p className="lead">컴포넌트에 모드/표시 이름 메타를 부여해 레지스트리에서 재사용 가능한 정의를 만듭니다.</p>
 
-    <Section as="h2" id="signature" title="정의/시그니처">
+    <Section as="h2" id="signature" title="Definition/Signature">
       <CodeBlock language="ts" code={signature} />
     </Section>
 
-    <Section as="h2" id="guarantees" title="동작 보증">
+    <Section as="h2" id="guarantees" title="Behavior Guarantees">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>미지정 시 기본 모드는 <InlineCode>&apos;sync&apos;</InlineCode>.</li>
         <li><InlineCode>displayName</InlineCode>이 없으면 컴포넌트의 <InlineCode>displayName/name</InlineCode>를 사용.</li>
@@ -37,17 +37,17 @@ export const ApiDefineDialogPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="example" title="간단 예시">
+    <Section as="h2" id="example" title="Examples">
       <CodeBlock language="ts" code={usage} />
     </Section>
 
-    <Section as="h2" id="notes" title="주의점">
+    <Section as="h2" id="notes" title="Notes">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li><InlineCode>satisfies</InlineCode> 또는 제네릭으로 props 타입을 안정화해 IDE 자동완성을 극대화하세요.</li>
       </ul>
     </Section>
 
-    <Section as="h2" id="related" title="관련 문서">
+    <Section as="h2" id="related" title="Related">
       <DocLinks
         links={[
           { to: '/fundamentals/create-dialog-api', label: '핵심 개념 → createDialogApi' },

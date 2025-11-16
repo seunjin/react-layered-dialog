@@ -31,7 +31,7 @@ export const DialogStorePage = () => (
       조작과 상태 동기화에 필요한 최소한의 인터페이스만 제공합니다.
     </p>
 
-    <Section as="h2" id="overview" title="핵심 동작 개요">
+    <Section as="h2" id="overview" title="Key Behaviors">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <InlineCode>open</InlineCode>/<InlineCode>openAsync</InlineCode>:
@@ -60,7 +60,7 @@ export const DialogStorePage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="sync-async" title="동기/비동기 한눈에">
+    <Section as="h2" id="sync-async" title="Sync/Async at a Glance">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <InlineCode>open</InlineCode>은 즉시{' '}
@@ -88,7 +88,7 @@ export const DialogStorePage = () => (
       <CodeBlock language="tsx" code={syncAsyncSnippet} />
     </Section>
 
-    <Section as="h2" id="return-shape" title="반환 요약">
+    <Section as="h2" id="return-shape" title="Return Summary">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           동기 핸들: <InlineCode>close</InlineCode>,{' '}
@@ -107,7 +107,7 @@ export const DialogStorePage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="constructor" title="생성자와 기본 상태">
+    <Section as="h2" id="constructor" title="Constructor and Defaults">
       <p>
         스토어는 클래스 인스턴스로 생성하며,{' '}
         <InlineCode>{`new DialogStore({ baseZIndex })`}</InlineCode>처럼 옵션
@@ -120,7 +120,7 @@ export const DialogStorePage = () => (
       />
     </Section>
 
-    <Section as="h2" id="open-close" title="열고 닫기">
+    <Section as="h2" id="open-close" title="Open and Close">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <InlineCode>open</InlineCode>은 렌더러 함수를 받아 스택에 동기
@@ -149,7 +149,7 @@ export const DialogStorePage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="state-management" title="상태 업데이트와 메타 정보">
+    <Section as="h2" id="state-management" title="State Updates and Meta">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <InlineCode>update</InlineCode>는 다이얼로그가 보유한 사용자 정의
@@ -180,7 +180,7 @@ export const DialogStorePage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="subscription" title="구독과 스냅샷">
+    <Section as="h2" id="subscription" title="Subscription and Snapshot">
       <p>
         <InlineCode>subscribe</InlineCode>와{' '}
         <InlineCode>getSnapshot</InlineCode> 쌍은{' '}
@@ -202,7 +202,7 @@ export const DialogStorePage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="patterns" title="사용 패턴과 주의 사항">
+    <Section as="h2" id="patterns" title="Usage Patterns and Notes">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           스토어는 전역 싱글턴일 필요가 없습니다. SSR 환경이라면 요청 단위로
@@ -219,7 +219,7 @@ export const DialogStorePage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="reference-code" title="참고 코드">
+    <Section as="h2" id="reference-code" title="Reference Code">
       <p>
         아래 스니펫은 Alert/Confirm 두 가지 다이얼로그를 등록한 대표적인 구성을
         보여 줍니다. <InlineCode>createDialogApi</InlineCode>에서 반환된{' '}
@@ -228,7 +228,7 @@ export const DialogStorePage = () => (
       </p>
       <CodeBlock language="ts" code={dialogsTsCode} />
     </Section>
-    <Section as="h2" id="api-links" title="API 문서">
+    <Section as="h2" id="api-links" title="API Docs">
       <DocLinks
         links={[
           { to: '/api/dialog-store', label: 'API → DialogStore' },

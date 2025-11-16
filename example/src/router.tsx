@@ -28,28 +28,28 @@ import { ApiAppendixChangelogPage } from '@/pages/api/appendix/ChangelogNotes';
 export const routeConfig = [
   {
     path: 'getting-started',
-    title: '시작하기',
+    title: 'Getting Started',
     children: [
       {
         path: 'introduction',
         element: <GettingStartedIntroduction />,
-        name: '소개',
+        name: 'Introduction',
       },
       {
         path: 'quick-start',
         element: <GettingStartedQuickStart />,
-        name: '빠르게 시작하기',
+        name: 'Quick Start',
       },
     ],
   },
   {
     path: 'fundamentals',
-    title: '핵심 개념',
+    title: 'Fundamentals',
     children: [
       {
         path: 'architecture',
         element: <FundamentalsArchitecture />,
-        name: '아키텍처 개요',
+        name: 'Architecture Overview',
       },
       {
         path: 'dialog-store',
@@ -102,76 +102,76 @@ export const routeConfig = [
         element: <ApiUseDialogControllerPage />,
         name: 'useDialogController',
       },
-      { path: 'types', element: <ApiTypesPage />, name: '타입 모음' },
+      { path: 'types', element: <ApiTypesPage />, name: 'Types' },
       // 고급
       {
         path: 'advanced/state-lifecycle',
         element: <ApiAdvancedStateLifecyclePage />,
-        name: '상태/수명주기',
+        name: 'Advanced: State/Lifecycle',
       },
       {
         path: 'advanced/z-index',
         element: <ApiAdvancedZIndexLayeringPage />,
-        name: 'zIndex/레이어링',
+        name: 'Advanced: zIndex/Layering',
       },
       {
         path: 'advanced/async-status',
         element: <ApiAdvancedAsyncStatusPage />,
-        name: '비동기 상태',
+        name: 'Advanced: Async Status',
       },
       {
         path: 'advanced/multi-store-ssr',
         element: <ApiAdvancedMultiStoreSSRPage />,
-        name: '멀티 스토어/SSR',
+        name: 'Advanced: Multi-store/SSR',
       },
       // 부록
       {
         path: 'appendix/faq',
         element: <ApiAppendixFAQPage />,
-        name: 'FAQ',
+        name: 'Appendix: FAQ',
       },
       {
         path: 'appendix/changelog',
         element: <ApiAppendixChangelogPage />,
-        name: '변경 로그',
+        name: 'Appendix: Changelog',
       },
     ],
   },
 
   {
     path: 'building-dialogs',
-    title: '다이얼로그 구현 가이드',
+    title: 'Building Dialogs',
     children: [
       {
         path: 'defining',
         element: <BuildingDefiningDialogsPage />,
-        name: '타입 설계',
+        name: 'Defining Types',
       },
       {
         path: 'components',
         element: <ComponentBasicsPage />,
-        name: '컴포넌트 기본기',
+        name: 'Component Basics',
       },
       {
         path: 'sync-patterns',
         element: <SyncPatternsPage />,
-        name: '동기 패턴',
+        name: 'Sync Patterns',
       },
       {
         path: 'async-patterns',
         element: <AsyncPatternsPage />,
-        name: '비동기 패턴',
+        name: 'Async Patterns',
       },
     ],
   },
   {
     path: 'renewal',
-    title: '라이브 데모',
+    title: 'Live Demo',
     children: [
       {
         path: 'live-showcase',
         element: <RenewalDemoPage />,
-        name: '라이브 쇼케이스',
+        name: 'Live Showcase',
       },
     ],
   },

@@ -7,14 +7,14 @@ import alertComponentCode from '@/code-templates/AlertQuickStart.tsx.txt?raw';
 import appTsxCode from '@/code-templates/AppQuickStart.tsx.txt?raw';
 
 export const QuickStart = () => (
-  <DocArticle title="빠르게 시작하기">
+  <DocArticle title="Quick Start">
     <p className="lead">
       세 파일과 간단한 엔트리 구성만으로 <InlineCode>DialogStore</InlineCode> 기반
       다이얼로그를 바로 실행할 수 있습니다. 여기서는 가장 작은 Alert 한 가지를
       예로 들어 새 API 흐름을 익힙니다.
     </p>
 
-    <Section as="h2" id="prerequisites" title="사전 준비">
+    <Section as="h2" id="prerequisites" title="Prerequisites">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <InlineCode>pnpm add react-layered-dialog</InlineCode> 명령으로
@@ -28,7 +28,7 @@ export const QuickStart = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="define" title="1. 스토어 만들기">
+    <Section as="h2" id="define" title="1. Create Store">
       <p>
         <InlineCode>src/lib/dialogs.ts</InlineCode> 파일에 아래 코드를 붙여 넣습니다.
         단일 <InlineCode>DialogStore</InlineCode> 인스턴스를 만들어 앱 전역에서 공유합니다.
@@ -38,7 +38,7 @@ export const QuickStart = () => (
       <CodeBlock language="ts" code={dialogsTsCode} />
     </Section>
 
-    <Section as="h2" id="component" title="2. 다이얼로그 컴포넌트 작성">
+    <Section as="h2" id="component" title="2. Build Dialog Component">
       <p>
         <InlineCode>src/components/dialogs/Alert.tsx</InlineCode> 파일을 만들고 아래 코드를
         붙여 넣습니다. <InlineCode>useDialogController</InlineCode>에서 받은{' '}
@@ -48,7 +48,7 @@ export const QuickStart = () => (
       <CodeBlock language="tsx" code={alertComponentCode} />
     </Section>
 
-    <Section as="h2" id="entry" title="3. 애플리케이션에 연결">
+    <Section as="h2" id="entry" title="3. Wire into App">
       <p>
         엔트리 파일(<InlineCode>src/App.tsx</InlineCode> 등)에서{' '}
         <InlineCode>DialogsRenderer</InlineCode>에 <InlineCode>dialog</InlineCode>를 전달하고,

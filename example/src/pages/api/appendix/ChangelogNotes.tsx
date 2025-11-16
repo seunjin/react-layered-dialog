@@ -3,9 +3,9 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 
 export const ApiAppendixChangelogPage = () => (
-  <DocArticle title="부록: 변경 로그/브레이킹 노트">
-    <p className="lead">주요 변경 사항과 브레이킹 포인트를 요약합니다. (선택)</p>
-    <Section as="h2" id="notes" title="안내">
+  <DocArticle title="Appendix: Changelog/Breaking Notes">
+    <p className="lead">Summary of major changes and breaking points. (Optional)</p>
+    <Section as="h2" id="notes" title="Notes">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           라이브러리 버전 업데이트 시 <InlineCode>DialogStore</InlineCode>, <InlineCode>DialogsRenderer</InlineCode>,
@@ -18,4 +18,3 @@ export const ApiAppendixChangelogPage = () => (
     </Section>
   </DocArticle>
 );
-

@@ -65,12 +65,12 @@ result.close();
 setTimeout(() => result.unmount(), 200);`;
 
 export const AsyncPatternsPage = () => (
-  <DocArticle title="비동기 & 상태 패턴">
+  <DocArticle title="Async & Status Patterns">
     <p className="lead">
       비동기 다이얼로그는 컨트롤러의 <InlineCode>setStatus</InlineCode>, <InlineCode>update</InlineCode>, <InlineCode>resolve</InlineCode>/<InlineCode>reject</InlineCode>를 활용해 진행 상황을 제어합니다. UI는 단계별 상태를 표현하고, 호출부에서는 Promise 결과로 흐름을 이어가면 됩니다.
     </p>
 
-    <Section as="h2" id="component" title="컴포넌트 구현">
+    <Section as="h2" id="component" title="Component Implementation">
       <CodeBlock language="tsx" code={asyncComponentSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
@@ -83,7 +83,7 @@ export const AsyncPatternsPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="caller" title="호출부 패턴">
+    <Section as="h2" id="caller" title="Caller Patterns">
       <CodeBlock language="ts" code={asyncOpenSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
@@ -95,7 +95,7 @@ export const AsyncPatternsPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="api-links" title="API 문서">
+    <Section as="h2" id="api-links" title="API Docs">
       <DocLinks
         links={[
           { to: '/api/use-dialog-controller', label: 'API → useDialogController' },

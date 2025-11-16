@@ -40,11 +40,11 @@ export const ApiCreateDialogApiPage = () => (
       스토어와 레지스트리를 매핑해 키별 고수준 메서드를 생성합니다. 모드에 따라 <InlineCode>open</InlineCode> 또는 <InlineCode>openAsync</InlineCode>로 자동 분기합니다.
     </p>
 
-    <Section as="h2" id="signature" title="정의/시그니처">
+    <Section as="h2" id="signature" title="Definition/Signature">
       <CodeBlock language="ts" code={registrySignature} />
     </Section>
 
-    <Section as="h2" id="mapping" title="동작 보증">
+    <Section as="h2" id="mapping" title="Behavior Guarantees">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li><InlineCode>mode: &apos;sync&apos;</InlineCode> → 동기 핸들 반환(<InlineCode>DialogOpenResult</InlineCode>).</li>
         <li><InlineCode>mode: &apos;async&apos;</InlineCode> → Promise로 감싼 결과 반환(<InlineCode>DialogAsyncResult</InlineCode>).</li>
@@ -53,18 +53,18 @@ export const ApiCreateDialogApiPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="example" title="간단 예시">
+    <Section as="h2" id="example" title="Examples">
       <CodeBlock language="ts" code={exampleRegistry} />
     </Section>
 
-    <Section as="h2" id="notes" title="주의점">
+    <Section as="h2" id="notes" title="Notes">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>컨트롤러 팩토리 입력을 지원해 내부에서 <InlineCode>resolve/reject</InlineCode> 사용 가능.</li>
         <li>정의에 <InlineCode>displayName</InlineCode>을 설정하면 디버깅 시 컴포넌트 식별이 용이.</li>
       </ul>
     </Section>
 
-    <Section as="h2" id="related" title="관련 문서">
+    <Section as="h2" id="related" title="Related">
       <DocLinks
         links={[
           { to: '/fundamentals/create-dialog-api', label: '핵심 개념 → createDialogApi' },

@@ -5,8 +5,8 @@ import { DocLinks } from '@/components/docs/DocLink';
 import { Link } from 'react-router-dom';
 
 export const ApiAppendixFAQPage = () => (
-  <DocArticle title="부록: FAQ">
-    <Section as="h2" id="unmount-timing" title="닫을 때 바로 사라지지 않아요">
+  <DocArticle title="Appendix: FAQ">
+    <Section as="h2" id="unmount-timing" title="It doesn't disappear immediately when closing">
       <p>
         <InlineCode>close()</InlineCode>는 <InlineCode>isOpen=false</InlineCode>{' '}
         전환만 수행하고 DOM은 유지합니다. 퇴장 애니메이션 후{' '}
@@ -15,7 +15,7 @@ export const ApiAppendixFAQPage = () => (
         참조하세요.
       </p>
     </Section>
-    <Section as="h2" id="zindex-order" title="z-index가 꼬일 때는?">
+    <Section as="h2" id="zindex-order" title="When z-index order breaks?">
       <p>
         {/* &#123; */}
         수동 지정(
@@ -25,7 +25,7 @@ export const ApiAppendixFAQPage = () => (
         <Link to="/api/advanced/z-index">고급: zIndex/레이어링</Link> 참조.
       </p>
     </Section>
-    <Section as="h2" id="async-flow" title="확인 모달 처리 흐름 권장 방식">
+    <Section as="h2" id="async-flow" title="Recommended confirmation modal flow">
       <p>
         <InlineCode>openAsync</InlineCode>를 사용하고, 내부에서는{' '}
         <InlineCode>resolve</InlineCode>로 결과를 전달하세요. 진행 상태는{' '}

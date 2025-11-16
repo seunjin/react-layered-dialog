@@ -62,7 +62,7 @@ export type OpenDialogOptions = {
 };`;
 
 export const ApiTypesPage = () => (
-  <DocArticle title="타입 모음 (API)">
+  <DocArticle title="Types (API)">
     <p className="lead">핵심 타입 시그니처를 한 곳에 모았습니다. 호출부와 컴포넌트 구현에서 참조하세요.</p>
 
     <Section as="h2" id="open-async" title="OpenResult / AsyncResult">
@@ -83,7 +83,7 @@ export const ApiTypesPage = () => (
         상태 우선순위: 컴포넌트 내부 <InlineCode>state</InlineCode> → 호출 시 전달한 props → 기본값 순으로 해석하세요.
       </p>
     </Section>
-    <Section as="h2" id="related" title="관련 문서">
+    <Section as="h2" id="related" title="Related">
       <DocLinks
         links={[
           { to: '/fundamentals/dialog-store', label: '핵심 개념 → DialogStore' },

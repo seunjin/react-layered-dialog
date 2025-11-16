@@ -47,7 +47,7 @@ export const CreateDialogApiPage = () => (
       상세 시그니처는 API 문서를 참고하세요.
     </p>
 
-    <Section as="h2" id="overview" title="개념 요약">
+    <Section as="h2" id="overview" title="Overview">
       <ul className="ml-6 list-disc space-y-2">
         <li>레지스트리 키 → 컴포넌트 매핑으로 팀/도메인 용어 기반 API를 구성합니다.</li>
         <li>
@@ -64,7 +64,7 @@ export const CreateDialogApiPage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="registry" title="레지스트리 구성">
+    <Section as="h2" id="registry" title="Registry">
       <p>
         레지스트리는 다이얼로그 타입과 컴포넌트를 매핑하는 단순 객체입니다.
         값으로 <InlineCode>{'{ component, mode }'}</InlineCode> 형태를 전달하면
@@ -89,7 +89,7 @@ export const CreateDialogApiPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="inputs" title="입력 형태">
+    <Section as="h2" id="inputs" title="Inputs">
       <p>
         생성된 메서드는 props 객체를 직접 전달하거나 컨트롤러를 인자로 받는
         팩토리를 전달하는 두 가지 방식을 모두 지원합니다. 컨트롤러 팩토리를
@@ -104,7 +104,7 @@ export const CreateDialogApiPage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="define-dialog" title="defineDialog 활용">
+    <Section as="h2" id="define-dialog" title="Using defineDialog">
       <p>
         더 세밀하게 옵션을 지정하고 싶다면 <InlineCode>defineDialog</InlineCode>
         로 컴포넌트를 감싼 뒤 레지스트리에 등록할 수 있습니다. displayName을
@@ -113,7 +113,7 @@ export const CreateDialogApiPage = () => (
       <CodeBlock language="ts" code={defineDialogExample} />
     </Section>
 
-    <Section as="h2" id="export" title="헬퍼 노출 패턴">
+    <Section as="h2" id="export" title="Export Patterns">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           대부분의 프로젝트는 <InlineCode>dialog</InlineCode> 객체를 그대로
@@ -130,7 +130,7 @@ export const CreateDialogApiPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="tips" title="팁">
+    <Section as="h2" id="tips" title="Tips">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           레지스트리에 새로운 타입을 추가하면 관련 메서드 시그니처가 즉시
@@ -150,7 +150,7 @@ export const CreateDialogApiPage = () => (
         </li>
       </ul>
     </Section>
-    <Section as="h2" id="api-links" title="API 문서">
+    <Section as="h2" id="api-links" title="API Docs">
       <DocLinks
         links={[
           { to: '/api/create-dialog-api', label: 'API → createDialogApi' },

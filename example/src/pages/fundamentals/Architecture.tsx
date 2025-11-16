@@ -6,14 +6,14 @@ import dialogsTsCode from '@/code-templates/dialogs.ts.txt?raw';
 import dialogRendererCode from '@/code-templates/DialogRendererMinimal.tsx.txt?raw';
 
 export const Architecture = () => (
-  <DocArticle title="아키텍처 개요">
+  <DocArticle title="Architecture Overview">
     <p className="lead">
       React Layered Dialog는 단일 <InlineCode>DialogStore</InlineCode>를 중심으로 동작하며,
       나머지 요소는 얇은 계층으로 조합하는 구조를 지향합니다. 코어는 스택과 상태만
       책임지고, 실제 UI·동작은 애플리케이션이 직접 구성합니다.
     </p>
 
-    <Section as="h2" id="components" title="구성 요소 한눈에">
+    <Section as="h2" id="components" title="Components Overview">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <b>DialogStore</b>: 다이얼로그 엔트리 배열과 z-index, 메타 상태를 보관합니다.
@@ -35,7 +35,7 @@ export const Architecture = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="flow" title="상호 작용 흐름">
+    <Section as="h2" id="flow" title="Interaction Flow">
       <ol className="ml-6 list-decimal space-y-2">
         <li>
           애플리케이션이 <InlineCode>DialogStore</InlineCode> 인스턴스를 생성합니다. 필요하면{' '}
@@ -57,7 +57,7 @@ export const Architecture = () => (
       </ol>
     </Section>
 
-    <Section as="h2" id="principles" title="설계 원칙">
+    <Section as="h2" id="principles" title="Design Principles">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <b>스토어는 가장 얇게</b>: 스택과 z-index 계산, 비동기 settle만 담당합니다. 렌더링·스타일링은
@@ -78,7 +78,7 @@ export const Architecture = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="reference-code" title="참고 코드 스니펫">
+    <Section as="h2" id="reference-code" title="Reference Snippets">
       <p>
         Quick Start 문서에서는 Alert 한 가지를 기준으로 최소 구현을 소개합니다. 실제 애플리케이션에서는
         아래처럼 여러 다이얼로그를 동시에 등록해 두고, 필요에 따라 컨트롤러 패턴을 확장하게 됩니다.
@@ -91,7 +91,7 @@ export const Architecture = () => (
       <CodeBlock language="tsx" code={dialogRendererCode} />
     </Section>
 
-    <Section as="h2" id="considerations" title="확장 시 고려 사항">
+    <Section as="h2" id="considerations" title="Considerations">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           여러 스토어를 사용할 경우 컨트롤러는 호출 시점에 가장 가까운 렌더러 컨텍스트를 참조합니다.
@@ -108,7 +108,7 @@ export const Architecture = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="next" title="다음 읽을 거리">
+    <Section as="h2" id="next" title="Next Steps">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <InlineCode>DialogStore</InlineCode> 메서드와 스냅샷 구조는 핵심 개념 → DialogStore에서

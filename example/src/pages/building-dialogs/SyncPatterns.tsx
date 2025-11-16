@@ -43,13 +43,13 @@ const handle = dialog.store.open(({ close, unmount, update }) => (
 ));`;
 
 export const SyncPatternsPage = () => (
-  <DocArticle title="동기 패턴">
+  <DocArticle title="Sync Patterns">
     <p className="lead">
       동기 다이얼로그는 <InlineCode>open</InlineCode>으로 열고 즉시 제어 핸들을 반환합니다. 컴포넌트 내부에서
       <InlineCode>update</InlineCode>로 메시지나 라벨을 바꾸거나, 호출부에서 핸들을 통해 외부 업데이트를 수행할 수 있습니다.
     </p>
 
-    <Section as="h2" id="component" title="컴포넌트 내부 업데이트">
+    <Section as="h2" id="component" title="In-Component Updates">
       <CodeBlock language="tsx" code={syncComponentSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
@@ -61,21 +61,21 @@ export const SyncPatternsPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="caller" title="컨트롤러 메서드를 props로 전달">
+    <Section as="h2" id="caller" title="Pass Controller Methods as Props">
       <CodeBlock language="tsx" code={controllerAsPropsSnippet} />
       <p className="mt-2 text-sm text-muted-foreground">
         호출부는 열기만 담당하고, 닫기/업데이트/제거는 컴포넌트에 위임해 흐름을 단순화합니다.
       </p>
     </Section>
 
-    <Section as="h2" id="next" title="다음 단계">
+    <Section as="h2" id="next" title="Next Steps">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           확인/승인 흐름은 <InlineCode>비동기 &amp; 상태 패턴</InlineCode> 페이지에서 이어집니다.
         </li>
       </ul>
     </Section>
-    <Section as="h2" id="api-links" title="API 문서">
+    <Section as="h2" id="api-links" title="API Docs">
       <DocLinks links={[{ to: '/api/dialog-store', label: 'API → DialogStore' }]} />
     </Section>
   </DocArticle>

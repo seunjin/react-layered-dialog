@@ -60,7 +60,7 @@ export const UseDialogControllerPage = () => (
 
     {/* 시그니처 상세는 API 문서로 이동 */}
 
-    <Section as="h2" id="usage" title="사용 예시">
+    <Section as="h2" id="usage" title="Usage">
       <CodeBlock language="tsx" code={controllerUsage} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
@@ -78,7 +78,7 @@ export const UseDialogControllerPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="api" title="컨트롤러가 제공하는 항목">
+    <Section as="h2" id="api" title="Controller API">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           <InlineCode>close()</InlineCode>: 현재 다이얼로그의 <InlineCode>isOpen</InlineCode>을 <InlineCode>false</InlineCode>로 바꿉니다.
@@ -122,7 +122,7 @@ export const UseDialogControllerPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="tips" title="팁">
+    <Section as="h2" id="tips" title="Tips">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           <InlineCode>getStateFields</InlineCode>로 props와 사용자 정의 상태를 병합하면 안전하게 기본값을
@@ -140,7 +140,7 @@ export const UseDialogControllerPage = () => (
     </Section>
 
     {/* 다음 읽을 거리 섹션 제거: 문서 흐름 간소화 */}
-    <Section as="h2" id="api-links" title="API 문서">
+    <Section as="h2" id="api-links" title="API Docs">
       <DocLinks
         links={[
           { to: '/api/use-dialog-controller', label: 'API → useDialogController' },

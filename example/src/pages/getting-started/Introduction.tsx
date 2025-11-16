@@ -11,7 +11,7 @@ const npmInstallSnippet = `npm add react-layered-dialog`;
 const yarnInstallSnippet = `yarn add react-layered-dialog`;
 
 export const Introduction = () => (
-  <DocArticle title="React Layered Dialog 소개">
+  <DocArticle title="Introduction to React Layered Dialog">
     <p className="lead">
       React Layered Dialog는 <InlineCode>DialogStore</InlineCode>와{' '}
       <InlineCode>createDialogApi</InlineCode> 기반으로 다이얼로그 스택을 선언적으로
@@ -25,7 +25,7 @@ export const Introduction = () => (
       패턴을 단계적으로 안내합니다.
     </p>
 
-    <Section as="h2" id="why-unique" title="어떤 점이 특별한가요?">
+    <Section as="h2" id="why-unique" title="What Makes It Unique?">
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <b>스토어 중심 설계</b>: 단일 <InlineCode>DialogStore</InlineCode> 인스턴스가 모든
@@ -49,7 +49,7 @@ export const Introduction = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="scenarios" title="이런 상황에서 유용합니다">
+    <Section as="h2" id="scenarios" title="When It’s Useful">
       <ul className="ml-6 list-disc space-y-2">
         <li>디자인 시스템마다 다른 UI를 유지하면서도 공통 다이얼로그 매니저를 사용하고 싶을 때</li>
         <li>복잡한 상태 끌어올리기를 피하고 선언적 API로 비즈니스 로직을 분리하고 싶을 때</li>
@@ -57,7 +57,7 @@ export const Introduction = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="install" title="설치">
+    <Section as="h2" id="install" title="Install">
       <Tabs defaultValue="pnpm">
         <TabsList>
           <TabsTrigger value="pnpm">pnpm</TabsTrigger>
@@ -80,11 +80,11 @@ export const Introduction = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="next" title="다음 단계">
+    <Section as="h2" id="next" title="Next Steps">
       <ol className="ml-6 list-decimal space-y-2">
         <li>
           <Link to="/getting-started/quick-start" className="text-primary underline">
-            빠르게 시작하기
+            Quick Start
           </Link>
           에서 <InlineCode>DialogStore</InlineCode> 설정과 렌더러 배치를 익혀 보세요.
         </li>

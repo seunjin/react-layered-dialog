@@ -17,13 +17,13 @@ const c = store.open(() => <C />, { zIndex: 1300 }); // zIndex 1300, next는 ≥
 store.unmountAll();                        // nextZIndex → 1200로 초기화`;
 
 export const ApiAdvancedZIndexLayeringPage = () => (
-  <DocArticle title="고급: zIndex/레이어링">
+  <DocArticle title="Advanced: zIndex/Layering">
     <p className="lead">
       레이어 우선순위는 스토어에서 자동 계산하지만, 필요 시 옵션으로 정밀
       제어합니다.
     </p>
 
-    <Section as="h2" id="definition" title="정의/시그니처">
+    <Section as="h2" id="definition" title="Definition/Signature">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           <InlineCode>new DialogStore({`{ baseZIndex }`})</InlineCode>: 시작
@@ -36,7 +36,7 @@ export const ApiAdvancedZIndexLayeringPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="guarantees" title="동작 보증">
+    <Section as="h2" id="guarantees" title="Behavior Guarantees">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>직접 지정 시 다음 증가 값은 지정값+1 이상으로 유지됩니다.</li>
         <li>
@@ -46,11 +46,11 @@ export const ApiAdvancedZIndexLayeringPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="example" title="간단 예시">
+    <Section as="h2" id="example" title="Examples">
       <CodeBlock language="ts" code={rules} />
     </Section>
 
-    <Section as="h2" id="notes" title="주의점">
+    <Section as="h2" id="notes" title="Notes">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           상세 동작은 <Link to="/api/dialog-store">API → DialogStore</Link> 보증
@@ -58,7 +58,7 @@ export const ApiAdvancedZIndexLayeringPage = () => (
         </li>
       </ul>
     </Section>
-    <Section as="h2" id="related" title="관련 문서">
+    <Section as="h2" id="related" title="Related">
       <DocLinks
         links={[
           { to: '/fundamentals/dialog-store', label: '핵심 개념 → DialogStore' },

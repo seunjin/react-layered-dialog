@@ -65,11 +65,11 @@ export const ApiDialogStorePage = () => (
       다이얼로그 스택과 메타(z-index, 상태)를 관리하는 코어 클래스입니다. 렌더링은 앱 책임이며, 이 스토어는 스택 조작과 구독만 담당합니다.
     </p>
 
-    <Section as="h2" id="definition" title="정의/시그니처">
+    <Section as="h2" id="definition" title="Definition/Signature">
       <CodeBlock language="ts" code={signature} />
     </Section>
 
-    <Section as="h2" id="guarantees" title="동작 보증">
+    <Section as="h2" id="guarantees" title="Behavior Guarantees">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>닫기(<InlineCode>close</InlineCode>)는 <InlineCode>isOpen=false</InlineCode>로 전환하여 DOM을 유지합니다. 퇴장 애니메이션에 적합합니다.</li>
         <li>제거(<InlineCode>unmount</InlineCode>)는 스택에서 항목을 삭제합니다. 애니메이션 종료 후 호출하는 것을 권장합니다.</li>
@@ -79,25 +79,25 @@ export const ApiDialogStorePage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="returns" title="반환 형태">
+    <Section as="h2" id="returns" title="Return Shape">
       <CodeBlock language="ts" code={openResult} />
       <p className="mt-2 text-sm text-muted-foreground">
         <InlineCode>openAsync</InlineCode>는 위와 동일한 핸들에 <InlineCode>ok: boolean</InlineCode>을 추가해 Promise로 래핑합니다.
       </p>
     </Section>
 
-    <Section as="h2" id="examples" title="간단 예시">
+    <Section as="h2" id="examples" title="Examples">
       <CodeBlock language="tsx" code={syncAsyncExamples} />
     </Section>
 
-    <Section as="h2" id="notes" title="주의점">
+    <Section as="h2" id="notes" title="Notes">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>애니메이션 정책: <InlineCode>close()</InlineCode> → 퇴장 → <InlineCode>unmount()</InlineCode> 순서 권장.</li>
         <li>멀티 스토어/SSR: 요청 단위 인스턴스 생성, 렌더러는 스토어별로 연결.</li>
         <li>z-index 레이어링: 기본값은 1000부터 1씩 증가. 필요 시 옵션으로 시작값 조정.</li>
       </ul>
     </Section>
-    <Section as="h2" id="related" title="관련 문서">
+    <Section as="h2" id="related" title="Related">
       <DocLinks
         links={[
           { to: '/fundamentals/dialog-store', label: '핵심 개념 → DialogStore' },

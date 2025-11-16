@@ -23,14 +23,14 @@ const dialog = createDialogApi(new DialogStore(), {
 });`;
 
 export const DefiningDialogsPage = () => (
-  <DocArticle title="다이얼로그 타입 설계">
+  <DocArticle title="Designing Dialog Types">
     <p className="lead">
       다이얼로그마다 필요한 데이터 구조(<InlineCode>TProps</InlineCode>)를 명확히 정의해 두면,
       레지스트리와 컨트롤러/렌더러 전반에서 타입 안전한 계약을 유지할 수 있습니다.
       동작 플래그도 props 안에서 함께 관리해 <InlineCode>getStateFields</InlineCode>로 병합하세요.
     </p>
 
-    <Section as="h2" id="props" title="Props 정의">
+    <Section as="h2" id="props" title="Props Definition">
       <p>
         다이얼로그 UI에 필요한 데이터(<InlineCode>TProps</InlineCode>)를 한 타입으로 묶어두면 컨트롤러/렌더러 전반에서
         계약이 선명해집니다. 표시/동작 관련 플래그가 필요하다면 함께 정의하고, 컴포넌트 내부에서 컨트롤러 도우미(
@@ -59,7 +59,7 @@ export const DefiningDialogsPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="registry" title="createDialogApi 레지스트리">
+    <Section as="h2" id="registry" title="createDialogApi Registry">
       <p>
         <InlineCode>createDialogApi</InlineCode>에 레지스트리를 전달하면 각
         키마다 전용 메서드가 생성되고, props/옵션 타입이 자동으로 좁혀집니다.
@@ -84,11 +84,7 @@ export const DefiningDialogsPage = () => (
       </ul>
     </Section>
 
-    <Section
-      as="h2"
-      id="dialog-component"
-      title="DialogComponent 제네릭과 컨트롤러"
-    >
+    <Section as="h2" id="dialog-component" title="DialogComponent Generics & Controller">
       <p>
         컴포넌트를 만들 때 <InlineCode>DialogComponent&lt;TProps&gt;</InlineCode>{' '}
         형태로 선언하면 레지스트리와 컨트롤러가 동일한 타입 정보를 공유합니다.
@@ -109,7 +105,7 @@ export const AlertB = ((props: AlertDialogProps) => null) satisfies DialogCompon
       />
     </Section>
 
-    <Section as="h2" id="generics" title="열기 메서드에서의 제네릭 명시">
+    <Section as="h2" id="generics" title="Generics on Open Methods">
       <p>
         대부분의 경우 레지스트리 정보만으로 타입이 추론되지만, 필요하다면{' '}
         <InlineCode>dialog.store.open</InlineCode> / <InlineCode>dialog.store.openAsync</InlineCode> 호출 시{' '}
@@ -124,7 +120,7 @@ export const AlertB = ((props: AlertDialogProps) => null) satisfies DialogCompon
       </p>
     </Section>
 
-    <Section as="h2" id="async" title="비동기 계약 설계">
+    <Section as="h2" id="async" title="Async Contract Design">
       <p>
         비동기 다이얼로그는 레지스트리에서{' '}
         <InlineCode>mode: &apos;async&apos;</InlineCode>만 추가하면 됩니다.
@@ -146,7 +142,7 @@ export const AlertB = ((props: AlertDialogProps) => null) satisfies DialogCompon
       </ul>
     </Section>
 
-    <Section as="h2" id="tips" title="설계 팁">
+    <Section as="h2" id="tips" title="Design Tips">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           입력과 상태를 구분하세요. props는 열기 시점의 입력, 컨트롤러 <InlineCode>update</InlineCode>로 바뀌는 값은
@@ -178,7 +174,7 @@ export const AlertB = ((props: AlertDialogProps) => null) satisfies DialogCompon
       </ul>
     </Section>
 
-    <Section as="h2" id="next" title="다음 단계">
+    <Section as="h2" id="next" title="Next Steps">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           실제 컴포넌트 구현 패턴은 <InlineCode>컴포넌트 기본기</InlineCode>{' '}
@@ -186,7 +182,7 @@ export const AlertB = ((props: AlertDialogProps) => null) satisfies DialogCompon
         </li>
       </ul>
     </Section>
-    <Section as="h2" id="api-links" title="API 문서">
+    <Section as="h2" id="api-links" title="API Docs">
       <DocLinks
         links={[
           { to: '/api/create-dialog-api', label: 'API → createDialogApi' },

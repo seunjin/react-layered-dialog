@@ -45,26 +45,26 @@ export const ApiUseDialogControllerPage = () => (
   <DocArticle title="useDialogController (API)">
     <p className="lead">다이얼로그 컴포넌트 내부에서 상태·제어 함수·스택 메타를 제공하는 컨트롤러 훅입니다.</p>
 
-    <Section as="h2" id="signature" title="정의/시그니처">
+    <Section as="h2" id="signature" title="Definition/Signature">
       <CodeBlock language="ts" code={signature} />
     </Section>
 
-    <Section as="h2" id="controller-fields" title="컨트롤러 항목">
+    <Section as="h2" id="controller-fields" title="Controller Fields">
       <CodeBlock language="ts" code={fields} />
     </Section>
 
-    <Section as="h2" id="example" title="간단 예시">
+    <Section as="h2" id="example" title="Examples">
       <CodeBlock language="tsx" code={usage} />
     </Section>
 
-    <Section as="h2" id="notes" title="주의점">
+    <Section as="h2" id="notes" title="Notes">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li><InlineCode>getStateFields</InlineCode>로 props와 내부 상태를 병합해 안전하게 기본값을 다룹니다.</li>
         <li>비동기 모드에서는 <InlineCode>resolve/reject/status</InlineCode>를 활용해 로딩→완료 흐름을 표현합니다.</li>
       </ul>
     </Section>
 
-    <Section as="h2" id="related" title="관련 문서">
+    <Section as="h2" id="related" title="Related">
       <DocLinks
         links={[
           { to: '/fundamentals/use-dialog-controller', label: '핵심 개념 → useDialogController' },

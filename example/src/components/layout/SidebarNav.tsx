@@ -44,21 +44,21 @@ export const SidebarNav = ({ className }: { className?: string }) => {
     const groups: Array<{ title: string; items: typeof apiSection.children }> =
       [
         {
-          title: '코어',
+          title: 'Core',
           items: apiSection.children.filter((c) => core.has(c.path)),
         },
         {
-          title: '타입',
+          title: 'Types',
           items: apiSection.children.filter((c) => types.has(c.path)),
         },
         {
-          title: '고급',
+          title: 'Advanced',
           items: apiSection.children.filter((c) =>
             c.path.startsWith('advanced/')
           ),
         },
         {
-          title: '부록',
+          title: 'Appendix',
           items: apiSection.children.filter((c) =>
             c.path.startsWith('appendix/')
           ),

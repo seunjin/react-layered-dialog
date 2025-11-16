@@ -72,7 +72,7 @@ export const DialogsRendererPage = () => (
       다이얼로그 컴포넌트를 DOM에 출력합니다. 개념과 활용 포인트에 집중하며, 상세 시그니처는 API 문서를 참조합니다.
     </p>
 
-    <Section as="h2" id="overview" title="개념 요약">
+    <Section as="h2" id="overview" title="Overview">
       <ul className="ml-6 list-disc space-y-2">
         <li><InlineCode>useSyncExternalStore</InlineCode> 패턴으로 스토어의 스냅샷을 구독합니다.</li>
         <li>컨트롤러 컨텍스트를 주입해 컴포넌트 내부에서 <InlineCode>close/unmount/update</InlineCode> 등을 사용할 수 있습니다.</li>
@@ -81,7 +81,7 @@ export const DialogsRendererPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="basic-usage" title="기본 사용">
+    <Section as="h2" id="basic-usage" title="Basic Usage">
       <p>
         스토어 인스턴스를 <InlineCode>store</InlineCode> prop으로 전달하면 나머지는 자동으로 처리됩니다.
         별도의 props가 필요 없으므로 어느 위치에서든 쉽게 배치할 수 있습니다.
@@ -98,7 +98,7 @@ export const DialogsRendererPage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="custom-renderer" title="커스텀 렌더러 패턴">
+    <Section as="h2" id="custom-renderer" title="Custom Renderer Pattern">
       <p>
         scroll lock, 포커스 트랩, 애니메이션 같은 전역 동작은 대개 개별 다이얼로그의 커스텀 훅에서 구현합니다.
         그래도 필요하다면 렌더러를 래핑해 로깅이나 포털 이동 등 공통 로직을 추가할 수 있습니다.
@@ -109,7 +109,7 @@ export const DialogsRendererPage = () => (
       </p>
     </Section>
 
-    <Section as="h2" id="tips" title="팁">
+    <Section as="h2" id="tips" title="Tips">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           렌더러는 React Portal과 조합하기 쉽습니다. 필요한 경우 <InlineCode>createPortal</InlineCode>을 사용해
@@ -140,14 +140,14 @@ export const DialogsRendererPage = () => (
       <CodeBlock language="ts" code={storeDecoratorExample} />
     </Section>
 
-    <Section as="h2" id="next" title="다음 읽을 거리">
+    <Section as="h2" id="next" title="Next Steps">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           다이얼로그 내부 컨트롤러 사용법은 <InlineCode>useDialogController</InlineCode> 문서에서 자세히 다룹니다.
         </li>
       </ul>
     </Section>
-    <Section as="h2" id="api-links" title="API 문서">
+    <Section as="h2" id="api-links" title="API Docs">
       <DocLinks links={[{ to: '/api/dialogs-renderer', label: 'API → DialogsRenderer' }]} />
     </Section>
   </DocArticle>
