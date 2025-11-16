@@ -10,7 +10,6 @@ import { DialogsRendererPage } from '@/pages/fundamentals/DialogsRenderer';
 import { DefiningDialogsPage as BuildingDefiningDialogsPage } from '@/pages/building-dialogs/DefiningDialogs';
 import { ComponentBasicsPage } from '@/pages/building-dialogs/ComponentBasics';
 import { AsyncPatternsPage } from '@/pages/building-dialogs/AsyncPatterns';
-import { BehaviorOptionsPage } from '@/pages/building-dialogs/BehaviorOptions';
 import RenewalDemoPage from '@/pages/renewal/Renewal';
 
 export const routeConfig = [
@@ -79,11 +78,6 @@ export const routeConfig = [
         path: 'async-patterns',
         element: <AsyncPatternsPage />,
         name: '비동기 패턴',
-      },
-      {
-        path: 'behavior-options',
-        element: <BehaviorOptionsPage />,
-        name: '옵션 & 동작',
       },
     ],
   },

@@ -27,7 +27,7 @@ export type ConfirmProps = {
  * `openDialog`와 `openDialogAsync` 모두에서 사용할 수 있도록
  * 기본 동작과 `resolve` 기반 비동기 제어를 함께 지원합니다.
  */
-const Confirm = ((props: ConfirmProps) => {
+const Confirm: DialogComponent<ConfirmProps> = ((props: ConfirmProps) => {
   const controller = useDialogController<ConfirmProps>();
 
   const {
@@ -44,24 +44,15 @@ const Confirm = ((props: ConfirmProps) => {
   const isLoading = status === 'loading';
 
   const {
-    title,
-    message,
-    confirmLabel,
-    cancelLabel,
+    title = '',
+    message = '',
+    confirmLabel = '확인',
+    cancelLabel = '취소',
     onConfirm,
     onCancel,
     dimmed = true,
     scrollLock = true,
-  } = getStateFields({
-    title: props.title ?? '',
-    message: props.message ?? '',
-    confirmLabel: props.confirmLabel ?? '확인',
-    cancelLabel: props.cancelLabel ?? '취소',
-    onConfirm: props.onConfirm,
-    onCancel: props.onCancel,
-    dimmed: props.dimmed ?? true,
-    scrollLock: props.scrollLock ?? true,
-  });
+  } = getStateFields(props);
 
   const handleConfirm = async () => {
     if (isLoading) return;

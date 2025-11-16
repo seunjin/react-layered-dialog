@@ -39,11 +39,29 @@ export const AlertDialog: DialogComponent<AlertDialogProps> = (props) => {
   );
 };`;
 
+const typeStabilizationSnippet = `import type { DialogComponent } from 'react-layered-dialog';
+
+type AlertDialogProps = { title: string; message?: string };
+
+// 1) 선언 시 제네릭으로 annotate
+export const AlertA: DialogComponent<AlertDialogProps> = (props) => {
+  /* ... */
+  return null;
+};
+
+// 2) satisfies로 형태 검증만 수행(값 추론은 유지)
+export const AlertB = ((props: AlertDialogProps) => {
+  /* ... */
+  return null;
+}) satisfies DialogComponent<AlertDialogProps>;`;
+
+// (접근성 예시는 섹션 간소화에 따라 제거되었습니다)
+
 export const ComponentBasicsPage = () => (
   <DocArticle title="다이얼로그 컴포넌트 기본기">
     <p className="lead">
       다이얼로그 컴포넌트는 <InlineCode>useDialogController</InlineCode>를 통해 닫기, 언마운트, 스택 정보를 받아
-      UI와 상호작용을 정의합니다. props와 옵션을 안전하게 병합하고, 컨트롤러가 제공하는 제어 함수를 적극 활용하세요.
+      UI와 상호작용을 정의합니다. props를 안전하게 병합하고, 컨트롤러가 제공하는 제어 함수를 적극 활용하세요.
     </p>
 
     <Section as="h2" id="controller" title="컨트롤러와 props 병합">
@@ -59,9 +77,22 @@ export const ComponentBasicsPage = () => (
           컨트롤러는 자동 계산된 <InlineCode>zIndex</InlineCode>를 제공하므로 스타일이나 포탈 전략을 제어할 때 활용하세요.
         </li>
         <li>
-          컴포넌트를 <InlineCode>DialogComponent&lt;TProps&gt;</InlineCode>로 선언하면 레지스트리에 등록할 때 타입이 자동으로 매핑되어 호환성을 보장합니다.
+          컴포넌트는 <InlineCode>DialogComponent&lt;TProps&gt;</InlineCode>로 annotate하거나,
+          함수 표현식에 <InlineCode>satisfies DialogComponent&lt;TProps&gt;</InlineCode>를 사용해 타입 추론을 안정화하세요.
         </li>
       </ul>
+    </Section>
+
+    <Section as="h2" id="typing" title="타입 안정화">
+      <p>
+        레지스트리/컨트롤러에서 일관된 제네릭(<InlineCode>TProps</InlineCode>)을 유지하려면 컴포넌트를 명시적으로
+        annotate하거나 <InlineCode>satisfies</InlineCode>를 사용해 형태 검증을 수행하는 방법이 가장 안전합니다.
+      </p>
+      <CodeBlock language="tsx" code={typeStabilizationSnippet} />
+      <p className="mt-2 text-sm text-muted-foreground">
+        annotate 방식은 선언을 간결하게 하고, <InlineCode>satisfies</InlineCode>는 값 추론을 보존하면서도
+        컴포넌트 형태가 맞는지 검증합니다. 두 방식 모두 레지스트리에 등록할 때 타입 호환을 보장합니다.
+      </p>
     </Section>
 
     <Section as="h2" id="lifecycle" title="닫기와 언마운트">
@@ -74,23 +105,17 @@ export const ComponentBasicsPage = () => (
     </Section>
 
     <Section as="h2" id="focus" title="포커스와 접근성">
-      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>
-          컨트롤러는 포커스를 자동으로 이동시키지 않습니다. 기본 포커스를 줄 요소에 <InlineCode>autoFocus</InlineCode>를 지정하거나 <InlineCode>useEffect</InlineCode>로 직접 관리하세요.
-        </li>
-        <li>
-          <InlineCode>data-topmost</InlineCode> 같은 속성으로 최상단 여부를 표현하면 CSS나 유틸리티 함수에서 간단히 확인할 수 있습니다.
-        </li>
-      </ul>
+      <p>
+        이 라이브러리는 포커스 이동/트랩이나 접근성 보조를 제공하지 않습니다. 다이얼로그 컨테이너의 역할과 ARIA 속성은
+        컴포넌트에서 명시하고, 초기 포커스 이동과 최상단 판단(컨트롤러의 <InlineCode>stack</InlineCode> 활용) 등 구체 동작은
+        프로젝트의 훅/유틸로 직접 구현하세요.
+      </p>
     </Section>
 
     <Section as="h2" id="next" title="다음 단계">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           비동기 확인 모달을 구현하려면 <InlineCode>비동기 패턴</InlineCode> 페이지를 참고하세요.
-        </li>
-        <li>
-          동작 플래그 설계는 <InlineCode>동작 패턴</InlineCode> 페이지에서 이어집니다.
         </li>
       </ul>
     </Section>

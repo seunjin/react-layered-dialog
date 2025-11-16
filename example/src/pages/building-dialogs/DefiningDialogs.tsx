@@ -94,6 +94,18 @@ export const DefiningDialogsPage = () => (
         컨트롤러 훅도 <InlineCode>useDialogController&lt;TProps&gt;</InlineCode>처럼
         같은 제네릭을 사용해 <InlineCode>getStateFields</InlineCode> 등에서 정확한 자동 완성을 받을 수 있습니다.
       </p>
+      <CodeBlock
+        language="tsx"
+        code={`import type { DialogComponent } from 'react-layered-dialog';
+
+type AlertDialogProps = { title: string; message?: string };
+
+// annotate 방식
+export const AlertA: DialogComponent<AlertDialogProps> = (props) => null;
+
+// satisfies 방식(값 추론 유지 + 형태 검증)
+export const AlertB = ((props: AlertDialogProps) => null) satisfies DialogComponent<AlertDialogProps>;`}
+      />
     </Section>
 
     <Section as="h2" id="generics" title="열기 메서드에서의 제네릭 명시">
