@@ -128,12 +128,12 @@ export const routeConfig = [
       {
         path: 'appendix/faq',
         element: <ApiAppendixFAQPage />,
-        name: '부록: FAQ',
+        name: 'FAQ',
       },
       {
         path: 'appendix/changelog',
         element: <ApiAppendixChangelogPage />,
-        name: '부록: 변경 로그',
+        name: '변경 로그',
       },
     ],
   },

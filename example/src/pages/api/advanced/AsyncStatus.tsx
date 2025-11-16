@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 import { Link } from 'react-router-dom';
 
 const patterns = `// openAsync 결과와 컨트롤러 status 활용
@@ -59,6 +60,14 @@ export const ApiAdvancedAsyncStatusPage = () => (
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>컨트롤러 훅 시그니처는 <Link to="/api/use-dialog-controller">API → useDialogController</Link> 참고.</li>
       </ul>
+    </Section>
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/use-dialog-controller', label: '핵심 개념 → useDialogController' },
+          { to: '/building-dialogs/async-patterns', label: '구현 가이드 → 비동기 & 상태 패턴' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );

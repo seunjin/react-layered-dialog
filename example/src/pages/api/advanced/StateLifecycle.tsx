@@ -3,6 +3,7 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { Link } from 'react-router-dom';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const sequence = `// 권장 시퀀스
 // 1) close() → isOpen=false로 전환 (DOM 유지, 퇴장 애니메이션 트리거)
@@ -49,6 +50,14 @@ export const ApiAdvancedStateLifecyclePage = () => (
         <li>렌더러 구독 규칙은 <Link to="/api/dialogs-renderer">API → DialogsRenderer</Link> 참조.</li>
       </ul>
     </Section>
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/use-dialog-controller', label: '핵심 개념 → useDialogController' },
+          { to: '/fundamentals/dialogs-renderer', label: '핵심 개념 → DialogsRenderer' },
+          { to: '/building-dialogs/components', label: '구현 가이드 → 컴포넌트 기본기' },
+        ]}
+      />
+    </Section>
   </DocArticle>
 );
-

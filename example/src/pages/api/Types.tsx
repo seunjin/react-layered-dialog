@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const openAsyncTypes = `export type DialogOpenResult<TProps = Record<string, unknown>> = {
   dialog: OpenDialogResult;
@@ -82,6 +83,15 @@ export const ApiTypesPage = () => (
         상태 우선순위: 컴포넌트 내부 <InlineCode>state</InlineCode> → 호출 시 전달한 props → 기본값 순으로 해석하세요.
       </p>
     </Section>
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/dialog-store', label: '핵심 개념 → DialogStore' },
+          { to: '/fundamentals/use-dialog-controller', label: '핵심 개념 → useDialogController' },
+          { to: '/building-dialogs/defining', label: '구현 가이드 → 다이얼로그 타입 설계' },
+        ]}
+      />
+    </Section>
   </DocArticle>
 );
-
+  

@@ -1,6 +1,7 @@
 import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
+import { DocLinks } from '@/components/docs/DocLink';
 import { Link } from 'react-router-dom';
 
 export const ApiAppendixFAQPage = () => (
@@ -31,6 +32,15 @@ export const ApiAppendixFAQPage = () => (
         <InlineCode>status/getStatus/setStatus</InlineCode>로 관리합니다.{' '}
         <Link to="/api/advanced/async-status">고급: 비동기 상태</Link> 참조.
       </p>
+    </Section>
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/api/advanced/state-lifecycle', label: 'API(고급) → 상태/수명주기' },
+          { to: '/api/advanced/z-index', label: 'API(고급) → zIndex/레이어링' },
+          { to: '/fundamentals/dialogs-renderer', label: '핵심 개념 → DialogsRenderer' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );

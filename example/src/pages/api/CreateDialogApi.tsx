@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const registrySignature = `function createDialogApi<TRegistry extends Record<string, any>>(
   store: DialogStore,
@@ -61,6 +62,16 @@ export const ApiCreateDialogApiPage = () => (
         <li>컨트롤러 팩토리 입력을 지원해 내부에서 <InlineCode>resolve/reject</InlineCode> 사용 가능.</li>
         <li>정의에 <InlineCode>displayName</InlineCode>을 설정하면 디버깅 시 컴포넌트 식별이 용이.</li>
       </ul>
+    </Section>
+
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/create-dialog-api', label: '핵심 개념 → createDialogApi' },
+          { to: '/building-dialogs/defining', label: '구현 가이드 → 다이얼로그 타입 설계' },
+          { to: '/building-dialogs/components', label: '구현 가이드 → 컴포넌트 기본기' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );

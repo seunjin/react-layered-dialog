@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const signature = `type DialogsRendererProps = { store: DialogStore };
 function DialogsRenderer({ store }: DialogsRendererProps): JSX.Element;`;
@@ -39,6 +40,15 @@ export const ApiDialogsRendererPage = () => (
         <li>여러 스토어를 사용하면 렌더러도 스토어별로 배치해야 컨텍스트가 올바르게 연결됩니다.</li>
       </ul>
     </Section>
+
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/dialogs-renderer', label: '핵심 개념 → DialogsRenderer' },
+          { to: '/fundamentals/use-dialog-controller', label: '핵심 개념 → useDialogController' },
+          { to: '/building-dialogs/components', label: '구현 가이드 → 컴포넌트 기본기' },
+        ]}
+      />
+    </Section>
   </DocArticle>
 );
-

@@ -1,6 +1,7 @@
 import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const guideline = `// 멀티 스토어/SSR 가이드
 // - 요청 단위로 DialogStore 인스턴스를 생성
@@ -42,6 +43,14 @@ export const ApiAdvancedMultiStoreSSRPage = () => (
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>요청 스코프 외부 공유를 피하고 필요한 범위에서만 주입하세요.</li>
       </ul>
+    </Section>
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/architecture', label: '핵심 개념 → 아키텍처 개요' },
+          { to: '/fundamentals/dialogs-renderer', label: '핵심 개념 → DialogsRenderer' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );

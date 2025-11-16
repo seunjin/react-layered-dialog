@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 import { Link } from 'react-router-dom';
 
 const rules = `// z-index 규칙 요약
@@ -56,6 +57,14 @@ export const ApiAdvancedZIndexLayeringPage = () => (
           섹션을 참고하세요.
         </li>
       </ul>
+    </Section>
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/dialog-store', label: '핵심 개념 → DialogStore' },
+          { to: '/fundamentals/dialogs-renderer', label: '핵심 개념 → DialogsRenderer' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );

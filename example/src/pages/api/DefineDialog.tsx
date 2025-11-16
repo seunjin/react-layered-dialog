@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const signature = `function defineDialog<
   TProps extends Record<string, unknown>,
@@ -44,6 +45,15 @@ export const ApiDefineDialogPage = () => (
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li><InlineCode>satisfies</InlineCode> 또는 제네릭으로 props 타입을 안정화해 IDE 자동완성을 극대화하세요.</li>
       </ul>
+    </Section>
+
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/create-dialog-api', label: '핵심 개념 → createDialogApi' },
+          { to: '/building-dialogs/defining', label: '구현 가이드 → 다이얼로그 타입 설계' },
+        ]}
+      />
     </Section>
   </DocArticle>
 );

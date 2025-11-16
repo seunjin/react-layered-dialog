@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const signature = `class DialogStore {
   constructor(options?: { baseZIndex?: number });
@@ -96,6 +97,15 @@ export const ApiDialogStorePage = () => (
         <li>z-index 레이어링: 기본값은 1000부터 1씩 증가. 필요 시 옵션으로 시작값 조정.</li>
       </ul>
     </Section>
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/dialog-store', label: '핵심 개념 → DialogStore' },
+          { to: '/fundamentals/dialogs-renderer', label: '핵심 개념 → DialogsRenderer' },
+          { to: '/building-dialogs/sync-patterns', label: '구현 가이드 → 동기 패턴' },
+          { to: '/building-dialogs/async-patterns', label: '구현 가이드 → 비동기 & 상태 패턴' },
+        ]}
+      />
+    </Section>
   </DocArticle>
 );
-

@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { DocLinks } from '@/components/docs/DocLink';
 
 const signature = `function useDialogController<
   TProps extends Record<string, unknown> = Record<string, unknown>
@@ -62,6 +63,15 @@ export const ApiUseDialogControllerPage = () => (
         <li>비동기 모드에서는 <InlineCode>resolve/reject/status</InlineCode>를 활용해 로딩→완료 흐름을 표현합니다.</li>
       </ul>
     </Section>
+
+    <Section as="h2" id="related" title="관련 문서">
+      <DocLinks
+        links={[
+          { to: '/fundamentals/use-dialog-controller', label: '핵심 개념 → useDialogController' },
+          { to: '/building-dialogs/components', label: '구현 가이드 → 컴포넌트 기본기' },
+          { to: '/building-dialogs/async-patterns', label: '구현 가이드 → 비동기 & 상태 패턴' },
+        ]}
+      />
+    </Section>
   </DocArticle>
 );
-
