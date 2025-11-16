@@ -33,8 +33,8 @@ export const CodeBlock: FC<CodeBlockProps> = ({
   return (
     <div
       className={cn(
-        'w-[calc(100vw-32px)]',
-        'relative  rounded-md bg-[#1e1e1e] overflow-auto',
+        'w-[calc(100vw-32px)] md:w-[calc(100%-32px)]',
+        'relative rounded-md bg-[#1e1e1e] overflow-auto',
         className
       )}
     >
@@ -55,6 +55,7 @@ export const CodeBlock: FC<CodeBlockProps> = ({
         language={language}
         style={vscDarkPlus}
         // showLineNumbers
+
         customStyle={{
           border: 'none',
           padding: '1rem',
