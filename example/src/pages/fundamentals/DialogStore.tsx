@@ -5,34 +5,6 @@ import { CodeBlock } from '@/components/docs/CodeBlock';
 import dialogsTsCode from '@/code-templates/dialogs.ts.txt?raw';
 import { Link } from 'react-router-dom';
 
-const signature = `class DialogStore {
-  constructor(options?: { baseZIndex?: number });
-
-  open<TProps extends Record<string, unknown> = Record<string, unknown>>(
-    renderer: DialogRenderFn<TProps>,
-    options?: OpenDialogOptions
-  ): DialogOpenResult<TProps>;
-  openAsync<TProps extends Record<string, unknown> = Record<string, unknown>>(
-    renderer: DialogRenderFn<TProps>,
-    options?: OpenDialogOptions
-  ): Promise<DialogAsyncResult<TProps>>;
-
-  close(id?: DialogId): void;
-  unmount(id?: DialogId): void;
-  closeAll(): void;
-  unmountAll(): void;
-
-  update<TProps extends Record<string, unknown> = Record<string, unknown>>(
-    id: DialogId,
-    updater: DialogStateUpdater<TProps>
-  ): void;
-  setStatus(id: DialogId, status: DialogStatus): void;
-  getStatus(id: DialogId): DialogStatus;
-
-  subscribe(listener: DialogListener): () => void;
-  getSnapshot(): DialogStoreSnapshot;
-}`;
-
 const syncAsyncSnippet = `// 동기(open): 즉시 제어 핸들을 반환합니다.
 const sync = dialog.store.open(() => <Alert title="안내" message="완료되었습니다" />);
 sync.update({ message: '다시 시도해 주세요' });
@@ -49,19 +21,7 @@ if (asyncResult.ok) {
   asyncResult.close();
 }`;
 
-const openResultSignature = `type DialogOpenResult<
-  TProps extends Record<string, unknown> = Record<string, unknown>
-> = {
-  dialog: OpenDialogResult; // { id, componentKey }
-  close(): void;
-  unmount(): void;
-  update(updater: DialogStateUpdater<TProps>): void;
-  setStatus(status: DialogStatus): void;
-  // status는 게터이며, getStatus()는 호출 시점의 값을 반환합니다.
-  readonly status: DialogStatus;
-  getStatus(): DialogStatus;
-  zIndex: number;
-};`;
+// 반환 형태 상세 시그니처는 API 문서로 이동했습니다.
 
 export const DialogStorePage = () => (
   <DocArticle title="DialogStore">
@@ -71,11 +31,23 @@ export const DialogStorePage = () => (
       인터페이스만 제공합니다.
     </p>
 
-    <Section as="h2" id="signature" title="주요 메서드">
-      <CodeBlock language="ts" code={signature} />
+    <Section as="h2" id="overview" title="핵심 동작 개요">
+      <ul className="ml-6 list-disc space-y-2">
+        <li>
+          <InlineCode>open</InlineCode>/<InlineCode>openAsync</InlineCode>: 렌더러 함수를 스택에 추가하고 제어 핸들(닫기/업데이트/상태)을 제공합니다.
+        </li>
+        <li>
+          <InlineCode>close</InlineCode>/<InlineCode>unmount</InlineCode>: 닫힘 전환(<InlineCode>isOpen=false</InlineCode>)과 제거(스택에서 삭제)를 분리해 퇴장 애니메이션을 안전하게 처리합니다.
+        </li>
+        <li>
+          <InlineCode>subscribe</InlineCode>/<InlineCode>getSnapshot</InlineCode>: <InlineCode>useSyncExternalStore</InlineCode>와 호환되는 구독/스냅샷 인터페이스입니다.
+        </li>
+        <li>
+          z-index: <InlineCode>baseZIndex</InlineCode>(기본 1000)에서 시작해 open마다 1씩 증가하며, 스택이 비면 초기화됩니다.
+        </li>
+      </ul>
       <p className="mt-2 text-sm text-muted-foreground">
-        생성자에 전달할 수 있는 <InlineCode>baseZIndex</InlineCode>는 선택 사항입니다. 지정하지
-        않으면 기본값(1000)에서 시작하며, 다이얼로그가 열릴 때마다 1씩 증가합니다.
+        자세한 시그니처는 <Link to="/api/dialog-store">API → DialogStore</Link>를 참조하세요.
       </p>
     </Section>
 
@@ -99,12 +71,19 @@ export const DialogStorePage = () => (
       <CodeBlock language="tsx" code={syncAsyncSnippet} />
     </Section>
 
-    <Section as="h2" id="return-shape" title="반환 타입 요약">
-      <p>
-        아래는 <InlineCode>open/openAsync</InlineCode>가 반환하는 객체의 핵심 필드입니다. 스토어 메서드 목록에는 포함되지
-        않지만, 호출 결과에서 <InlineCode>status</InlineCode>/<InlineCode>getStatus()</InlineCode>를 함께 사용할 수 있습니다.
+    <Section as="h2" id="return-shape" title="반환 요약">
+      <ul className="ml-6 list-disc space-y-2">
+        <li>
+          동기 핸들: <InlineCode>close</InlineCode>, <InlineCode>unmount</InlineCode>, <InlineCode>update</InlineCode>,
+          <InlineCode>setStatus</InlineCode>, <InlineCode>status/getStatus</InlineCode>, <InlineCode>zIndex</InlineCode> 제공.
+        </li>
+        <li>
+          비동기 핸들: 위 항목에 더해 <InlineCode>ok: boolean</InlineCode>으로 결과 분기.
+        </li>
+      </ul>
+      <p className="mt-2 text-sm text-muted-foreground">
+        필드 정의는 <Link to="/api/types">API → 타입 모음</Link>에서 확인하세요.
       </p>
-      <CodeBlock language="ts" code={openResultSignature} />
     </Section>
 
     <Section as="h2" id="constructor" title="생성자와 기본 상태">

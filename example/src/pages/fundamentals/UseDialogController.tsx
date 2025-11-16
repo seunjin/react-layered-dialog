@@ -4,10 +4,6 @@ import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { Link } from 'react-router-dom';
 
-const controllerSignature = `function useDialogController<
-  TProps extends Record<string, unknown> = Record<string, unknown>
->(): DialogControllerContextValue<TProps>;`;
-
 const controllerUsage = `import { useDialogController } from 'react-layered-dialog';
 
 type AlertDialogProps = {
@@ -62,9 +58,7 @@ export const UseDialogControllerPage = () => (
       제공해 UI와 상호작용을 일관되게 제어할 수 있게 해 줍니다.
     </p>
 
-    <Section as="h2" id="signature" title="시그니처">
-      <CodeBlock language="ts" code={controllerSignature} />
-    </Section>
+    {/* 시그니처 상세는 API 문서로 이동 */}
 
     <Section as="h2" id="usage" title="사용 예시">
       <CodeBlock language="tsx" code={controllerUsage} />

@@ -43,6 +43,37 @@ export const routeConfig = [
     ],
   },
   {
+    path: 'fundamentals',
+    title: '핵심 개념',
+    children: [
+      {
+        path: 'architecture',
+        element: <FundamentalsArchitecture />,
+        name: '아키텍처 개요',
+      },
+      {
+        path: 'dialog-store',
+        element: <DialogStorePage />,
+        name: 'DialogStore',
+      },
+      {
+        path: 'create-dialog-api',
+        element: <CreateDialogApiPage />,
+        name: 'createDialogApi',
+      },
+      {
+        path: 'dialogs-renderer',
+        element: <DialogsRendererPage />,
+        name: 'DialogsRenderer',
+      },
+      {
+        path: 'use-dialog-controller',
+        element: <UseDialogControllerPage />,
+        name: 'useDialogController',
+      },
+    ],
+  },
+  {
     path: 'api',
     title: 'API',
     children: [
@@ -106,37 +137,7 @@ export const routeConfig = [
       },
     ],
   },
-  {
-    path: 'fundamentals',
-    title: '핵심 개념',
-    children: [
-      {
-        path: 'architecture',
-        element: <FundamentalsArchitecture />,
-        name: '아키텍처 개요',
-      },
-      {
-        path: 'dialog-store',
-        element: <DialogStorePage />,
-        name: 'DialogStore',
-      },
-      {
-        path: 'create-dialog-api',
-        element: <CreateDialogApiPage />,
-        name: 'createDialogApi',
-      },
-      {
-        path: 'dialogs-renderer',
-        element: <DialogsRendererPage />,
-        name: 'DialogsRenderer',
-      },
-      {
-        path: 'use-dialog-controller',
-        element: <UseDialogControllerPage />,
-        name: 'useDialogController',
-      },
-    ],
-  },
+
   {
     path: 'building-dialogs',
     title: '다이얼로그 구현 가이드',
