@@ -21,12 +21,10 @@ export function MainLayout() {
         <div className="flex flex-1">
           <Sidebar />
           <SidebarInset className="flex flex-1 flex-col">
-            <main id="main-content" className="flex-1 p-4 sm:p-6">
-              <div className="grid grid-rows-[1fr_auto] h-full mx-auto">
-                <Outlet />
-                <PageNavigation />
-              </div>
-            </main>
+            <div className="grid grid-rows-[1fr_auto] h-full mx-auto">
+              <Outlet />
+              <PageNavigation />
+            </div>
             <Footer />
           </SidebarInset>
         </div>

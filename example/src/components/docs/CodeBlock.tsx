@@ -31,7 +31,13 @@ export const CodeBlock: FC<CodeBlockProps> = ({
   };
 
   return (
-    <div className={cn('relative rounded-md bg-[#1e1e1e]', className)}>
+    <div
+      className={cn(
+        'w-[calc(100vw-32px)]',
+        'relative  rounded-md bg-[#1e1e1e] overflow-auto',
+        className
+      )}
+    >
       <Button
         variant="ghost"
         size="icon"
@@ -48,11 +54,11 @@ export const CodeBlock: FC<CodeBlockProps> = ({
         className={'SyntaxHighlighter'}
         language={language}
         style={vscDarkPlus}
-        showLineNumbers
+        // showLineNumbers
         customStyle={{
+          border: 'none',
           padding: '1rem',
           backgroundColor: 'transparent',
-          borderRadius: '0.375rem',
         }}
         codeTagProps={{
           style: {

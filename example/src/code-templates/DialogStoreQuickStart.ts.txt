@@ -1,0 +1,4 @@
+import { DialogStore } from 'react-layered-dialog';
+
+// 애플리케이션 전역에서 공유할 스토어 인스턴스
+export const dialog = new DialogStore();

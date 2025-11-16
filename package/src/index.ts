@@ -1,12 +1,30 @@
-export { createDialogManager, createUseDialogs } from './core/factory';
+export { DialogStore } from './store';
+export type { DialogStoreOptions } from './store';
+export { DialogsRenderer, useDialogController } from './renderer';
+export {
+  createDialogApi,
+  defineDialog,
+  type DialogComponent,
+  type DialogDefinition,
+  type DialogInput,
+  type DialogMode,
+  type DefineDialogOptions,
+} from './registry';
 export type {
-  BaseLayerProps,
-  BaseState,
-  BaseStateMeta,
-  DialogState,
-  DialogInstance,
-  DialogsConfig,
-  DialogHandle,
-} from './core/types';
-export { useLayerBehavior } from './hooks/useLayerBehavior';
-export type { UseLayerBehaviorOptions } from './hooks/useLayerBehavior';
+  DialogAsyncEntryHandlers,
+  DialogAsyncResolvePayload,
+  DialogAsyncResult,
+  DialogControllerContextValue,
+  DialogEntry,
+  DialogEntryMeta,
+  DialogId,
+  DialogListener,
+  DialogOpenResult,
+  DialogRenderFn,
+  DialogStackInfo,
+  DialogStateUpdater,
+  DialogStatus,
+  DialogStoreSnapshot,
+  OpenDialogOptions,
+  OpenDialogResult,
+} from './types';

@@ -1,118 +1,147 @@
-import { useCallback, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import { useDialogs } from '@/lib/dialogs';
-import type { ConfirmDialogState } from '@/lib/dialogs';
-import type { DialogState } from 'react-layered-dialog';
-import { useLayerBehavior } from 'react-layered-dialog';
+import {
+  useDialogController,
+  type DialogComponent,
+  type DialogControllerContextValue,
+} from 'react-layered-dialog';
+import { Spinner } from '@/components/ui/spinner';
+import { AnimatePresence } from 'motion/react';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
-type ConfirmProps = DialogState<ConfirmDialogState>;
+export type ConfirmController = DialogControllerContextValue<ConfirmProps>;
 
-export const Confirm = ({
-  id,
-  title,
-  message,
-  onConfirm,
-  onCancel,
-  zIndex,
-  closeOnEscape = true,
-  closeOnOutsideClick = true,
-  dimmed = true,
-  step = 'confirm',
-}: ConfirmProps) => {
-  const { dialogs, closeDialog } = useDialogs();
-  const panelRef = useRef<HTMLDivElement>(null);
+export type ConfirmProps = {
+  title: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm?: () => void | Promise<void>;
+  onCancel?: () => void | Promise<void>;
+  dimmed?: boolean;
+  scrollLock?: boolean;
+};
 
-  const isLoading = step === 'loading';
-  const isDone = step === 'done';
+/**
+ * 리뉴얼 데모에서 재사용하는 컨펌 다이얼로그입니다.
+ * `openDialog`와 `openDialogAsync` 모두에서 사용할 수 있도록
+ * 기본 동작과 `resolve` 기반 비동기 제어를 함께 지원합니다.
+ */
+const Confirm: DialogComponent<ConfirmProps> = ((props: ConfirmProps) => {
+  const controller = useDialogController<ConfirmProps>();
 
-  const handleCancel = useCallback(() => {
-    if (!onCancel || isLoading) return;
-    const shouldClose = onCancel();
-    if (shouldClose !== false) {
-      closeDialog(id);
-    }
-  }, [closeDialog, id, isLoading, onCancel]);
+  const {
+    isOpen,
+    resolve,
+    reject,
+    close,
+    unmount,
+    status,
+    getStateFields,
+    zIndex,
+  } = controller;
 
-  const handleConfirm = useCallback(() => {
+  const isLoading = status === 'loading';
+
+  const {
+    title = '',
+    message = '',
+    confirmLabel = '확인',
+    cancelLabel = '취소',
+    onConfirm,
+    onCancel,
+    dimmed = true,
+    scrollLock = true,
+  } = getStateFields(props);
+
+  const handleConfirm = async () => {
     if (isLoading) return;
-    if (!onConfirm) {
-      closeDialog(id);
+
+    if (onConfirm) {
+      try {
+        await Promise.resolve(onConfirm());
+      } catch (error) {
+        reject?.(error);
+      }
       return;
     }
-    const shouldClose = onConfirm();
-    if (shouldClose !== false) {
-      closeDialog(id);
-    }
-  }, [closeDialog, id, isLoading, onConfirm]);
 
-  useLayerBehavior({
-    id,
-    dialogs,
-    zIndex,
-    closeOnEscape,
-    onEscape: handleCancel,
-    closeOnOutsideClick,
-    onOutsideClick: handleCancel,
-    outsideClickRef: panelRef,
-  });
+    resolve?.({ ok: true });
+    close();
+  };
+
+  const handleCancel = async () => {
+    if (isLoading) return;
+
+    if (onCancel) {
+      try {
+        await Promise.resolve(onCancel());
+      } catch (error) {
+        reject?.(error);
+      }
+      return;
+    }
+
+    resolve?.({ ok: false });
+    close();
+  };
+
+  useBodyScrollLock(scrollLock && isOpen);
 
   return (
-    <div
-      className={`fixed inset-0 flex items-center justify-center ${
-        dimmed ? 'pointer-events-auto' : 'pointer-events-none'
-      }`}
-      style={{ zIndex }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={`confirm-${id}-title`}
-      aria-describedby={`confirm-${id}-message`}
-    >
-      {dimmed && (
+    <AnimatePresence onExitComplete={unmount}>
+      {isOpen && (
         <motion.div
-          className="absolute inset-0 bg-black/40 pointer-events-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        />
-      )}
-      <motion.div
-        ref={panelRef}
-        className="relative min-w-[320px] rounded-lg bg-white p-6 shadow-xl pointer-events-auto"
-        initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.92, opacity: 0 }}
-      >
-        <h3 id={`confirm-${id}-title`} className="text-lg font-semibold">
-          {title}
-        </h3>
-        <p
-          id={`confirm-${id}-message`}
-          className="mt-2 text-sm text-muted-foreground"
+          className={`fixed inset-0 flex items-center justify-center ${
+            dimmed ? 'pointer-events-auto' : 'pointer-events-none'
+          }`}
+          initial={{
+            backgroundColor: 'rgba(0, 0, 0, 0)',
+            backdropFilter: 'blur(0px)',
+          }}
+          animate={{
+            backgroundColor: dimmed ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0)',
+            backdropFilter: 'blur(4px)',
+          }}
+          exit={{
+            backgroundColor: 'rgba(0, 0, 0, 0)',
+            backdropFilter: 'blur(0px)',
+          }}
+          style={{ zIndex }}
         >
-          {message}
-        </p>
-        <div className="mt-4 flex justify-end gap-2">
-          {onCancel && !isDone ? (
-            <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
-              취소
-            </Button>
-          ) : null}
-          <Button autoFocus onClick={handleConfirm} disabled={isLoading}>
-            {isLoading ? (
-              <span className="inline-flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                진행 중...
-              </span>
-            ) : isDone ? (
-              '닫기'
-            ) : (
-              '확인'
-            )}
-          </Button>
-        </div>
-      </motion.div>
-    </div>
+          <motion.div
+            className="w-[min(340px,90%)] space-y-4 rounded-xl bg-card p-6 shadow-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <header className="space-y-1">
+              <h3 className="text-base font-semibold text-foreground">
+                {title}
+              </h3>
+              <p className="text-sm text-muted-foreground">{message}</p>
+            </header>
+
+            <div className="flex justify-end gap-2">
+              {status !== 'done' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={isLoading}
+                  onClick={handleCancel}
+                >
+                  {cancelLabel}
+                </Button>
+              )}
+              <Button size="sm" disabled={isLoading} onClick={handleConfirm}>
+                {isLoading && <Spinner />} {confirmLabel}
+              </Button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
-};
+}) satisfies DialogComponent<ConfirmProps>;
+
+export default Confirm;

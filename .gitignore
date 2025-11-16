@@ -106,3 +106,5 @@ typings/
 dist
 dist-ssr
 
+# Local third-party checkouts
+/third_party/

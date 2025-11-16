@@ -1,7 +1,7 @@
 import { useLocation, Link } from 'react-router-dom';
 import { routeConfig } from '@/router';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export function PageNavigation() {
   // Flatten the route config inside the component to avoid circular dependency issues.
@@ -28,24 +28,50 @@ export function PageNavigation() {
       : null;
 
   return (
-    <div className="w-[min(calc(100%-2rem),var(--prose-max))] mx-auto my-12 flex justify-between border-t pt-6">
+    <div className="w-[min(calc(100%-2rem),var(--prose-max))] mx-auto my-12 flex gap-2 flex-wrap justify-between border-t pt-6">
       {prevRoute ? (
-        <Button variant="outline" asChild>
-          <Link to={prevRoute.path} className="flex items-center gap-2">
+        <button
+          type="button"
+          className={cn(
+            'border px-2 py-2 rounded-md transition-[background-color] duration-200 cursor-pointer ',
+            'bg-background hover:bg-foreground group'
+          )}
+        >
+          <Link
+            to={prevRoute.path}
+            className={cn(
+              'flex text-xs items-center gap-1 font-medium',
+              'transition-[color] duration-200',
+              ' group-hover:text-background'
+            )}
+          >
             <ChevronLeft className="h-4 w-4" />
             {prevRoute.name}
           </Link>
-        </Button>
+        </button>
       ) : (
         <div /> // Empty div for spacing
       )}
       {nextRoute ? (
-        <Button variant="outline" asChild>
-          <Link to={nextRoute.path} className="flex items-center gap-2">
+        <button
+          type="button"
+          className={cn(
+            'border px-2 py-2 rounded-md transition-[background-color] duration-200 cursor-pointer ',
+            'bg-background hover:bg-foreground group'
+          )}
+        >
+          <Link
+            to={nextRoute.path}
+            className={cn(
+              'flex text-xs items-center gap-1 font-medium',
+              'transition-[color] duration-200',
+              ' group-hover:text-background'
+            )}
+          >
             {nextRoute.name}
             <ChevronRight className="h-4 w-4" />
           </Link>
-        </Button>
+        </button>
       ) : (
         <div /> // Empty div for spacing
       )}

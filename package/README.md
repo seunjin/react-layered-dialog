@@ -22,18 +22,16 @@ pnpm add react-layered-dialog
 
 ### 기본 사용법
 
-`react-layered-dialog`는 `useDialogs` 훅을 통해 매우 간단하게 다이얼로그를 열고 관리할 수 있습니다.
+`react-layered-dialog`는 전역 `DialogStore`와 `createDialogApi`로 구성한 `dialog` 헬퍼를 통해 다이얼로그를 제어합니다.
 
 ```tsx
-import { useDialogs } from '@/lib/dialogs'; // 1. 설정된 훅 임포트
-import { DialogRenderer } from '@/components/DialogRenderer';
+import { dialog, dialogStore } from '@/lib/dialogs';
+import { DialogsRenderer } from 'react-layered-dialog';
 
 function App() {
-  const { openDialog, dialogs } = useDialogs();
-
-  const showAlert = () => {
-    // 2. 원하는 다이얼로그를 타입과 함께 호출
-    openDialog('alert', {
+  const showConfirm = () => {
+    // 1. 레지스트리에 등록된 다이얼로그 메서드를 호출
+    dialog.confirm({
       title: '알림',
       message: '안녕하세요! React Layered Dialog 입니다.',
     });
@@ -41,22 +39,22 @@ function App() {
 
   return (
     <>
-      <button onClick={showAlert}>알림 열기</button>
+      <button onClick={showConfirm}>알림 열기</button>
 
-      {/* 3. 앱 최상단에 렌더러 추가 */}
-      <DialogRenderer dialogs={dialogs} />
+      {/* 2. 앱 최상단에 렌더러 추가 */}
+      <DialogsRenderer store={dialogStore} />
     </>
   );
 }
 ```
 
-> 전체 설정 과정( `createDialogManager`, `createUseDialogs` 등)에 대한 자세한 내용은 [공식 문서](https://seunjin.github.io/react-layered-dialog/getting-started/quick-start)를 참고해 주세요.
+> 전체 설정 과정( `DialogStore`, `createDialogApi` 등)에 대한 자세한 내용은 [공식 문서](https://seunjin.github.io/react-layered-dialog/getting-started/quick-start)를 참고해 주세요.
 
 ---
 
 ## Why React Layered Dialog?
 
-| Feature | React Layered Dialog | 기존 Modal 라이브러리 |
+| Feature | React Layered Dialog | 일반 Modal 라이브러리 |
 | :--- | :--- | :--- |
 | **선언적 API** | ✅ `openDialog('type', props)` | ❌ 상태 끌어올리기 또는 복잡한 상태관리 |
 | **타입 안전성** | ✅ 완전한 TypeScript 지원 | ❌ 제한적 또는 없음 |

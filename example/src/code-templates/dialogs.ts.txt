@@ -1,40 +1,12 @@
-import {
-  createDialogManager,
-  createUseDialogs,
-  type BaseLayerProps,
-  type DialogState,
-} from 'react-layered-dialog';
+import { DialogStore, createDialogApi } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
 import { Confirm } from '@/components/dialogs/Confirm';
 
-type AlertState = {
-  type: 'alert';
-  title: string;
-  message: string;
-  onOk?: () => void;
-} & Partial<BaseLayerProps>;
+// 애플리케이션 전역에서 공유할 스토어 인스턴스
+export const dialogStore = new DialogStore();
 
-type ConfirmState = {
-  type: 'confirm';
-  title: string;
-  message: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-} & Partial<BaseLayerProps>;
-
-type AppDialogState = AlertState | ConfirmState;
-
-export type AlertDialogProps = DialogState<AlertState>;
-export type ConfirmDialogProps = DialogState<ConfirmState>;
-
-const { manager } = createDialogManager<AppDialogState>();
-
-export const useDialogs = createUseDialogs(manager, {
-  alert: Alert,
-  confirm: Confirm,
+// 컴포넌트 레지스트리를 등록하면 dialog.open / dialog.confirm 같은 헬퍼가 생성됩니다.
+export const dialog = createDialogApi(dialogStore, {
+  alert: { component: Alert },
+  confirm: { component: Confirm },
 });
-
-export const openDialog = manager.openDialog;
-export const closeDialog = manager.closeDialog;
-export const closeAllDialogs = manager.closeAllDialogs;
-export const updateDialog = manager.updateDialog;

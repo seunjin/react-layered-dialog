@@ -22,18 +22,16 @@ pnpm add react-layered-dialog
 
 ### 기본 사용법
 
-`react-layered-dialog`는 `useDialogs` 훅을 통해 매우 간단하게 다이얼로그를 열고 관리할 수 있습니다.
+`react-layered-dialog`는 전역 `DialogStore`와 `createDialogApi`로 구성한 `dialog` 헬퍼를 통해 다이얼로그를 제어합니다.
 
 ```tsx
-import { useDialogs } from '@/lib/dialogs'; // 1. 설정된 훅 임포트
-import { DialogRenderer } from '@/components/DialogRenderer';
+import { dialog, dialogStore } from '@/lib/dialogs';
+import { DialogsRenderer } from 'react-layered-dialog';
 
 function App() {
-  const { openDialog, dialogs } = useDialogs();
-
-  const showAlert = () => {
-    // 2. 원하는 다이얼로그를 타입과 함께 호출
-    openDialog('alert', {
+  const showConfirm = () => {
+    // 1. 레지스트리에 등록된 다이얼로그 메서드를 호출
+    dialog.confirm({
       title: '알림',
       message: '안녕하세요! React Layered Dialog 입니다.',
     });
@@ -41,16 +39,16 @@ function App() {
 
   return (
     <>
-      <button onClick={showAlert}>알림 열기</button>
+      <button onClick={showConfirm}>알림 열기</button>
 
-      {/* 3. 앱 최상단에 렌더러 추가 */}
-      <DialogRenderer dialogs={dialogs} />
+      {/* 2. 앱 최상단에 렌더러 추가 */}
+      <DialogsRenderer store={dialogStore} />
     </>
   );
 }
 ```
 
-> 전체 설정 과정( `createDialogManager`, `createUseDialogs` 등)에 대한 자세한 내용은 [공식 문서](https://seunjin.github.io/react-layered-dialog/getting-started/quick-start)를 참고해 주세요.
+> 전체 설정 과정( `DialogStore`, `createDialogApi` 등)에 대한 자세한 내용은 [공식 문서](https://seunjin.github.io/react-layered-dialog/getting-started/quick-start)를 참고해 주세요.
 
 ---
 
@@ -58,41 +56,89 @@ function App() {
 
 `react-layered-dialog`는 포커스 이동을 자동으로 처리하지 않습니다. 각 다이얼로그 컴포넌트 안에서 표준
 `autoFocus` 속성이나 필요에 맞는 포커스 전략을 직접 지정해 주세요.
-필요하다면 `useLayerBehavior` 훅을 사용해 ESC, 외부 클릭 처리 등을 보조적으로 적용할 수 있습니다.
+필요한 경우 컨트롤러가 제공하는 스택 정보를 활용해 ESC, 외부 클릭 같은 동작을 직접 구현할 수 있습니다.
 
 ```tsx
-function AlertDialog({ id, title, message }: DialogState<AlertState>) {
-  const { dialogs, closeDialog } = useDialogs();
+import { useEffect, useRef } from 'react';
+import { useDialogController } from 'react-layered-dialog';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
-  useLayerBehavior({
-    id,
-    dialogs,
-    closeOnEscape: true,
-    closeOnOutsideClick: true,
-    onEscape: () => closeDialog(id),
-    onOutsideClick: () => closeDialog(id),
+type AlertDialogProps = {
+  title: string;
+  message: string;
+  onOk?: () => void;
+  dimmed?: boolean;
+  closeOnEscape?: boolean;
+  closeOnOutsideClick?: boolean;
+  scrollLock?: boolean;
+};
+
+export const AlertDialog = (props: AlertDialogProps) => {
+  const controller = useDialogController<AlertDialogProps>();
+  const { close, unmount, getStateFields, stack, isOpen } = controller;
+  const panelRef = useRef<HTMLDivElement>(null);
+  const {
+    title,
+    message,
+    onOk,
+    dimmed = true,
+    closeOnEscape = true,
+    closeOnOutsideClick = true,
+    scrollLock = true,
+  } = getStateFields({
+    title: props.title,
+    message: props.message,
+    onOk: props.onOk,
+    dimmed: props.dimmed ?? true,
+    closeOnEscape: props.closeOnEscape ?? true,
+    closeOnOutsideClick: props.closeOnOutsideClick ?? true,
+    scrollLock: props.scrollLock ?? true,
   });
 
+  const handleClose = () => {
+    onOk?.();
+    close();
+    unmount();
+  };
+
+  useEffect(() => {
+    if (stack.index !== stack.size - 1 || !closeOnEscape) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') handleClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [closeOnEscape, handleClose, stack.index, stack.size]);
+
+  useEffect(() => {
+    if (stack.index !== stack.size - 1 || !closeOnOutsideClick) return;
+    const onMouseDown = (event: MouseEvent) => {
+      if (!panelRef.current) return;
+      if (!panelRef.current.contains(event.target as Node)) handleClose();
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [closeOnOutsideClick, handleClose, stack.index, stack.size]);
+
+  useBodyScrollLock(scrollLock && isOpen);
+
   return (
-    <div role="alertdialog" aria-modal="true">
+    <div role="alertdialog" aria-modal="true" ref={panelRef}>
       <h3>{title}</h3>
       <p>{message}</p>
-      <button autoFocus onClick={() => closeDialog(id)}>
-        확인
-      </button>
+      <button autoFocus onClick={handleClose}>확인</button>
     </div>
   );
-}
+};
 ```
 
-위와 같이 기본 포커스는 브라우저가 처리하도록 두고, 더 정교한 포커스 제어나 우선순위가 필요하면 `ref`와
-`useEffect` 등을 조합해 직접 구현하면 됩니다.
+이처럼 브라우저 기본 포커스를 활용하되, 필요하다면 `ref`와 `useEffect`를 조합해 세밀한 제어를 추가하세요.
 
 ---
 
 ## Why React Layered Dialog?
 
-| Feature | React Layered Dialog | 기존 Modal 라이브러리 |
+| Feature | React Layered Dialog | 일반 Modal 라이브러리 |
 | :--- | :--- | :--- |
 | **선언적 API** | ✅ `openDialog('type', props)` | ❌ 상태 끌어올리기 또는 복잡한 상태관리 |
 | **타입 안전성** | ✅ 완전한 TypeScript 지원 | ❌ 제한적 또는 없음 |

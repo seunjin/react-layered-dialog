@@ -1,24 +1,21 @@
 import { useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
-import { useDialogs } from '@/lib/dialogs';
-import { DialogRenderer } from '@/components/dialogs/DialogRenderer';
 import { router } from './router';
+import { dialog } from '@/lib/dialogs';
+import { ReactLayeredDialogRenderer } from './components/dialogs/ReactLayeredDialogRenderer';
 function App() {
-  const { dialogs } = useDialogs();
-
   useEffect(() => {
-    console.log(
-      '%c[React Layered Dialog] %cState Changed:',
-      'color: #7c3aed; font-weight: bold;',
-      'color: inherit;',
-      dialogs
-    );
-  }, [dialogs]);
+    const unsubscribe = dialog.store.subscribe(() => {
+      const snapshot = dialog.store.getSnapshot();
+      console.log('[renewal dialogs]', snapshot.entries);
+    });
+    return unsubscribe;
+  }, []);
 
   return (
     <>
       <RouterProvider router={router} />
-      <DialogRenderer dialogs={dialogs} />
+      <ReactLayeredDialogRenderer store={dialog.store} />
     </>
   );
 }
