@@ -7,21 +7,23 @@ export function DocLink({
   to,
   children,
   className,
+  showArrow = true,
 }: {
   to: string;
   children: ReactNode;
   className?: string;
+  showArrow?: boolean;
 }) {
   return (
     <Link
       to={to}
       className={cn(
-        'inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline',
+        'inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/50',
         className
       )}
     >
       <span>{children}</span>
-      <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+      {showArrow && <ChevronRight className="h-3.5 w-3.5" aria-hidden />}
     </Link>
   );
 }
@@ -43,4 +45,3 @@ export function DocLinks({
     </ul>
   );
 }
-

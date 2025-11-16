@@ -3,7 +3,7 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { DocLinks } from '@/components/docs/DocLink';
-import { Link } from 'react-router-dom';
+import { DocLink } from '@/components/docs/DocLink';
 
 const patterns = `// openAsync 결과와 컨트롤러 status 활용
 const result = await dialog.confirm((c) => ({
@@ -58,7 +58,7 @@ export const ApiAdvancedAsyncStatusPage = () => (
 
     <Section as="h2" id="notes" title="Notes">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>컨트롤러 훅 시그니처는 <Link to="/api/use-dialog-controller">API → useDialogController</Link> 참고.</li>
+        <li>컨트롤러 훅 시그니처는 <DocLink to="/api/use-dialog-controller">API → useDialogController</DocLink> 참고.</li>
       </ul>
     </Section>
     <Section as="h2" id="related" title="Related">

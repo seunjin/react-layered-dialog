@@ -2,7 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
-import { Link } from 'react-router-dom';
+import { DocLink } from '@/components/docs/DocLink';
 import { DocLinks } from '@/components/docs/DocLink';
 
 const sequence = `// 권장 시퀀스
@@ -46,8 +46,8 @@ export const ApiAdvancedStateLifecyclePage = () => (
 
     <Section as="h2" id="notes" title="Notes">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>컨트롤러 훅은 <Link to="/api/use-dialog-controller">API → useDialogController</Link> 참조.</li>
-        <li>렌더러 구독 규칙은 <Link to="/api/dialogs-renderer">API → DialogsRenderer</Link> 참조.</li>
+        <li>컨트롤러 훅은 <DocLink to="/api/use-dialog-controller">API → useDialogController</DocLink> 참조.</li>
+        <li>렌더러 구독 규칙은 <DocLink to="/api/dialogs-renderer">API → DialogsRenderer</DocLink> 참조.</li>
       </ul>
     </Section>
     <Section as="h2" id="related" title="Related">
