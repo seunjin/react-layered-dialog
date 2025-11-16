@@ -69,9 +69,17 @@ export const DialogsRendererPage = () => (
   <DocArticle title="DialogsRenderer">
     <p className="lead">
       <InlineCode>DialogsRenderer</InlineCode>는 <InlineCode>DialogStore</InlineCode> 스냅샷을 구독해 등록된
-      다이얼로그 컴포넌트를 DOM에 출력합니다. 렌더러를 앱 엔트리에 배치하면 컨트롤러가 컨텍스트를 통해
-      스토어와 연결됩니다.
+      다이얼로그 컴포넌트를 DOM에 출력합니다. 개념과 활용 포인트에 집중하며, 상세 시그니처는 API 문서를 참조합니다.
     </p>
+
+    <Section as="h2" id="overview" title="개념 요약">
+      <ul className="ml-6 list-disc space-y-2">
+        <li><InlineCode>useSyncExternalStore</InlineCode> 패턴으로 스토어의 스냅샷을 구독합니다.</li>
+        <li>컨트롤러 컨텍스트를 주입해 컴포넌트 내부에서 <InlineCode>close/unmount/update</InlineCode> 등을 사용할 수 있습니다.</li>
+        <li>스택 메타는 <InlineCode>isOpen=true</InlineCode> 항목만 기준으로 최상단/개수를 계산합니다.</li>
+        <li>전역 정책(ESC, 포커스, scroll lock)은 보통 별도 훅/래퍼에서 조합합니다.</li>
+      </ul>
+    </Section>
 
     <Section as="h2" id="basic-usage" title="기본 사용">
       <p>

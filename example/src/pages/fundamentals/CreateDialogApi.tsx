@@ -42,12 +42,27 @@ const dialog = createDialogApi(new DialogStore(), {
 export const CreateDialogApiPage = () => (
   <DocArticle title="createDialogApi">
     <p className="lead">
-      <InlineCode>createDialogApi</InlineCode>는{' '}
-      <InlineCode>DialogStore</InlineCode>와 레지스트리를 연결해 타입 안전한
-      헬퍼를 생성합니다. 한 번 정의하면 <InlineCode>dialog.open</InlineCode>,
-      <InlineCode>dialog.alert</InlineCode> 같이 재사용 가능한 메서드로 스택을
-      제어할 수 있습니다.
+      <InlineCode>createDialogApi</InlineCode>는 <InlineCode>DialogStore</InlineCode>와 레지스트리를 연결해
+      타입 안전한 호출 헬퍼를 생성합니다. 이 문서는 개념과 활용 포인트에 집중합니다.
+      상세 시그니처는 API 문서를 참고하세요.
     </p>
+
+    <Section as="h2" id="overview" title="개념 요약">
+      <ul className="ml-6 list-disc space-y-2">
+        <li>레지스트리 키 → 컴포넌트 매핑으로 팀/도메인 용어 기반 API를 구성합니다.</li>
+        <li>
+          <InlineCode>mode</InlineCode>에 따라 동기(<InlineCode>open</InlineCode>)/비동기(<InlineCode>openAsync</InlineCode>)가 자동 매핑됩니다.
+        </li>
+        <li>
+          입력은 props 객체 또는 컨트롤러 팩토리 두 가지를 지원합니다.
+          팩토리는 내부에서 <InlineCode>resolve/reject</InlineCode>를 사용할 수 있어 선언적 비동기 흐름에 적합합니다.
+        </li>
+        <li>생성된 객체는 스토어의 기본 제어 함수(<InlineCode>close/unmount/update</InlineCode> 등)도 함께 노출합니다.</li>
+      </ul>
+      <p className="mt-2 text-sm text-muted-foreground">
+        자세한 시그니처는 <InlineCode>API → createDialogApi</InlineCode> 문서를 참조하세요.
+      </p>
+    </Section>
 
     <Section as="h2" id="registry" title="레지스트리 구성">
       <p>
