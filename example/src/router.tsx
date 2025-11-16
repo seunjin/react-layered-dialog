@@ -12,6 +12,18 @@ import { ComponentBasicsPage } from '@/pages/building-dialogs/ComponentBasics';
 import { AsyncPatternsPage } from '@/pages/building-dialogs/AsyncPatterns';
 import { SyncPatternsPage } from '@/pages/building-dialogs/SyncPatterns';
 import RenewalDemoPage from '@/pages/renewal/Renewal';
+import { ApiDialogStorePage } from '@/pages/api/DialogStore';
+import { ApiCreateDialogApiPage } from '@/pages/api/CreateDialogApi';
+import { ApiDefineDialogPage } from '@/pages/api/DefineDialog';
+import { ApiDialogsRendererPage } from '@/pages/api/DialogsRenderer';
+import { ApiUseDialogControllerPage } from '@/pages/api/UseDialogController';
+import { ApiTypesPage } from '@/pages/api/Types';
+import { ApiAdvancedStateLifecyclePage } from '@/pages/api/advanced/StateLifecycle';
+import { ApiAdvancedZIndexLayeringPage } from '@/pages/api/advanced/ZIndexLayering';
+import { ApiAdvancedAsyncStatusPage } from '@/pages/api/advanced/AsyncStatus';
+import { ApiAdvancedMultiStoreSSRPage } from '@/pages/api/advanced/MultiStoreSSR';
+import { ApiAppendixFAQPage } from '@/pages/api/appendix/FAQ';
+import { ApiAppendixChangelogPage } from '@/pages/api/appendix/ChangelogNotes';
 
 export const routeConfig = [
   {
@@ -28,6 +40,26 @@ export const routeConfig = [
         element: <GettingStartedQuickStart />,
         name: '빠르게 시작하기',
       },
+    ],
+  },
+  {
+    path: 'api',
+    title: 'API',
+    children: [
+      { path: 'dialog-store', element: <ApiDialogStorePage />, name: 'DialogStore' },
+      { path: 'create-dialog-api', element: <ApiCreateDialogApiPage />, name: 'createDialogApi' },
+      { path: 'define-dialog', element: <ApiDefineDialogPage />, name: 'defineDialog' },
+      { path: 'dialogs-renderer', element: <ApiDialogsRendererPage />, name: 'DialogsRenderer' },
+      { path: 'use-dialog-controller', element: <ApiUseDialogControllerPage />, name: 'useDialogController' },
+      { path: 'types', element: <ApiTypesPage />, name: '타입 모음' },
+      // 고급
+      { path: 'advanced/state-lifecycle', element: <ApiAdvancedStateLifecyclePage />, name: '고급: 상태/수명주기' },
+      { path: 'advanced/z-index', element: <ApiAdvancedZIndexLayeringPage />, name: '고급: zIndex/레이어링' },
+      { path: 'advanced/async-status', element: <ApiAdvancedAsyncStatusPage />, name: '고급: 비동기 상태' },
+      { path: 'advanced/multi-store-ssr', element: <ApiAdvancedMultiStoreSSRPage />, name: '고급: 멀티 스토어/SSR' },
+      // 부록
+      { path: 'appendix/faq', element: <ApiAppendixFAQPage />, name: '부록: FAQ' },
+      { path: 'appendix/changelog', element: <ApiAppendixChangelogPage />, name: '부록: 변경 로그' },
     ],
   },
   {

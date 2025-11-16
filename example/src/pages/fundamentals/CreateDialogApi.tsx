@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { Link } from 'react-router-dom';
 
 const registryExample = `import { DialogStore, createDialogApi } from 'react-layered-dialog';
 import { Alert } from '@/components/dialogs/Alert';
@@ -131,6 +132,14 @@ export const CreateDialogApiPage = () => (
         <li>
           displayName이나 커스텀 옵션이 필요한 경우{' '}
           <InlineCode>defineDialog</InlineCode>로 래핑한 정의를 재사용하세요.
+        </li>
+      </ul>
+    </Section>
+    <Section as="h2" id="api-links" title="API 문서">
+      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
+        <li>
+          자세한 시그니처는 <Link to="/api/create-dialog-api">API → createDialogApi</Link>와{' '}
+          <Link to="/api/define-dialog">API → defineDialog</Link>를 참조하세요.
         </li>
       </ul>
     </Section>

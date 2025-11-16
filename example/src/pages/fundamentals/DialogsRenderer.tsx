@@ -2,6 +2,7 @@ import { DocArticle } from '@/components/docs/DocArticle';
 import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
+import { Link } from 'react-router-dom';
 
 const rendererUsage = `import { DialogsRenderer } from 'react-layered-dialog';
 import { dialog } from '@/lib/dialogs';
@@ -135,6 +136,13 @@ export const DialogsRendererPage = () => (
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           다이얼로그 내부 컨트롤러 사용법은 <InlineCode>useDialogController</InlineCode> 문서에서 자세히 다룹니다.
+        </li>
+      </ul>
+    </Section>
+    <Section as="h2" id="api-links" title="API 문서">
+      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
+        <li>
+          자세한 시그니처는 <Link to="/api/dialogs-renderer">API → DialogsRenderer</Link>를 참조하세요.
         </li>
       </ul>
     </Section>

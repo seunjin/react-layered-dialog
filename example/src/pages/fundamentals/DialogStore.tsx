@@ -3,6 +3,7 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import dialogsTsCode from '@/code-templates/dialogs.ts.txt?raw';
+import { Link } from 'react-router-dom';
 
 const signature = `class DialogStore {
   constructor(options?: { baseZIndex?: number });
@@ -207,6 +208,14 @@ export const DialogStorePage = () => (
         프로젝트 전역에서 재사용하면 호출 시점부터 타입이 안전하게 추론됩니다.
       </p>
       <CodeBlock language="ts" code={dialogsTsCode} />
+    </Section>
+    <Section as="h2" id="api-links" title="API 문서">
+      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
+        <li>
+          자세한 시그니처는 <Link to="/api/dialog-store">API → DialogStore</Link>와{' '}
+          <Link to="/api/types">API → 타입 모음</Link>을 참조하세요.
+        </li>
+      </ul>
     </Section>
   </DocArticle>
 );
