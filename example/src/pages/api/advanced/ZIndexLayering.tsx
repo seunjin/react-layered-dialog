@@ -3,6 +3,7 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { DocLink, DocLinks } from '@/components/docs/DocLink';
+import { DocCallout } from '@/components/docs/DocCallout';
 
 const rules = `// z-index 규칙 요약
 // - 기본 baseZIndex(기본값 1000)에서 시작, open 시 1씩 증가
@@ -50,11 +51,10 @@ export const ApiAdvancedZIndexLayeringPage = () => (
     </Section>
 
     <Section as="h2" id="notes" title="Notes">
-      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>
-          상세 동작은 <DocLink to="/api/dialog-store">API → DialogStore</DocLink> 보증 섹션을 참고하세요.
-        </li>
-      </ul>
+      <DocCallout variant="info" title="More Details">
+        Detailed behavior and edge-cases are documented in
+        {' '}<DocLink to="/api/dialog-store">API → DialogStore</DocLink> guarantees.
+      </DocCallout>
     </Section>
     <Section as="h2" id="related" title="Related">
       <DocLinks

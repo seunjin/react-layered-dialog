@@ -3,6 +3,7 @@ import { Section } from '@/components/docs/Section';
 import { InlineCode } from '@/components/docs/InlineCode';
 import { CodeBlock } from '@/components/docs/CodeBlock';
 import { DocLinks } from '@/components/docs/DocLink';
+import { DocDefinitionList } from '@/components/docs/DocDefinitionList';
 
 const signature = `class DialogStore {
   constructor(options?: { baseZIndex?: number });
@@ -70,13 +71,46 @@ export const ApiDialogStorePage = () => (
     </Section>
 
     <Section as="h2" id="guarantees" title="Behavior Guarantees">
-      <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
-        <li>닫기(<InlineCode>close</InlineCode>)는 <InlineCode>isOpen=false</InlineCode>로 전환하여 DOM을 유지합니다. 퇴장 애니메이션에 적합합니다.</li>
-        <li>제거(<InlineCode>unmount</InlineCode>)는 스택에서 항목을 삭제합니다. 애니메이션 종료 후 호출하는 것을 권장합니다.</li>
-        <li><InlineCode>unmountAll</InlineCode> 또는 스택이 비게 되면 <InlineCode>nextZIndex</InlineCode>는 <InlineCode>baseZIndex</InlineCode>로 초기화됩니다.</li>
-        <li>지정 z-index를 부여하면 내부 카운터는 해당 값+1 이상에서 계속 증가합니다.</li>
-        <li><InlineCode>subscribe</InlineCode>/<InlineCode>getSnapshot</InlineCode>는 <InlineCode>useSyncExternalStore</InlineCode>와 호환됩니다.</li>
-      </ul>
+      <DocDefinitionList
+        items={[
+          {
+            term: 'close()',
+            detail: (
+              <>
+                Sets <InlineCode>isOpen=false</InlineCode> and keeps DOM for exit animations.
+              </>
+            ),
+          },
+          {
+            term: 'unmount()',
+            detail: <>Removes the entry from the stack. Call after exit transition.</>,
+          },
+          {
+            term: 'zIndex',
+            detail: (
+              <>
+                Starts at <InlineCode>baseZIndex</InlineCode>, increments by 1 on open. If a custom
+                value is provided, the internal counter advances to <InlineCode>custom+1</InlineCode> or higher.
+              </>
+            ),
+          },
+          {
+            term: 'reset',
+            detail: (
+              <>
+                When the stack becomes empty (or on <InlineCode>unmountAll()</InlineCode>),
+                <InlineCode>nextZIndex</InlineCode> resets to <InlineCode>baseZIndex</InlineCode>.
+              </>
+            ),
+          },
+          {
+            term: 'subscribe/getSnapshot',
+            detail: <>
+              Compatible with <InlineCode>useSyncExternalStore</InlineCode> for safe subscription.
+            </>,
+          },
+        ]}
+      />
     </Section>
 
     <Section as="h2" id="returns" title="Return Shape">
