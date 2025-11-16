@@ -22,8 +22,7 @@ import { ApiAdvancedStateLifecyclePage } from '@/pages/api/advanced/StateLifecyc
 import { ApiAdvancedZIndexLayeringPage } from '@/pages/api/advanced/ZIndexLayering';
 import { ApiAdvancedAsyncStatusPage } from '@/pages/api/advanced/AsyncStatus';
 import { ApiAdvancedMultiStoreSSRPage } from '@/pages/api/advanced/MultiStoreSSR';
-import { ApiAppendixFAQPage } from '@/pages/api/appendix/FAQ';
-import { ApiAppendixChangelogPage } from '@/pages/api/appendix/ChangelogNotes';
+// Appendix routes removed for now
 
 export const routeConfig = [
   {
@@ -107,34 +106,24 @@ export const routeConfig = [
       {
         path: 'advanced/state-lifecycle',
         element: <ApiAdvancedStateLifecyclePage />,
-        name: 'Advanced: State/Lifecycle',
+        name: 'State/Lifecycle',
       },
       {
         path: 'advanced/z-index',
         element: <ApiAdvancedZIndexLayeringPage />,
-        name: 'Advanced: zIndex/Layering',
+        name: 'zIndex/Layering',
       },
       {
         path: 'advanced/async-status',
         element: <ApiAdvancedAsyncStatusPage />,
-        name: 'Advanced: Async Status',
+        name: 'Async Status',
       },
       {
         path: 'advanced/multi-store-ssr',
         element: <ApiAdvancedMultiStoreSSRPage />,
-        name: 'Advanced: Multi-store/SSR',
+        name: 'Multi-store/SSR',
       },
-      // 부록
-      {
-        path: 'appendix/faq',
-        element: <ApiAppendixFAQPage />,
-        name: 'Appendix: FAQ',
-      },
-      {
-        path: 'appendix/changelog',
-        element: <ApiAppendixChangelogPage />,
-        name: 'Appendix: Changelog',
-      },
+      // Appendix removed
     ],
   },
 

@@ -57,12 +57,6 @@ export const SidebarNav = ({ className }: { className?: string }) => {
             c.path.startsWith('advanced/')
           ),
         },
-        {
-          title: 'Appendix',
-          items: apiSection.children.filter((c) =>
-            c.path.startsWith('appendix/')
-          ),
-        },
       ].filter((g) => g.items.length > 0);
 
     return (

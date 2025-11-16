@@ -24,7 +24,7 @@ const withRenderer = `export function AppShell({ store }: { store: DialogStore }
 }`;
 
 export const ApiAdvancedMultiStoreSSRPage = () => (
-  <DocArticle title="Advanced: Multi-store/SSR">
+  <DocArticle title="Multi-store/SSR">
     <p className="lead">요청 단위 스토어를 생성하고 렌더러를 연결해 격리된 다이얼로그 스택을 운용합니다.</p>
 
     <Section as="h2" id="definition" title="Definition/Signature">

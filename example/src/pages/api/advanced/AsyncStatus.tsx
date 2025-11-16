@@ -34,7 +34,7 @@ const current = h.status; // 게터
 const latest = h.getStatus(); // 호출 시점 조회`;
 
 export const ApiAdvancedAsyncStatusPage = () => (
-  <DocArticle title="Advanced: Async Status">
+  <DocArticle title="Async Status">
     <p className="lead">status/getStatus/setStatus를 일관되게 사용해 로딩→완료 단계를 표현합니다.</p>
 
     <Section as="h2" id="definition" title="Definition/Signature">

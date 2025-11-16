@@ -20,7 +20,7 @@ controller.closeAll();
 // 필요 시 상위 컨텍스트/타이머/애니메이션 훅에서 개별 unmount() 수행`;
 
 export const ApiAdvancedStateLifecyclePage = () => (
-  <DocArticle title="Advanced: State/Lifecycle">
+  <DocArticle title="State/Lifecycle">
     <p className="lead">닫힘 전환과 제거 타이밍을 분리해 애니메이션과 접근성을 안정적으로 제어합니다.</p>
 
     <Section as="h2" id="definition" title="Definition/Signature">

@@ -17,7 +17,7 @@ const c = store.open(() => <C />, { zIndex: 1300 }); // zIndex 1300, next는 ≥
 store.unmountAll();                        // nextZIndex → 1200로 초기화`;
 
 export const ApiAdvancedZIndexLayeringPage = () => (
-  <DocArticle title="Advanced: zIndex/Layering">
+  <DocArticle title="zIndex/Layering">
     <p className="lead">
       레이어 우선순위는 스토어에서 자동 계산하지만, 필요 시 옵션으로 정밀
       제어합니다.
