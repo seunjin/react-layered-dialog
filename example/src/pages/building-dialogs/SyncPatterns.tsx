@@ -10,37 +10,36 @@ type NoticeProps = {
   title: string;
   message?: string;
   onClose?: () => void;
+  onDone?: () => void;
 };
 
 export const NoticeDialog: DialogComponent<NoticeProps> = (props) => {
-  const { close, unmount, update, getStateFields, zIndex } = useDialogController<NoticeProps>();
-  const { title, message = '완료되었습니다.' } = getStateFields({ title: props.title, message: props.message });
+  const { getStateFields, zIndex } = useDialogController<NoticeProps>();
+  const { title, message = '완료되었습니다.', onClose, onDone } = getStateFields(props);
 
   return (
     <section role="alertdialog" aria-modal="true" style={{ zIndex }}>
       <header className="text-base font-semibold">{title}</header>
       <p className="mt-2 text-sm text-muted-foreground">{message}</p>
       <div className="mt-4 flex justify-end gap-2">
-        <button className="rounded bg-black px-3 py-1 text-white" onClick={() => update({ message: '다시 시도해 주세요.' })}>상태 갱신</button>
-        <button className="rounded border px-3 py-1" onClick={() => { close(); unmount(); }}>닫기</button>
+        <button className="rounded bg-black px-3 py-1 text-white" onClick={onDone}>완료</button>
+        <button className="rounded border px-3 py-1" onClick={onClose}>닫기</button>
       </div>
     </section>
   );
 };`;
 
-const externalUpdateSnippet = `import { dialog } from '@/lib/dialogs';
+const controllerAsPropsSnippet = `import { dialog } from '@/lib/dialogs';
 
-// 열고 나서 외부에서 상태를 갱신/정리
-const handle = dialog.store.open(() => (
-  <NoticeDialog title="처리 중" message="잠시만 기다려 주세요." />
-));
-
-// 완료 시 메시지 변경
-handle.update({ message: '완료되었습니다.' });
-
-// 닫기 → 퇴장 → 제거(필요 시 지연)
-handle.close();
-setTimeout(() => handle.unmount(), 200);`;
+// 컨트롤러 메서드를 props로 내려 컴포넌트에서 흐름을 완결
+const handle = dialog.store.open(({ close, unmount, update }) => (
+  <NoticeDialog
+    title="처리 중"
+    message="잠시만 기다려 주세요."
+    onDone={() => { update({ message: '완료되었습니다.' }); close(); setTimeout(unmount, 200); }}
+    onClose={() => { close(); setTimeout(unmount, 200); }}
+  />
+));`;
 
 export const SyncPatternsPage = () => (
   <DocArticle title="동기 패턴">
@@ -61,10 +60,10 @@ export const SyncPatternsPage = () => (
       </ul>
     </Section>
 
-    <Section as="h2" id="caller" title="호출부에서 업데이트">
-      <CodeBlock language="tsx" code={externalUpdateSnippet} />
+    <Section as="h2" id="caller" title="컨트롤러 메서드를 props로 전달">
+      <CodeBlock language="tsx" code={controllerAsPropsSnippet} />
       <p className="mt-2 text-sm text-muted-foreground">
-        반환된 핸들의 <InlineCode>update/close/unmount</InlineCode>를 사용하면 컴포넌트 외부에서 흐름을 마무리할 수 있습니다.
+        호출부는 열기만 담당하고, 닫기/업데이트/제거는 컴포넌트에 위임해 흐름을 단순화합니다.
       </p>
     </Section>
 
@@ -77,4 +76,3 @@ export const SyncPatternsPage = () => (
     </Section>
   </DocArticle>
 );
-
