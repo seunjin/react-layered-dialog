@@ -12,12 +12,27 @@ React 18 `useSyncExternalStore` 기반 경량 다이얼로그 매니저
 
 ---
 
+## Requirements
+
+- React 18 이상(React 18의 `useSyncExternalStore` 기반)
+- TypeScript 권장
+
+---
+
 ## Quick Start
 
 ### 설치
 
 ```bash
 pnpm add react-layered-dialog
+```
+
+또는
+
+```bash
+npm i react-layered-dialog
+# 또는
+yarn add react-layered-dialog
 ```
 
 ### 기본 사용법
@@ -52,87 +67,68 @@ function App() {
 
 ---
 
-## Focus & Accessibility
+### 최소 셋업 예시(경로 별칭 없이)
 
-`react-layered-dialog`는 포커스 이동을 자동으로 처리하지 않습니다. 각 다이얼로그 컴포넌트 안에서 표준
-`autoFocus` 속성이나 필요에 맞는 포커스 전략을 직접 지정해 주세요.
-필요한 경우 컨트롤러가 제공하는 스택 정보를 활용해 ESC, 외부 클릭 같은 동작을 직접 구현할 수 있습니다.
+아래 3개 파일만으로 바로 동작하는 가장 작은 구성입니다.
 
-```tsx
-import { useEffect, useRef } from 'react';
-import { useDialogController } from 'react-layered-dialog';
-import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+1) dialogs.ts
 
-type AlertDialogProps = {
-  title: string;
-  message: string;
-  onOk?: () => void;
-  dimmed?: boolean;
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
-};
+```ts
+import { DialogStore, createDialogApi } from 'react-layered-dialog';
+import { Alert } from './Alert';
 
-export const AlertDialog = (props: AlertDialogProps) => {
-  const controller = useDialogController<AlertDialogProps>();
-  const { close, unmount, getStateFields, stack, isOpen } = controller;
-  const panelRef = useRef<HTMLDivElement>(null);
-  const {
-    title,
-    message,
-    onOk,
-    dimmed = true,
-    closeOnEscape = true,
-    closeOnOutsideClick = true,
-    scrollLock = true,
-  } = getStateFields({
-    title: props.title,
-    message: props.message,
-    onOk: props.onOk,
-    dimmed: props.dimmed ?? true,
-    closeOnEscape: props.closeOnEscape ?? true,
-    closeOnOutsideClick: props.closeOnOutsideClick ?? true,
-    scrollLock: props.scrollLock ?? true,
-  });
-
-  const handleClose = () => {
-    onOk?.();
-    close();
-    unmount();
-  };
-
-  useEffect(() => {
-    if (stack.index !== stack.size - 1 || !closeOnEscape) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') handleClose();
-    };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [closeOnEscape, handleClose, stack.index, stack.size]);
-
-  useEffect(() => {
-    if (stack.index !== stack.size - 1 || !closeOnOutsideClick) return;
-    const onMouseDown = (event: MouseEvent) => {
-      if (!panelRef.current) return;
-      if (!panelRef.current.contains(event.target as Node)) handleClose();
-    };
-    document.addEventListener('mousedown', onMouseDown);
-    return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [closeOnOutsideClick, handleClose, stack.index, stack.size]);
-
-  useBodyScrollLock(scrollLock && isOpen);
-
-  return (
-    <div role="alertdialog" aria-modal="true" ref={panelRef}>
-      <h3>{title}</h3>
-      <p>{message}</p>
-      <button autoFocus onClick={handleClose}>확인</button>
-    </div>
-  );
-};
+export const dialogStore = new DialogStore();
+export const dialog = createDialogApi(dialogStore, {
+  alert: { component: Alert }, // sync
+});
 ```
 
-이처럼 브라우저 기본 포커스를 활용하되, 필요하다면 `ref`와 `useEffect`를 조합해 세밀한 제어를 추가하세요.
+2) Alert.tsx
+
+```tsx
+import { useDialogController } from 'react-layered-dialog';
+
+type AlertProps = { title: string; message: string };
+
+export function Alert(props: AlertProps) {
+  const { getStateFields, close, unmount, zIndex } = useDialogController<AlertProps>();
+  const { title, message } = getStateFields(props);
+  return (
+    <div role="alertdialog" aria-modal="true" style={{ zIndex }}>
+      <h3>{title}</h3>
+      <p>{message}</p>
+      <button onClick={() => { close(); unmount(); }}>확인</button>
+    </div>
+  );
+}
+```
+
+3) App.tsx
+
+```tsx
+import { DialogsRenderer } from 'react-layered-dialog';
+import { dialog, dialogStore } from './dialogs';
+
+export default function App() {
+  return (
+    <>
+      <button onClick={() => dialog.alert({ title: '안내', message: '완료되었습니다' })}>
+        알림 열기
+      </button>
+      <DialogsRenderer store={dialogStore} />
+    </>
+  );
+}
+```
+
+자세한 시그니처는 아래 API 문서를 참고하세요.
+
+- API → DialogStore: https://seunjin.github.io/react-layered-dialog/api/dialog-store
+- API → Types: https://seunjin.github.io/react-layered-dialog/api/types
+
+---
+
+> Note: 라이브러리는 포커스/ESC/외부 클릭/스크롤 락 같은 동작을 강제하지 않습니다. 필요한 정책은 다이얼로그 컴포넌트 내부에서 컨트롤러(`useDialogController`)와 훅을 조합해 구현하세요.
 
 ---
 
@@ -140,11 +136,13 @@ export const AlertDialog = (props: AlertDialogProps) => {
 
 | Feature | React Layered Dialog | 일반 Modal 라이브러리 |
 | :--- | :--- | :--- |
-| **선언적 API** | ✅ `openDialog('type', props)` | ❌ 상태 끌어올리기 또는 복잡한 상태관리 |
-| **타입 안전성** | ✅ 완전한 TypeScript 지원 | ❌ 제한적 또는 없음 |
-| **자동 z-index 관리** | ✅ 다중 중첩 시 자동 처리 | ❌ 직접 관리 필요 |
-| **경량, 의존성 없음** | ✅ 1KB 미만 | ❌ 무거운 의존성 포함 |
-| **확장성** | ✅ 모든 React 컴포넌트 지원 | ❌ 제한된 템플릿 |
+| 선언적/레지스트리 기반 API | ✅ `createDialogApi` 레지스트리에서 안전한 메서드 자동 생성 | ❌ 수동 상태관리/보일러플레이트 |
+| TypeScript-first | ✅ 정의→호출까지 완전한 타입 추론 | ❌ 제한적 혹은 느슨한 타입 |
+| Controller 패턴 | ✅ 컴포넌트 내부에서 close/update/status/stack 일관 제어 | ❌ onClose 같은 단일 콜백 의존 |
+| 자동 z-index | ✅ 중첩 열림 시 자동 증가/리셋 | ❌ 수동 지정/충돌 위험 |
+| Headless | ✅ UI/애니메이션/포커스 정책 비강제(완전 커스터마이즈) | ❌ 특정 UI/동작 강제 |
+| SSR/멀티 스토어 친화 | ✅ 요청 단위 스토어, 렌더러 연결 원칙 | ❌ 전역 싱글턴 가정 많음 |
+| 경량/외부 의존성 없음 | ✅ 소형 번들, 외부 의존성 없음 | ❌ 무거운 의존성 포함 |
 
 ---
 
