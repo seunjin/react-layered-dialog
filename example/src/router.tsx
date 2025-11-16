@@ -46,20 +46,64 @@ export const routeConfig = [
     path: 'api',
     title: 'API',
     children: [
-      { path: 'dialog-store', element: <ApiDialogStorePage />, name: 'DialogStore' },
-      { path: 'create-dialog-api', element: <ApiCreateDialogApiPage />, name: 'createDialogApi' },
-      { path: 'define-dialog', element: <ApiDefineDialogPage />, name: 'defineDialog' },
-      { path: 'dialogs-renderer', element: <ApiDialogsRendererPage />, name: 'DialogsRenderer' },
-      { path: 'use-dialog-controller', element: <ApiUseDialogControllerPage />, name: 'useDialogController' },
+      {
+        path: 'dialog-store',
+        element: <ApiDialogStorePage />,
+        name: 'DialogStore',
+      },
+      {
+        path: 'create-dialog-api',
+        element: <ApiCreateDialogApiPage />,
+        name: 'createDialogApi',
+      },
+      {
+        path: 'define-dialog',
+        element: <ApiDefineDialogPage />,
+        name: 'defineDialog',
+      },
+      {
+        path: 'dialogs-renderer',
+        element: <ApiDialogsRendererPage />,
+        name: 'DialogsRenderer',
+      },
+      {
+        path: 'use-dialog-controller',
+        element: <ApiUseDialogControllerPage />,
+        name: 'useDialogController',
+      },
       { path: 'types', element: <ApiTypesPage />, name: '타입 모음' },
       // 고급
-      { path: 'advanced/state-lifecycle', element: <ApiAdvancedStateLifecyclePage />, name: '고급: 상태/수명주기' },
-      { path: 'advanced/z-index', element: <ApiAdvancedZIndexLayeringPage />, name: '고급: zIndex/레이어링' },
-      { path: 'advanced/async-status', element: <ApiAdvancedAsyncStatusPage />, name: '고급: 비동기 상태' },
-      { path: 'advanced/multi-store-ssr', element: <ApiAdvancedMultiStoreSSRPage />, name: '고급: 멀티 스토어/SSR' },
+      {
+        path: 'advanced/state-lifecycle',
+        element: <ApiAdvancedStateLifecyclePage />,
+        name: '상태/수명주기',
+      },
+      {
+        path: 'advanced/z-index',
+        element: <ApiAdvancedZIndexLayeringPage />,
+        name: 'zIndex/레이어링',
+      },
+      {
+        path: 'advanced/async-status',
+        element: <ApiAdvancedAsyncStatusPage />,
+        name: '비동기 상태',
+      },
+      {
+        path: 'advanced/multi-store-ssr',
+        element: <ApiAdvancedMultiStoreSSRPage />,
+        name: '멀티 스토어/SSR',
+      },
       // 부록
-      { path: 'appendix/faq', element: <ApiAppendixFAQPage />, name: '부록: FAQ' },
-      { path: 'appendix/changelog', element: <ApiAppendixChangelogPage />, name: '부록: 변경 로그' },
+      {
+        path: 'appendix/faq',
+        element: <ApiAppendixFAQPage />,
+        name: '부록: FAQ',
+      },
+      {
+        path: 'appendix/changelog',
+        element: <ApiAppendixChangelogPage />,
+        name: '부록: 변경 로그',
+      },
     ],
   },
   {
