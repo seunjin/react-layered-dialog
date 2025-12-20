@@ -67,6 +67,48 @@ describe('DialogStore', () => {
     expect(result.ok).toBe(true);
     expect(result.data).toEqual({ value: 'hello' });
   });
+
+  it('handle close/unmount on empty stack or non-existent ID', () => {
+    const store = new DialogStore();
+    // 비어있을 때 호출해도 에러가 발생하지 않아야 함
+    expect(() => store.close()).not.toThrow();
+    expect(() => store.unmount()).not.toThrow();
+    expect(() => store.closeAll()).not.toThrow();
+    expect(() => store.unmountAll()).not.toThrow();
+    expect(() => store.close('non-existent')).not.toThrow();
+    expect(() => store.unmount('non-existent')).not.toThrow();
+  });
+
+  it('throws error when opening duplicate ID', () => {
+    const store = new DialogStore();
+    store.open(() => null, { id: 'dup' });
+    expect(() => store.open(() => null, { id: 'dup' })).toThrow('Duplicate dialog id "dup"');
+  });
+
+  it('openAsync rejects when reject handler is called', async () => {
+    const store = new DialogStore();
+    const promise = store.openAsync(() => null);
+
+    const entry = store.getSnapshot().entries[0];
+    entry.asyncHandlers?.reject(new Error('fail'));
+
+    await expect(promise).rejects.toThrow('fail');
+  });
+
+  it('resets nextZIndex when all dialogs are unmounted', () => {
+    const store = new DialogStore({ baseZIndex: 1000 });
+    const h1 = store.open(() => null);
+    const h2 = store.open(() => null);
+    expect(h1.zIndex).toBe(1000);
+    expect(h2.zIndex).toBe(1001);
+
+    store.unmount(h1.dialog.id);
+    store.unmount(h2.dialog.id);
+
+    // 스택이 비면 다시 1000부터 시작해야 함
+    const h3 = store.open(() => null);
+    expect(h3.zIndex).toBe(1000);
+  });
 });
 
 describe('createDialogApi', () => {

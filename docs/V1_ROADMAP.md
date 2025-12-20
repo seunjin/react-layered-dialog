@@ -136,12 +136,12 @@
 
 ## M3: 테스트 강화
 
-### M3-1: 엣지 케이스 테스트 추가 🟡
+### M3-1: 엣지 케이스 테스트 추가 🟢
 **작업 내용**:
-- [ ] 빈 스택에서 `close()` 호출
-- [ ] 중복 ID 에러 케이스
-- [ ] `closeAll` / `unmountAll` 테스트
-- [ ] `reject` 시나리오
+- [x] 빈 스택에서 `close()` 호출
+- [x] 중복 ID 에러 케이스
+- [x] `closeAll` / `unmountAll` 테스트
+- [x] `reject` 시나리오
 
 **파일**: `index.test.ts`
 
@@ -149,9 +149,9 @@
 
 ### M3-2: 렌더러 테스트 추가 🟢
 **작업 내용**:
-- [ ] `DialogsRenderer` 렌더링 테스트
-- [ ] `useDialogController` 훅 테스트
-- [ ] 컨텍스트 없이 호출 시 에러 테스트
+- [x] `DialogsRenderer` 렌더링 테스트
+- [x] `useDialogController` 훅 테스트
+- [x] 컨텍스트 없이 호출 시 에러 테스트
 
 **파일**: `renderer.test.tsx` (신규)
 
