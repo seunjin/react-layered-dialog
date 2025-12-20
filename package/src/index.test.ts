@@ -29,6 +29,14 @@ describe('DialogStore', () => {
 
     expect(updated.state).toMatchObject({ message: 'hello', step: 'idle' });
 
+    // getProp, getProps 테스트
+    expect(handle.getProp('message', 'fallback')).toBe('hello');
+    expect(handle.getProp('non-existent', 'fallback')).toBe('fallback');
+    expect(handle.getProps({ message: 'default', extra: 'foo' })).toMatchObject({
+      message: 'hello',
+      extra: 'foo',
+    });
+
     handle.close();
     expect(store.getSnapshot().entries[0].isOpen).toBe(false);
   });
@@ -45,6 +53,19 @@ describe('DialogStore', () => {
 
     expect(result.ok).toBe(true);
     expect(result.dialog.id).toBe(entry.id);
+  });
+
+  it('openAsync resolves with custom data', async () => {
+    const store = new DialogStore();
+    type MyData = { value: string };
+    const promise = store.openAsync<Record<string, never>, MyData>(() => null);
+
+    const entry = store.getSnapshot().entries[0];
+    entry.asyncHandlers?.resolve({ ok: true, data: { value: 'hello' } });
+
+    const result = await promise;
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual({ value: 'hello' });
   });
 });
 
@@ -95,6 +116,30 @@ describe('createDialogApi', () => {
 
     expect(result.ok).toBe(true);
     expect(result.zIndex).toBeDefined();
+  });
+
+  it('generates IDs using registry keys and individual sequences', () => {
+    const store = new DialogStore();
+    const dialog = createDialogApi(store, {
+      confirm: { component: TestDialog, mode: 'sync' },
+      alert: { component: TestDialog, mode: 'sync' },
+    } as const);
+
+    const c1 = dialog.confirm({ message: 'c1' });
+    const c2 = dialog.confirm({ message: 'c2' });
+    const a1 = dialog.alert({ message: 'a1' });
+
+    expect(c1.dialog.id).toBe('confirm-0');
+    expect(c2.dialog.id).toBe('confirm-1');
+    expect(a1.dialog.id).toBe('alert-0');
+
+    // 명시적 ID 지정 시 우선순위 확인
+    const manual = dialog.confirm({ message: 'custom' }, { id: 'manual-id' });
+    expect(manual.dialog.id).toBe('manual-id');
+
+    // 수동 지정 이후에도 시퀀스는 독립적으로 예약됨 (다음은 confirm-2)
+    const c3 = dialog.confirm({ message: 'c3' });
+    expect(c3.dialog.id).toBe('confirm-2');
   });
 
   it('respects baseZIndex option when provided', () => {

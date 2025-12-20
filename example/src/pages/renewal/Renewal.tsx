@@ -1,7 +1,7 @@
 import Confirm, { type ConfirmProps } from '@/components/dialogs/Confirm';
 import { DocArticle } from '@/components/docs/DocArticle';
 import { Button } from '@/components/ui/button';
-import { dialog, openConfirm } from '@/lib/dialogs';
+import { dialog } from '@/lib/dialogs';
 import type { DialogRenderFn } from 'react-layered-dialog';
 
 const Renewal = () => {
@@ -76,7 +76,7 @@ const Renewal = () => {
         <Button onClick={handleAsyncConfirmDialogOpen}>
           비동기 Confirm 열기
         </Button>
-        <Button onClick={() => openConfirm({ title: 'sd', message: 'dasd' })}>
+        <Button onClick={() => dialog.confirm({ title: 'sd', message: 'dasd' })}>
           비동기 Confirm 열기
         </Button>
       </div>

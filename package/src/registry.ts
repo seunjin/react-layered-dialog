@@ -205,12 +205,15 @@ export function createDialogApi<
     [K in keyof TRegistry]: DialogMethodFromDefinition<NormalizeRegistry<TRegistry>[K]>;
   };
 
+  const counters: Record<string, number> = {};
+
   (Object.keys(registry) as Array<keyof TRegistry>).forEach((key) => {
+    counters[key as string] = 0;
     const entry = registry[key];
     const definition = normalizeDefinition(entry) as NormalizeRegistry<TRegistry>[typeof key];
 
     type Params = DefinitionParams<NormalizeRegistry<TRegistry>[typeof key]>;
-    const method = ((input: unknown, options?: unknown) => {
+    const method = ((input: unknown, options?: OpenDialogOptions) => {
       const renderer = definition.render(
         input as DialogInput<
           Params['props'],
@@ -218,16 +221,21 @@ export function createDialogApi<
         >
       );
 
+      const finalOptions: OpenDialogOptions = {
+        ...options,
+        id: options?.id ?? `${String(key)}-${counters[key as string]++}`,
+      };
+
       if (definition.mode === 'sync') {
         return store.open<Params['props']>(
           renderer,
-          options as OpenDialogOptions
+          finalOptions
         );
       }
 
       return store.openAsync<Params['props']>(
         renderer,
-        options as OpenDialogOptions
+        finalOptions
       );
     }) as DialogMethodFromDefinition<NormalizeRegistry<TRegistry>[typeof key]>;
 

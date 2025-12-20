@@ -15,8 +15,8 @@ type NoticeProps = {
 };
 
 export const NoticeDialog: DialogComponent<NoticeProps> = (props) => {
-  const { getStateFields, zIndex } = useDialogController<NoticeProps>();
-  const { title, message = '완료되었습니다.', onClose, onDone } = getStateFields(props);
+  const { getProps, zIndex } = useDialogController<NoticeProps>();
+  const { title, message = '완료되었습니다.', onClose, onDone } = getProps(props);
 
   return (
     <section role="alertdialog" aria-modal="true" style={{ zIndex }}>
@@ -33,7 +33,7 @@ export const NoticeDialog: DialogComponent<NoticeProps> = (props) => {
 const controllerAsPropsSnippet = `import { dialog } from '@/lib/dialogs';
 
 // 컨트롤러 메서드를 props로 내려 컴포넌트에서 흐름을 완결
-const handle = dialog.store.open(({ close, unmount, update }) => (
+const handle = dialog.open(({ close, unmount, update }) => (
   <NoticeDialog
     title="처리 중"
     message="잠시만 기다려 주세요."
@@ -53,7 +53,7 @@ export const SyncPatternsPage = () => (
       <CodeBlock language="tsx" code={syncComponentSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          <InlineCode>getStateFields</InlineCode>로 props와 상태를 읽을 때 병합하면 기본값을 안전하게 유지할 수 있습니다.
+          <InlineCode>getProps</InlineCode>로 props와 상태를 읽을 때 병합하면 기본값을 안전하게 유지할 수 있습니다.
         </li>
         <li>
           닫을 때는 <InlineCode>close()</InlineCode> 후 필요하면 퇴장 애니메이션을 거쳐 <InlineCode>unmount()</InlineCode>로 제거하세요.

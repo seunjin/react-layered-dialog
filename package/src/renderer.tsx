@@ -62,19 +62,27 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
       closeAll: store.closeAll,
       unmountAll: store.unmountAll,
       update: (updater) => store.update(entry.id, updater),
-      getStateField: <V,>(key: PropertyKey, fallback: V) => {
+      getProp: <V,>(key: PropertyKey, fallback: V) => {
         const current = entry.state as Record<PropertyKey, unknown> | undefined;
         if (current && Object.prototype.hasOwnProperty.call(current, key)) {
           return current[key] as V;
         }
         return fallback;
       },
-      getStateFields: <T extends Record<string, unknown>>(base: T) => {
+      getProps: <T extends Record<string, unknown>>(base: T) => {
         const current = entry.state as Partial<T> | undefined;
         if (!current) return base;
         return { ...base, ...current };
       },
-      resolve: entry.asyncHandlers?.resolve,
+      getStateField: <V,>(key: PropertyKey, fallback: V) => {
+        return (entry.state as Record<PropertyKey, unknown> | undefined)?.[key] as V ?? fallback;
+      },
+      getStateFields: <T extends Record<string, unknown>>(base: T) => {
+        return { ...base, ...(entry.state as Partial<T>) };
+      },
+      resolve: entry.asyncHandlers?.resolve as
+        | ((payload: import('./types').DialogAsyncResolvePayload<unknown>) => void)
+        | undefined,
       reject: entry.asyncHandlers?.reject,
       status: entry.meta?.status ?? 'idle',
       getStatus,

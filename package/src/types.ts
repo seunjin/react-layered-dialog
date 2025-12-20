@@ -74,9 +74,11 @@ export type DialogStateUpdater<TProps extends Record<string, unknown> = Record<s
 
 /**
  * 비동기 다이얼로그에서 resolve로 전달되는 페이로드 형태입니다.
+ * @template T 비동기 결과 데이터 타입
  */
-export type DialogAsyncResolvePayload = {
+export type DialogAsyncResolvePayload<T = unknown> = {
   ok: boolean;
+  data?: T;
 };
 
 /**
@@ -93,19 +95,26 @@ export type DialogOpenResult<
   status: DialogStatus;
   getStatus: () => DialogStatus;
   zIndex: number;
+  /** 특정 필드 값을 안전하게 조회합니다. */
+  getProp: <V>(key: PropertyKey, fallback: V) => V;
+  /** 현재 state를 주어진 기본 객체와 병합해 반환합니다. */
+  getProps: <T extends Record<string, unknown>>(base: T) => T;
+  /** @alias getProp */
+  getStateField: <V>(key: PropertyKey, fallback: V) => V;
+  /** @alias getProps */
+  getStateFields: <T extends Record<string, unknown>>(base: T) => T;
 };
 
 export type DialogAsyncResult<
-  TProps extends Record<string, unknown> = Record<string, unknown>
-> = DialogOpenResult<TProps> & {
-  ok: boolean;
-};
+  TProps extends Record<string, unknown> = Record<string, unknown>,
+  TData = unknown
+> = DialogOpenResult<TProps> & DialogAsyncResolvePayload<TData>;
 
 /**
  * 비동기 다이얼로그를 위해 엔트리에 저장되는 핸들러 모음입니다.
  */
-export interface DialogAsyncEntryHandlers {
-  resolve: (payload: DialogAsyncResolvePayload) => void;
+export interface DialogAsyncEntryHandlers<TData = unknown> {
+  resolve: (payload: DialogAsyncResolvePayload<TData>) => void;
   reject: (reason?: unknown) => void;
 }
 
@@ -144,14 +153,18 @@ export interface DialogControllerContextValue<
    * 특정 필드 값을 안전하게 조회합니다.
    * state에 값이 없으면 fallback을 반환합니다.
    */
-  getStateField: <V>(key: PropertyKey, fallback: V) => V;
+  getProp: <V>(key: PropertyKey, fallback: V) => V;
   /**
    * 현재 state를 주어진 기본 객체와 병합해 반환합니다.
    * state가 비어 있으면 기본 객체가 그대로 반환됩니다.
    */
+  getProps: <T extends Record<string, unknown>>(base: T) => T;
+  /** @alias getProp */
+  getStateField: <V>(key: PropertyKey, fallback: V) => V;
+  /** @alias getProps */
   getStateFields: <T extends Record<string, unknown>>(base: T) => T;
   /** Promise 기반 컨트롤러에서 결과를 resolve */
-  resolve?: (payload: DialogAsyncResolvePayload) => void;
+  resolve?: (payload: DialogAsyncResolvePayload<unknown>) => void;
   /** Promise 기반 컨트롤러에서 Promise를 reject */
   reject?: (reason?: unknown) => void;
   /** 현재 컨트롤러 상태 */

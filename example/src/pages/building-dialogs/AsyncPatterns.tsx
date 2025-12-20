@@ -16,8 +16,8 @@ type ConfirmDialogProps = {
 
 export const ConfirmDialog: DialogComponent<ConfirmDialogProps> = (props) => {
   const controller = useDialogController<ConfirmDialogProps>();
-  const { close, unmount, setStatus, getStateFields, resolve } = controller;
-  const { title, message, onConfirm, onCancel } = getStateFields(props);
+  const { close, unmount, setStatus, getProps, resolve } = controller;
+  const { title, message, onConfirm, onCancel } = getProps(props);
 
   const handleConfirm = async () => {
     // 필요 시 진행 상태 표현
@@ -52,7 +52,7 @@ export const ConfirmDialog: DialogComponent<ConfirmDialogProps> = (props) => {
 const asyncOpenSnippet = `import { dialog } from '@/lib/dialogs';
 
 // 기본 openAsync 메서드를 사용해 비동기 다이얼로그 열기
-const result = await dialog.store.openAsync(() => (
+const result = await dialog.openAsync(() => (
   <ConfirmDialog title='정말 삭제할까요?' message='이 작업은 되돌릴 수 없습니다.' />
 ));
 

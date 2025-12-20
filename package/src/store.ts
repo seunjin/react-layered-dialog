@@ -138,6 +138,27 @@ export class DialogStore {
         return getStatus();
       },
       zIndex,
+      getProp: <V>(key: PropertyKey, fallback: V) => {
+        const entry = this.entries.find((e) => e.id === handle.id);
+        if (entry && Object.prototype.hasOwnProperty.call(entry.state, key)) {
+          return (entry.state as Record<PropertyKey, unknown>)[key] as V;
+        }
+        return fallback;
+      },
+      getProps: <T extends Record<string, unknown>>(base: T) => {
+        const entry = this.entries.find((e) => e.id === handle.id);
+        const current = entry?.state as Partial<T> | undefined;
+        if (!current) return base;
+        return { ...base, ...current };
+      },
+      getStateField: <V>(key: PropertyKey, fallback: V) => {
+        const entry = this.entries.find((e) => e.id === handle.id);
+        return (entry?.state as Record<PropertyKey, unknown> | undefined)?.[key] as V ?? fallback;
+      },
+      getStateFields: <T extends Record<string, unknown>>(base: T) => {
+        const entry = this.entries.find((e) => e.id === handle.id);
+        return { ...base, ...(entry?.state as Partial<T>) };
+      },
     };
 
     return result;
@@ -169,27 +190,28 @@ export class DialogStore {
    * Promise 기반 다이얼로그를 열고 결과를 반환합니다.
    */
   openAsync = <
-    TProps extends Record<string, unknown> = Record<string, unknown>
+    TProps extends Record<string, unknown> = Record<string, unknown>,
+    TData = unknown
   >(
     renderer: DialogRenderFn<TProps>,
     options: OpenDialogOptions = {}
-  ): Promise<DialogAsyncResult<TProps>> => {
+  ): Promise<DialogAsyncResult<TProps, TData>> => {
     const {
       entry,
       handle,
       zIndex,
     } = this.createEntry(renderer, options);
 
-    let settle: ((value: DialogAsyncResult<TProps>) => void) | null =
+    let settle: ((value: DialogAsyncResult<TProps, TData>) => void) | null =
       null;
     let rejectPromiseRef: ((reason?: unknown) => void) | null = null;
     let settled = false;
 
-    const resolveController = (payload: DialogAsyncResolvePayload) => {
+    const resolveController = (payload: DialogAsyncResolvePayload<TData>) => {
       if (settled) return;
       settled = true;
       const base = this.createOpenResult<TProps>(handle, zIndex);
-      settle?.(Object.assign(base, { ok: payload.ok }));
+      settle?.(Object.assign(base, { ok: payload.ok, data: payload.data }));
     };
 
     const rejectController = (reason?: unknown) => {
@@ -198,7 +220,7 @@ export class DialogStore {
       rejectPromiseRef?.(reason);
     };
 
-    const promise = new Promise<DialogAsyncResult<TProps>>(
+    const promise = new Promise<DialogAsyncResult<TProps, TData>>(
       (resolvePromise, rejectPromise) => {
         settle = resolvePromise;
         rejectPromiseRef = rejectPromise;

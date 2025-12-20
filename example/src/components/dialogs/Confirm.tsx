@@ -37,7 +37,7 @@ const Confirm: DialogComponent<ConfirmProps> = ((props: ConfirmProps) => {
     close,
     unmount,
     status,
-    getStateFields,
+    getProps,
     zIndex,
   } = controller;
 
@@ -52,7 +52,7 @@ const Confirm: DialogComponent<ConfirmProps> = ((props: ConfirmProps) => {
     onCancel,
     dimmed = true,
     scrollLock = true,
-  } = getStateFields(props);
+  } = getProps(props);
 
   const handleConfirm = async () => {
     if (isLoading) return;
@@ -89,12 +89,16 @@ const Confirm: DialogComponent<ConfirmProps> = ((props: ConfirmProps) => {
   useBodyScrollLock(scrollLock && isOpen);
 
   return (
+    /**
+     * [Standard Pattern]
+     * close()는 상태만 변경하고, 실제 DOM 제거(unmount)는 
+     * 애니메이션이 완전히 끝난 시점(onExitComplete)에 수행하는 것이 권장됩니다.
+     */
     <AnimatePresence onExitComplete={unmount}>
       {isOpen && (
         <motion.div
-          className={`fixed inset-0 flex items-center justify-center ${
-            dimmed ? 'pointer-events-auto' : 'pointer-events-none'
-          }`}
+          className={`fixed inset-0 flex items-center justify-center ${dimmed ? 'pointer-events-auto' : 'pointer-events-none'
+            }`}
           initial={{
             backgroundColor: 'rgba(0, 0, 0, 0)',
             backdropFilter: 'blur(0px)',
