@@ -9,27 +9,28 @@
 ### 시작하기 (Getting Started)
 | 문서 | 설명 | 상태 |
 |------|------|------|
-| [소개](./getting-started/introduction.md) | 라이브러리 개요 및 특징 | 🔴 미작성 |
-| [빠른 시작](./getting-started/quick-start.md) | 5분 만에 시작하기 | 🔴 미작성 |
-| [설치](./getting-started/installation.md) | 설치 및 설정 방법 | 🔴 미작성 |
+| [소개](./getting-started/introduction.md) | 라이브러리 개요 및 특징 | 🟢 완료 |
+| [빠른 시작](./getting-started/quick-start.md) | 5분 만에 시작하기 | 🟢 완료 |
+| [설치](./getting-started/installation.md) | 설치 및 설정 방법 | 🟢 완료 |
 
 ### 가이드 (Guides)
 | 문서 | 설명 | 상태 |
 |------|------|------|
-| [기본 사용법](./guides/basic-usage.md) | 동기 다이얼로그 열기/닫기 | 🔴 미작성 |
-| [비동기 다이얼로그](./guides/async-dialogs.md) | Promise 기반 확인 모달 | 🟡 부분 (`06-renewal-dialog.md`) |
-| [상태 관리](./guides/state-management.md) | update, getStateFields 사용법 | 🔴 미작성 |
-| [애니메이션](./guides/animations.md) | close/unmount 분리 활용 | 🔴 미작성 |
+| [기본 사용법](./guides/basic-usage.md) | 동기 다이얼로그 열기/닫기 | 🟢 완료 |
+| [비동기 다이얼로그](./guides/async-dialogs.md) | Promise 기반 확인 모달 | 🟢 완료 |
+| [상태 관리](./guides/state-management.md) | update, getProps 사용법 | 🟢 완료 |
+| [애니메이션](./guides/animations.md) | close/unmount 분리 활용 | 🟢 완료 |
+| [Z-Index 전략](./guides/z-index-strategy.md) | 계층 구조 및 외부 연동 가이드 | 🟢 완료 |
 | [접근성](./guides/accessibility.md) | ARIA, 키보드 네비게이션 | 🔴 미작성 |
 
 ### API 레퍼런스 (API Reference)
 | 문서 | 설명 | 상태 |
 |------|------|------|
-| [DialogStore](./api/dialog-store.md) | 스토어 클래스 API | 🔴 미작성 |
-| [createDialogApi](./api/create-dialog-api.md) | 레지스트리 API 생성 | 🔴 미작성 |
-| [useDialogController](./api/use-dialog-controller.md) | 컨트롤러 훅 | 🔴 미작성 |
-| [DialogsRenderer](./api/dialogs-renderer.md) | 렌더러 컴포넌트 | 🔴 미작성 |
-| [타입 정의](./api/types.md) | 모든 타입 레퍼런스 | 🔴 미작성 |
+| [DialogStore](./api/dialog-store.md) | 스토어 클래스 API | 🟢 완료 |
+| [createDialogApi](./api/create-dialog-api.md) | 레지스트리 API 생성 | 🟢 완료 |
+| [useDialogController](./api/use-dialog-controller.md) | 컨트롤러 훅 | 🟢 완료 |
+| [DialogsRenderer](./api/dialogs-renderer.md) | 렌더러 컴포넌er | 🟢 완료 |
+| [타입 정의](./api/types.md) | 모든 타입 레퍼런스 | 🟢 완료 |
 
 ### 고급 (Advanced)
 | 문서 | 설명 | 상태 |

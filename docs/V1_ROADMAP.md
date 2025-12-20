@@ -75,60 +75,60 @@
 
 ## M2: 문서화
 
-### M2-1: README 구조 개편 🔴
+### M2-1: README 구조 개편 🟢
 > Architecture Overview 부재, Quick Start 복잡
 
 **작업 내용**:
-- [ ] "Architecture Overview" 섹션 추가 (Mermaid 다이어그램)
-- [ ] "Hello World" 단일 파일 예시 추가
-- [ ] `open` vs `openAsync` 비교표 추가
-- [ ] `docs/` 링크 연결
+- [x] "Architecture Overview" 섹션 추가 (Mermaid 다이어그램)
+- [x] "Hello World" 단일 파일 예시 추가
+- [x] `open` vs `openAsync` 비교표 추가
+- [x] `docs/` 링크 연결
 
 **파일**: `README.md`
 
 ---
 
-### M2-2: 시작하기 문서 작성 🔴
+### M2-2: 시작하기 문서 작성 🟢
 **작업 내용**:
-- [ ] `getting-started/introduction.md` 작성
-- [ ] `getting-started/quick-start.md` 작성
-- [ ] `getting-started/installation.md` 작성
-- [ ] `index.md` 상태 업데이트
+- [x] `getting-started/introduction.md` 작성
+- [x] `getting-started/quick-start.md` 작성
+- [x] `getting-started/installation.md` 작성
+- [x] `index.md` 상태 업데이트
 
 **파일**: `docs/getting-started/*`
 
 ---
 
-### M2-3: API Reference 문서 작성 🔴
+### M2-3: API Reference 문서 작성 🟢
 **작업 내용**:
-- [ ] `api/dialog-store.md` 작성
-- [ ] `api/create-dialog-api.md` 작성
-- [ ] `api/use-dialog-controller.md` 작성
-- [ ] `api/dialogs-renderer.md` 작성
-- [ ] `api/types.md` 작성
+- [x] `api/dialog-store.md` 작성
+- [x] `api/create-dialog-api.md` 작성
+- [x] `api/use-dialog-controller.md` 작성
+- [x] `api/dialogs-renderer.md` 작성
+- [x] `api/types.md` 작성
 
 **파일**: `docs/api/*`
 
 ---
 
-### M2-4: 가이드 문서 작성 🟡
+### M2-4: 가이드 문서 작성 🟢
 **작업 내용**:
-- [ ] `guides/basic-usage.md` 작성
-- [ ] `guides/async-dialogs.md` 작성 (기존 `06-renewal-dialog.md` 리팩터링)
+- [x] `guides/basic-usage.md` 작성
+- [x] `guides/async-dialogs.md` 작성 (기존 `06-renewal-dialog.md` 리팩터링 완료)
 - [x] `guides/animations.md` 작성 (**핵심: 애니메이션 종료 후 unmount 호출 패턴 가이드**)
-- [ ] `guides/state-management.md` 작성
+- [x] `guides/state-management.md` 작성
 
 **파일**: `docs/guides/*`
 
 ---
 
-### M2-5: Z-Index 전략 가이드 🟡
+### M2-5: Z-Index 전략 가이드 🟢
 > Toast 등과 함께 사용 시 가이드 부재
 
 **작업 내용**:
-- [ ] z-index 계층 구조 예시
-- [ ] `baseZIndex` 설정 가이드
-- [ ] 다른 오버레이 라이브러리와의 공존 패턴
+- [x] z-index 계층 구조 예시
+- [x] `baseZIndex` 설정 가이드
+- [x] 다른 오버레이 라이브러리와의 공존 패턴
 
 **파일**: `docs/guides/z-index-strategy.md`
 

@@ -4,149 +4,99 @@ React 18 `useSyncExternalStore` 기반 경량 다이얼로그 매니저
 
 ---
 
-## Live Demo & Docs
+## Architecture Overview
 
-더 자세한 설명과 다양한 사용 예제는 아래 공식 문서 페이지에서 확인하실 수 있습니다.
+`react-layered-dialog`는 상태 저장소(Store), 렌더러(Renderer), 그리고 고수준 API(Registry)를 분리하여 유연한 다이얼로그 관리를 제공합니다.
 
-**[Live Demo 바로가기](https://seunjin.github.io/react-layered-dialog/getting-started/introduction)**
+```mermaid
+graph TD
+    Store["DialogStore (State)"] --> Renderer["DialogsRenderer (View)"]
+    API["createDialogApi (Registry)"] --> Store
+    Component["Dialog Component"] -- useDialogController --> Controller["Controller Context"]
+    App["User Application"] -- "open / confirm" --> API
+```
+
+1. **DialogStore**: 모든 다이얼로그의 상태(열림/닫힘, z-index, props, status)를 관리합니다.
+2. **DialogsRenderer**: 스토어의 상태를 구독하여 실제 DOM에 다이얼로그를 렌더링합니다.
+3. **createDialogApi**: 다이얼로그 컴포넌트를 등록하고 타입 안정성이 보장된 메서드를 생성합니다.
+4. **useDialogController**: 컴포넌트 내부에서 자신의 상태를 제어(update, close, resolve 등)하기 위한 훅입니다.
 
 ---
 
-## Requirements
+## Hello World (Single File Example)
 
-- React 18 이상(React 18의 `useSyncExternalStore` 기반)
-- TypeScript 권장
+아래는 `react-layered-dialog`를 사용하는 가장 간단한 방법입니다.
+
+```tsx
+import { DialogStore, createDialogApi, DialogsRenderer, useDialogController } from 'react-layered-dialog';
+
+// 1. 스토어 및 API 생성
+const store = new DialogStore();
+const dialog = createDialogApi(store, {
+  alert: { component: ({ message }) => {
+    const { close, unmount, zIndex } = useDialogController();
+    return (
+      <div style={{ position: 'fixed', top: '20%', left: '50%', transform: 'translateX(-50%)', background: 'white', padding: '20px', border: '1px solid black', zIndex }}>
+        <p>{message}</p>
+        <button onClick={() => { close(); unmount(); }}>닫기</button>
+      </div>
+    );
+  }}
+});
+
+// 2. 앱에서 사용
+function App() {
+  return (
+    <>
+      <button onClick={() => dialog.alert({ message: 'Hello World!' })}>알림 열기</button>
+      <DialogsRenderer store={store} />
+    </>
+  );
+}
+```
 
 ---
 
-## Quick Start
-
-### 설치
+## Installation
 
 ```bash
 pnpm add react-layered-dialog
-```
-
-또는
-
-```bash
+# or
 npm i react-layered-dialog
-# 또는
-yarn add react-layered-dialog
 ```
-
-### 기본 사용법
-
-`react-layered-dialog`는 전역 `DialogStore`와 `createDialogApi`로 구성한 `dialog` 헬퍼를 통해 다이얼로그를 제어합니다.
-
-```tsx
-import { dialog, dialogStore } from '@/lib/dialogs';
-import { DialogsRenderer } from 'react-layered-dialog';
-
-function App() {
-  const showConfirm = () => {
-    // 1. 레지스트리에 등록된 다이얼로그 메서드를 호출
-    dialog.confirm({
-      title: '알림',
-      message: '안녕하세요! React Layered Dialog 입니다.',
-    });
-  };
-
-  return (
-    <>
-      <button onClick={showConfirm}>알림 열기</button>
-
-      {/* 2. 앱 최상단에 렌더러 추가 */}
-      <DialogsRenderer store={dialogStore} />
-    </>
-  );
-}
-```
-
-> 전체 설정 과정( `DialogStore`, `createDialogApi` 등)에 대한 자세한 내용은 [공식 문서](https://seunjin.github.io/react-layered-dialog/getting-started/quick-start)를 참고해 주세요.
 
 ---
 
-### 최소 셋업 예시(경로 별칭 없이)
+## 핵심 메서드 비교
 
-아래 3개 파일만으로 바로 동작하는 가장 작은 구성입니다.
+사용 사례에 따라 동기(`open`) 또는 비동기(`openAsync` / `confirm`) 방식을 선택할 수 있습니다.
 
-1) dialogs.ts
-
-```ts
-import { DialogStore, createDialogApi } from 'react-layered-dialog';
-import { Alert } from './Alert';
-
-export const dialogStore = new DialogStore();
-export const dialog = createDialogApi(dialogStore, {
-  alert: { component: Alert }, // sync
-});
-```
-
-2) Alert.tsx
-
-```tsx
-import { useDialogController } from 'react-layered-dialog';
-
-type AlertProps = { title: string; message: string };
-
-export function Alert(props: AlertProps) {
-  const { getStateFields, close, unmount, zIndex } = useDialogController<AlertProps>();
-  const { title, message } = getStateFields(props);
-  return (
-    <div role="alertdialog" aria-modal="true" style={{ zIndex }}>
-      <h3>{title}</h3>
-      <p>{message}</p>
-      <button onClick={() => { close(); unmount(); }}>확인</button>
-    </div>
-  );
-}
-```
-
-3) App.tsx
-
-```tsx
-import { DialogsRenderer } from 'react-layered-dialog';
-import { dialog, dialogStore } from './dialogs';
-
-export default function App() {
-  return (
-    <>
-      <button onClick={() => dialog.alert({ title: '안내', message: '완료되었습니다' })}>
-        알림 열기
-      </button>
-      <DialogsRenderer store={dialogStore} />
-    </>
-  );
-}
-```
-
-자세한 시그니처는 아래 API 문서를 참고하세요.
-
-- API → DialogStore: https://seunjin.github.io/react-layered-dialog/api/dialog-store
-- API → Types: https://seunjin.github.io/react-layered-dialog/api/types
-
----
-
-> Note: 라이브러리는 포커스/ESC/외부 클릭/스크롤 락 같은 동작을 강제하지 않습니다. 필요한 정책은 다이얼로그 컴포넌트 내부에서 컨트롤러(`useDialogController`)와 훅을 조합해 구현하세요.
+| 메서드 | 반환값 | 주요 특징 | 권장 상황 |
+| :--- | :--- | :--- | :--- |
+| **`open`** | `DialogOpenResult` (Handle) | 즉시 핸들을 반환하여 외부에서 업데이트/닫기 가능 | 단순 알림, 지속적인 업데이트가 필요한 다이얼로그 |
+| **`openAsync`** | `Promise<DialogAsyncResult>` | 사용자의 명시적 응답(resolve)이 있을 때까지 대기 | 폼 입력, 삭제 확인 등 결과가 필요한 흐름 |
+| **`confirm`** | `Promise<DialogAsyncResult>` | `openAsync`의 별칭으로, 등록된 설정(mode: async) 활용 | 전형적인 확인/취소 시나리오 |
 
 ---
 
 ## Why React Layered Dialog?
 
-| Feature | React Layered Dialog | 일반 Modal 라이브러리 |
-| :--- | :--- | :--- |
-| 선언적/레지스트리 기반 API | ✅ `createDialogApi` 레지스트리에서 안전한 메서드 자동 생성 | ❌ 수동 상태관리/보일러플레이트 |
-| TypeScript-first | ✅ 정의→호출까지 완전한 타입 추론 | ❌ 제한적 혹은 느슨한 타입 |
-| Controller 패턴 | ✅ 컴포넌트 내부에서 close/update/status/stack 일관 제어 | ❌ onClose 같은 단일 콜백 의존 |
-| 자동 z-index | ✅ 중첩 열림 시 자동 증가/리셋 | ❌ 수동 지정/충돌 위험 |
-| Headless | ✅ UI/애니메이션/포커스 정책 비강제(완전 커스터마이즈) | ❌ 특정 UI/동작 강제 |
-| SSR/멀티 스토어 친화 | ✅ 요청 단위 스토어, 렌더러 연결 원칙 | ❌ 전역 싱글턴 가정 많음 |
-| 경량/외부 의존성 없음 | ✅ 소형 번들, 외부 의존성 없음 | ❌ 무거운 의존성 포함 |
+- **Type-safe Registry**: 컴포넌트 등록 시점부터 호출까지 완전한 타입 추론을 지원합니다.
+- **Controller Pattern**: 컴포넌트 내부에서 `getProps(props)`를 통해 초기 Props와 업데이트된 상태를 안전하게 병합합니다.
+- **Automatic Z-Index**: 다이얼로그가 층층이 쌓일 때 레이어 순서를 자동으로 관리합니다.
+- **Headless & Flexible**: UI 프레임워크나 애니메이션 라이브러리에 의존하지 않아 자유로운 디자인이 가능합니다.
 
 ---
 
-## 기여하기
+## More Resources
 
-이 프로젝트는 Conventional Commits 명세를 따릅니다.
-버전 관리 및 배포는 Changesets를 사용합니다. 자세한 내용은 [배포 가이드](./docs/03-releasing.md)를 참고하세요.
+- [공식 문서 (Live Demo)](https://seunjin.github.io/react-layered-dialog/)
+- [시작하기 가이드](./docs/index.md)
+- [애니메이션 적용 가이드](./docs/guides/animations.md)
+- [API Reference](./docs/V1_ROADMAP.md)
+
+---
+
+## Contributing
+
+이 프로젝트는 Conventional Commits 명세를 따릅니다. 버전 관리는 Changesets를 사용합니다. 자세한 내용은 [배포 가이드](./docs/03-releasing.md)를 참고하세요.
