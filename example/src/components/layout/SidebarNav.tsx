@@ -15,9 +15,9 @@ const NavLink = ({ path, label }: { path: string; label: string }) => {
     >
       <Link
         className={cn(
-          'text-sm text-start text-accent-foreground/50',
+          'text-[15px] text-start text-accent-foreground/50',
           'hover:text-accent-foreground',
-          isActive && 'text-accent-foreground'
+          isActive && 'text-accent-foreground font-medium'
         )}
         to={path}
       >
@@ -61,13 +61,13 @@ export const SidebarNav = ({ className }: { className?: string }) => {
 
     return (
       <div key={apiSection.path}>
-        <h4 className="mb-2 text-sm font-semibold text-foreground border-b-1 pb-1 border-muted-foreground/20">
+        <h4 className="mb-4 text-[15px] font-bold text-foreground border-b-2 pb-1.5 border-muted-foreground/10">
           {apiSection.title}
         </h4>
         <div className="flex flex-col gap-3">
           {groups.map((g) => (
             <div key={g.title} className="flex flex-col gap-1">
-              <div className="text-xs font-semibold text-muted-foreground">
+              <div className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-1">
                 {g.title}
               </div>
               {g.items.map((item) => (
@@ -90,7 +90,7 @@ export const SidebarNav = ({ className }: { className?: string }) => {
         if (section.path === 'api') return renderApiGrouped();
         return (
           <div key={section.path}>
-            <h4 className="mb-2 text-sm font-semibold text-foreground border-b-1 pb-1 border-muted-foreground/20">
+            <h4 className="mb-4 text-[15px] font-bold text-foreground border-b-2 pb-1.5 border-muted-foreground/10">
               {section.title}
             </h4>
             <div className="flex flex-col gap-1">
