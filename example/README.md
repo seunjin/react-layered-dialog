@@ -1,69 +1,48 @@
-# React + TypeScript + Vite
+# react-layered-dialog Example
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+이 디렉토리는 `react-layered-dialog` 라이브러리의 **공식 데모 앱**입니다. 라이브러리의 주요 기능과 권장 사용 패턴을 실제 동작하는 코드로 확인할 수 있습니다.
 
-Currently, two official plugins are available:
+## 기술 스택
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** + **TypeScript**
+- **Vite** (빌드 도구)
+- **shadcn/ui** (UI 컴포넌트)
+- **Framer Motion** (애니메이션)
 
-## Expanding the ESLint configuration
+## 로컬 실행 방법
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# 프로젝트 루트에서
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+개발 서버가 실행되면 [http://localhost:5173](http://localhost:5173)에서 데모를 확인할 수 있습니다.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 주요 파일 및 패턴
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 다이얼로그 등록 (`src/lib/dialogs.ts`)
+```ts
+export const dialog = createDialogApi(new DialogStore(), {
+  confirm: { component: Confirm, mode: 'async' },
+});
+```
+
+### 애니메이션 연동 패턴 (`src/components/dialogs/Confirm.tsx`)
+- `AnimatePresence`의 `onExitComplete`에서 `unmount()`를 호출하여 애니메이션 종료 후 DOM 제거.
+- `getProps(props)`를 통해 업데이트된 상태와 초기 Props를 안전하게 병합.
+
+### 렌더러 배치 (`src/App.tsx`)
+- `<ReactLayeredDialogRenderer store={dialog.store} />`를 앱 루트에 배치하여 모든 다이얼로그를 렌더링.
+
+## 폴더 구조
+
+```
+example/
+├── src/
+│   ├── lib/dialogs.ts          # 스토어 및 API 싱글톤
+│   ├── components/dialogs/     # 다이얼로그 컴포넌트들
+│   ├── pages/                  # 라우팅된 데모 페이지들
+│   └── App.tsx                 # 앱 엔트리 포인트
+└── ...
 ```

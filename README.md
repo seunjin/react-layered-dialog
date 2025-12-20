@@ -93,10 +93,10 @@ npm i react-layered-dialog
 - [공식 문서 (Live Demo)](https://seunjin.github.io/react-layered-dialog/)
 - [시작하기 가이드](./docs/index.md)
 - [애니메이션 적용 가이드](./docs/guides/animations.md)
-- [API Reference](./docs/V1_ROADMAP.md)
+- [API Reference](./docs/api/dialog-store.md)
 
 ---
 
 ## Contributing
 
-이 프로젝트는 Conventional Commits 명세를 따릅니다. 버전 관리는 Changesets를 사용합니다. 자세한 내용은 [배포 가이드](./docs/03-releasing.md)를 참고하세요.
+이 프로젝트는 Conventional Commits 명세를 따릅니다. 버전 관리는 Changesets를 사용합니다. 자세한 내용은 [릴리즈 가이드](./docs/contributing/releasing.md)를 참고하세요.
