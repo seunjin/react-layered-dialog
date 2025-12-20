@@ -102,18 +102,18 @@ export const ApiCreateDialogApiPage = () => (
     </p>
 
     {/* ───────────────────────────────────────────────────────────────────── */}
-    <Section as="h2" id="signature" title="Function Signature">
-      <FunctionSignature
-        signature={signature}
-        description="DialogStore와 레지스트리 객체를 받아 타입 추론된 API 객체를 반환합니다."
-        parameters={[
-          { name: 'store', type: 'DialogStore', description: '다이얼로그 상태를 관리할 스토어 인스턴스' },
-          { name: 'registry', type: 'TRegistry', description: '키-다이얼로그 매핑 객체' },
-        ]}
-        returnType="DialogApi<NormalizeRegistry<TRegistry>>"
-        returnDescription="기본 스토어 메서드 + 레지스트리 키별 생성된 메서드를 포함한 API 객체"
-      />
-    </Section>
+    <FunctionSignature
+      id="signature"
+      title="createDialogApi()"
+      signature={signature}
+      description="DialogStore와 레지스트리 객체를 받아 타입 추론된 API 객체를 반환합니다."
+      parameters={[
+        { name: 'store', type: 'DialogStore', description: '다이얼로그 상태를 관리할 스토어 인스턴스' },
+        { name: 'registry', type: 'TRegistry', description: '키-다이얼로그 매핑 객체' },
+      ]}
+      returnType="DialogApi<NormalizeRegistry<TRegistry>>"
+      returnDescription="기본 스토어 메서드 + 레지스트리 키별 생성된 메서드를 포함한 API 객체"
+    />
 
     {/* ───────────────────────────────────────────────────────────────────── */}
     <Section as="h2" id="return-type" title="Return Type">

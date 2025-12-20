@@ -58,9 +58,9 @@ export function DocCallout({
 
       <div className="min-w-0 flex-1">
         {title ? (
-          <div className="flex items-center gap-1 mb-1 text-sm font-semibold leading-none"><Icon className="h-4 w-4 shrink-0" aria-hidden /> {title}</div>
+          <div className="flex items-center gap-1 mb-2 text-base font-semibold leading-none"><Icon className="h-4 w-4 shrink-0" aria-hidden /> {title}</div>
         ) : null}
-        <div className="text-sm leading-relaxed text-foreground dark:text-foreground">{children}</div>
+        <div className="text-base leading-relaxed text-foreground dark:text-foreground">{children}</div>
       </div>
     </div>
   );

@@ -150,83 +150,75 @@ export const ApiDialogStorePage = () => (
         다이얼로그 스택을 조작하는 메서드들입니다.
       </p>
 
-      <Section as="h3" id="open" title="open()">
-        <FunctionSignature
-          signature={`open<TProps>(
+      <FunctionSignature
+        id="open"
+        title="open()"
+        signature={`open<TProps>(
   renderer: DialogRenderFn<TProps>,
   options?: OpenDialogOptions
 ): DialogOpenResult<TProps>`}
-          description="새 다이얼로그를 스택에 추가하고 제어 핸들을 즉시 반환합니다."
-          parameters={[
-            { name: 'renderer', type: 'DialogRenderFn<TProps>', description: '컨트롤러를 받아 ReactNode를 반환하는 렌더링 함수' },
-            { name: 'options', type: 'OpenDialogOptions', description: 'ID, z-index, componentKey 등 옵션', optional: true },
-          ]}
-          returnType="DialogOpenResult<TProps>"
-          returnDescription="close, unmount, update 등의 메서드를 포함한 제어 핸들"
-        />
-        <CodeBlock language="tsx" code={openExample} />
-      </Section>
+        description="새 다이얼로그를 스택에 추가하고 제어 핸들을 즉시 반환합니다."
+        parameters={[
+          { name: 'renderer', type: 'DialogRenderFn<TProps>', description: '컨트롤러를 받아 ReactNode를 반환하는 렌더링 함수' },
+          { name: 'options', type: 'OpenDialogOptions', description: 'ID, z-index, componentKey 등 옵션', optional: true },
+        ]}
+        returnType="DialogOpenResult<TProps>"
+        returnDescription="close, unmount, update 등의 메서드를 포함한 제어 핸들"
+        usage={openExample}
+      />
 
-      <Section as="h3" id="open-async" title="openAsync()">
-        <FunctionSignature
-          signature={`openAsync<TProps, TData = unknown>(
+      <FunctionSignature
+        id="open-async"
+        title="openAsync()"
+        signature={`openAsync<TProps, TData = unknown>(
   renderer: DialogRenderFn<TProps>,
   options?: OpenDialogOptions
 ): Promise<DialogAsyncResult<TProps, TData>>`}
-          description="Promise 기반 다이얼로그를 열고 사용자 응답을 await합니다."
-          parameters={[
-            { name: 'renderer', type: 'DialogRenderFn<TProps>', description: '렌더링 함수. controller.resolve()로 Promise를 resolve' },
-            { name: 'options', type: 'OpenDialogOptions', description: '동기 open과 동일한 옵션', optional: true },
-          ]}
-          returnType="Promise<DialogAsyncResult<TProps, TData>>"
-          returnDescription="ok, data를 포함한 결과 객체. 사용자가 resolve 호출 시 Promise가 완료됨"
-        />
-        <CodeBlock language="tsx" code={openAsyncExample} />
-        <DocCallout variant="tip" title="비동기 패턴">
-          <InlineCode>resolve</InlineCode>에 <InlineCode>{`{ ok: true/false }`}</InlineCode>를 전달하여
-          사용자의 확인/취소를 구분합니다. <InlineCode>data</InlineCode>에 추가 정보를 담을 수 있습니다.
-        </DocCallout>
-      </Section>
+        description="Promise 기반 다이얼로그를 열고 사용자 응답을 await합니다."
+        parameters={[
+          { name: 'renderer', type: 'DialogRenderFn<TProps>', description: '렌더링 함수. controller.resolve()로 Promise를 resolve' },
+          { name: 'options', type: 'OpenDialogOptions', description: '동기 open과 동일한 옵션', optional: true },
+        ]}
+        returnType="Promise<DialogAsyncResult<TProps, TData>>"
+        returnDescription="ok, data를 포함한 결과 객체. 사용자가 resolve 호출 시 Promise가 완료됨"
+        usage={openAsyncExample}
+      />
 
-      <Section as="h3" id="close" title="close()">
-        <FunctionSignature
-          signature="close(id?: DialogId): void"
-          description="다이얼로그를 닫습니다 (isOpen = false). DOM에서 제거하지 않아 퇴장 애니메이션 구현이 가능합니다."
-          parameters={[
-            { name: 'id', type: 'DialogId', description: '닫을 다이얼로그 ID. 생략 시 마지막 다이얼로그', optional: true },
-          ]}
-        />
-        <CodeBlock language="ts" code={closeExample} />
-      </Section>
+      <FunctionSignature
+        id="close"
+        title="close()"
+        signature="close(id?: DialogId): void"
+        description="다이얼로그를 닫습니다 (isOpen = false). DOM에서 제거하지 않아 퇴장 애니메이션 구현이 가능합니다."
+        parameters={[
+          { name: 'id', type: 'DialogId', description: '닫을 다이얼로그 ID. 생략 시 마지막 다이얼로그', optional: true },
+        ]}
+        usage={closeExample}
+      />
 
-      <Section as="h3" id="unmount" title="unmount()">
-        <FunctionSignature
-          signature="unmount(id?: DialogId): void"
-          description="다이얼로그를 스택에서 완전히 제거합니다. 퇴장 애니메이션 완료 후 호출하세요."
-          parameters={[
-            { name: 'id', type: 'DialogId', description: '제거할 다이얼로그 ID. 생략 시 마지막 다이얼로그', optional: true },
-          ]}
-        />
-        <CodeBlock language="ts" code={unmountExample} />
-        <DocCallout variant="warning" title="close vs unmount">
-          <InlineCode>close()</InlineCode>는 <InlineCode>isOpen=false</InlineCode>만 설정하고 DOM을 유지합니다.
-          퇴장 애니메이션 후 <InlineCode>unmount()</InlineCode>를 호출해 완전히 제거하세요.
-        </DocCallout>
-      </Section>
+      <FunctionSignature
+        id="unmount"
+        title="unmount()"
+        signature="unmount(id?: DialogId): void"
+        description="다이얼로그를 스택에서 완전히 제거합니다. 퇴장 애니메이션 완료 후 호출하세요."
+        parameters={[
+          { name: 'id', type: 'DialogId', description: '제거할 다이얼로그 ID. 생략 시 마지막 다이얼로그', optional: true },
+        ]}
+        usage={unmountExample}
+      />
 
-      <Section as="h3" id="close-all" title="closeAll()">
-        <FunctionSignature
-          signature="closeAll(): void"
-          description="모든 다이얼로그를 닫습니다 (isOpen = false). DOM은 유지됩니다."
-        />
-      </Section>
+      <FunctionSignature
+        id="close-all"
+        title="closeAll()"
+        signature="closeAll(): void"
+        description="모든 다이얼로그를 닫습니다 (isOpen = false). DOM은 유지됩니다."
+      />
 
-      <Section as="h3" id="unmount-all" title="unmountAll()">
-        <FunctionSignature
-          signature="unmountAll(): void"
-          description="모든 다이얼로그를 스택에서 제거하고 z-index 카운터를 baseZIndex로 초기화합니다."
-        />
-      </Section>
+      <FunctionSignature
+        id="unmount-all"
+        title="unmountAll()"
+        signature="unmountAll(): void"
+        description="모든 다이얼로그를 스택에서 제거하고 z-index 카운터를 baseZIndex로 초기화합니다."
+      />
     </Section>
 
     {/* ───────────────────────────────────────────────────────────────────── */}
@@ -235,44 +227,44 @@ export const ApiDialogStorePage = () => (
         다이얼로그 상태를 조작하는 메서드들입니다.
       </p>
 
-      <Section as="h3" id="update" title="update()">
-        <FunctionSignature
-          signature={`update<TProps>(
+      <FunctionSignature
+        id="update"
+        title="update()"
+        signature={`update<TProps>(
   id: DialogId,
   updater: DialogStateUpdater<TProps>
 ): void`}
-          description="다이얼로그의 사용자 정의 상태를 업데이트합니다. 객체 또는 함수형 업데이트를 지원합니다."
-          parameters={[
-            { name: 'id', type: 'DialogId', description: '업데이트할 다이얼로그 ID' },
-            { name: 'updater', type: 'DialogStateUpdater<TProps>', description: '새 상태 객체 또는 (prev) => newState 함수' },
-          ]}
-        />
-        <CodeBlock language="ts" code={updateExample} />
-      </Section>
+        description="다이얼로그의 사용자 정의 상태를 업데이트합니다. 객체 또는 함수형 업데이트를 지원합니다."
+        parameters={[
+          { name: 'id', type: 'DialogId', description: '업데이트할 다이얼로그 ID' },
+          { name: 'updater', type: 'DialogStateUpdater<TProps>', description: '새 상태 객체 또는 (prev) => newState 함수' },
+        ]}
+        usage={updateExample}
+      />
 
-      <Section as="h3" id="set-status" title="setStatus()">
-        <FunctionSignature
-          signature="setStatus(id: DialogId, status: DialogStatus): void"
-          description="다이얼로그의 상태(idle/loading/done/error)를 설정합니다."
-          parameters={[
-            { name: 'id', type: 'DialogId', description: '대상 다이얼로그 ID' },
-            { name: 'status', type: 'DialogStatus', description: "'idle' | 'loading' | 'done' | 'error'" },
-          ]}
-        />
-        <CodeBlock language="ts" code={statusExample} />
-      </Section>
+      <FunctionSignature
+        id="set-status"
+        title="setStatus()"
+        signature="setStatus(id: DialogId, status: DialogStatus): void"
+        description="다이얼로그의 상태(idle/loading/done/error)를 설정합니다."
+        parameters={[
+          { name: 'id', type: 'DialogId', description: '대상 다이얼로그 ID' },
+          { name: 'status', type: 'DialogStatus', description: "'idle' | 'loading' | 'done' | 'error'" },
+        ]}
+        usage={statusExample}
+      />
 
-      <Section as="h3" id="get-status" title="getStatus()">
-        <FunctionSignature
-          signature="getStatus(id: DialogId): DialogStatus"
-          description="다이얼로그의 현재 상태를 조회합니다."
-          parameters={[
-            { name: 'id', type: 'DialogId', description: '조회할 다이얼로그 ID' },
-          ]}
-          returnType="DialogStatus"
-          returnDescription="현재 상태. 다이얼로그가 없으면 'idle' 반환"
-        />
-      </Section>
+      <FunctionSignature
+        id="get-status"
+        title="getStatus()"
+        signature="getStatus(id: DialogId): DialogStatus"
+        description="다이얼로그의 현재 상태를 조회합니다."
+        parameters={[
+          { name: 'id', type: 'DialogId', description: '조회할 다이얼로그 ID' },
+        ]}
+        returnType="DialogStatus"
+        returnDescription="현재 상태. 다이얼로그가 없으면 'idle' 반환"
+      />
     </Section>
 
     {/* ───────────────────────────────────────────────────────────────────── */}
@@ -281,27 +273,27 @@ export const ApiDialogStorePage = () => (
         상태 변경을 구독하는 메서드들입니다. <InlineCode>useSyncExternalStore</InlineCode>와 호환됩니다.
       </p>
 
-      <Section as="h3" id="subscribe" title="subscribe()">
-        <FunctionSignature
-          signature="subscribe(listener: DialogListener): () => void"
-          description="스토어 상태 변경을 구독합니다. 반환된 함수로 구독을 해제합니다."
-          parameters={[
-            { name: 'listener', type: 'DialogListener', description: '상태 변경 시 호출될 콜백 함수' },
-          ]}
-          returnType="() => void"
-          returnDescription="구독 해제 함수"
-        />
-        <CodeBlock language="ts" code={subscribeExample} />
-      </Section>
+      <FunctionSignature
+        id="subscribe"
+        title="subscribe()"
+        signature="subscribe(listener: DialogListener): () => void"
+        description="스토어 상태 변경을 구독합니다. 반환된 함수로 구독을 해제합니다."
+        parameters={[
+          { name: 'listener', type: 'DialogListener', description: '상태 변경 시 호출될 콜백 함수' },
+        ]}
+        returnType="() => void"
+        returnDescription="구독 해제 함수"
+        usage={subscribeExample}
+      />
 
-      <Section as="h3" id="get-snapshot" title="getSnapshot()">
-        <FunctionSignature
-          signature="getSnapshot(): DialogStoreSnapshot"
-          description="현재 스택의 스냅샷을 반환합니다. 불변 객체로 참조 동등성 비교가 가능합니다."
-          returnType="DialogStoreSnapshot"
-          returnDescription="entries 배열을 포함한 스냅샷 객체"
-        />
-      </Section>
+      <FunctionSignature
+        id="get-snapshot"
+        title="getSnapshot()"
+        signature="getSnapshot(): DialogStoreSnapshot"
+        description="현재 스택의 스냅샷을 반환합니다. 불변 객체로 참조 동등성 비교가 가능합니다."
+        returnType="DialogStoreSnapshot"
+        returnDescription="entries 배열을 포함한 스냅샷 객체"
+      />
     </Section>
 
     {/* ───────────────────────────────────────────────────────────────────── */}

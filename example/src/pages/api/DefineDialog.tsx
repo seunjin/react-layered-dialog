@@ -90,18 +90,19 @@ export const ApiDefineDialogPage = () => (
         </p>
 
         {/* ───────────────────────────────────────────────────────────────────── */}
-        <Section as="h2" id="signature" title="Function Signature">
-            <FunctionSignature
-                signature={signature}
-                description="컴포넌트와 옵션을 받아 DialogDefinition을 반환합니다."
-                parameters={[
-                    { name: 'component', type: 'ComponentType<TProps>', description: '다이얼로그로 렌더링할 React 컴포넌트' },
-                    { name: 'options', type: 'DefineDialogOptions<TMode>', description: '모드, displayName 등 옵션', optional: true },
-                ]}
-                returnType="DialogDefinition<TProps, TMode>"
-                returnDescription="레지스트리에 등록 가능한 정의 객체"
-            />
-        </Section>
+        <FunctionSignature
+            id="signature"
+            title="defineDialog()"
+            signature={signature}
+            description="컴포넌트와 옵션을 받아 DialogDefinition을 반환합니다."
+            parameters={[
+                { name: 'component', type: 'ComponentType<TProps>', description: '다이얼로그로 렌더링할 React 컴포넌트' },
+                { name: 'options', type: 'DefineDialogOptions<TMode>', description: '모드, displayName 등 옵션', optional: true },
+            ]}
+            returnType="DialogDefinition<TProps, TMode>"
+            returnDescription="레지스트리에 등록 가능한 정의 객체"
+            usage={basicExample}
+        />
 
         {/* ───────────────────────────────────────────────────────────────────── */}
         <Section as="h2" id="options" title="Options">

@@ -167,14 +167,15 @@ export const ApiUseDialogControllerPage = () => (
     </DocCallout>
 
     {/* ───────────────────────────────────────────────────────────────────── */}
-    <Section as="h2" id="signature" title="Function Signature">
-      <FunctionSignature
-        signature={signature}
-        description="현재 다이얼로그의 컨트롤러 컨텍스트를 반환합니다."
-        returnType="DialogControllerContextValue<TProps>"
-        returnDescription="다이얼로그 상태와 제어 메서드를 포함한 객체"
-      />
-    </Section>
+    <FunctionSignature
+      id="signature"
+      title="useDialogController()"
+      signature={signature}
+      description="현재 다이얼로그의 컨트롤러 컨텍스트를 반환합니다."
+      returnType="DialogControllerContextValue<TProps>"
+      returnDescription="다이얼로그 상태와 제어 메서드를 포함한 객체"
+      usage={basicExample}
+    />
 
     {/* ───────────────────────────────────────────────────────────────────── */}
     <Section as="h2" id="return-type" title="Return Type">

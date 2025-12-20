@@ -5,6 +5,7 @@ import { CodeBlock } from '@/components/docs/CodeBlock';
 import { DocLinks } from '@/components/docs/DocLink';
 import { PropertyTable } from '@/components/docs/PropertyTable';
 import { DocCallout } from '@/components/docs/DocCallout';
+import { FunctionSignature } from '@/components/docs/FunctionSignature';
 
 const signature = `function DialogsRenderer({ store }: { store: DialogStore }): JSX.Element`;
 
@@ -113,117 +114,114 @@ function AnimatedModal() {
 }`;
 
 export const ApiDialogsRendererPage = () => (
-    <DocArticle title="DialogsRenderer (API Reference)">
-        <p className="lead">
-            DialogStore의 상태를 구독하고 다이얼로그 엔트리들을 렌더링하는 컨테이너 컴포넌트입니다.
-            각 다이얼로그에 컨트롤러 컨텍스트를 주입하여 <InlineCode>useDialogController</InlineCode> 훅 사용을 가능하게 합니다.
-        </p>
+  <DocArticle title="DialogsRenderer (API Reference)">
+    <p className="lead">
+      DialogStore의 상태를 구독하고 다이얼로그 엔트리들을 렌더링하는 컨테이너 컴포넌트입니다.
+      각 다이얼로그에 컨트롤러 컨텍스트를 주입하여 <InlineCode>useDialogController</InlineCode> 훅 사용을 가능하게 합니다.
+    </p>
 
-        {/* ───────────────────────────────────────────────────────────────────── */}
-        <Section as="h2" id="signature" title="Component Signature">
-            <CodeBlock language="ts" code={signature} />
-            <PropertyTable
-                items={[
-                    {
-                        name: 'store',
-                        type: 'DialogStore',
-                        description: '다이얼로그 상태를 관리하는 스토어 인스턴스',
-                        required: true
-                    },
-                ]}
-            />
-        </Section>
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <FunctionSignature
+      id="signature"
+      title="<DialogsRenderer />"
+      signature={signature}
+      description="DialogStore의 상태를 구독하고 다이얼로그 엔트리들을 렌더링하는 컨테이너 컴포넌트입니다."
+      parameters={[
+        { name: 'store', type: 'DialogStore', description: '다이얼로그 상태를 관리하는 스토어 인스턴스' },
+      ]}
+      usage={basicExample}
+    />
 
-        {/* ───────────────────────────────────────────────────────────────────── */}
-        <Section as="h2" id="basic-usage" title="기본 사용법">
-            <CodeBlock language="tsx" code={basicExample} />
-            <DocCallout variant="tip" title="배치 위치">
-                렌더러를 앱의 최상단(body 직속)에 배치하면 다이얼로그가 다른 UI 위에 표시됩니다.
-                Portal을 사용하지 않으므로 렌더러 위치가 곧 다이얼로그 렌더링 위치입니다.
-            </DocCallout>
-        </Section>
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <Section as="h2" id="basic-usage" title="기본 사용법">
+      <CodeBlock language="tsx" code={basicExample} />
+      <DocCallout variant="tip" title="배치 위치">
+        렌더러를 앱의 최상단(body 직속)에 배치하면 다이얼로그가 다른 UI 위에 표시됩니다.
+        Portal을 사용하지 않으므로 렌더러 위치가 곧 다이얼로그 렌더링 위치입니다.
+      </DocCallout>
+    </Section>
 
-        {/* ───────────────────────────────────────────────────────────────────── */}
-        <Section as="h2" id="multi-store" title="멀티 스토어 패턴">
-            <CodeBlock language="tsx" code={multiStoreExample} />
-            <p className="mt-2 text-sm text-muted-foreground">
-                여러 스토어를 사용하여 다이얼로그 레이어를 분리할 수 있습니다.
-                각 스토어는 독립적인 z-index 범위와 스택을 관리합니다.
-            </p>
-        </Section>
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <Section as="h2" id="multi-store" title="멀티 스토어 패턴">
+      <CodeBlock language="tsx" code={multiStoreExample} />
+      <p className="mt-2 text-sm text-muted-foreground">
+        여러 스토어를 사용하여 다이얼로그 레이어를 분리할 수 있습니다.
+        각 스토어는 독립적인 z-index 범위와 스택을 관리합니다.
+      </p>
+    </Section>
 
-        {/* ───────────────────────────────────────────────────────────────────── */}
-        <Section as="h2" id="how-it-works" title="동작 원리">
-            <Section as="h3" id="subscription" title="스토어 구독">
-                <CodeBlock language="tsx" code={howItWorks} />
-                <PropertyTable
-                    items={[
-                        { name: 'useSyncExternalStore', type: 'React 18', description: '스토어 상태 변경 시 자동 리렌더링' },
-                        { name: 'entries.map', type: 'iteration', description: '각 엔트리를 개별 컴포넌트로 렌더링' },
-                        { name: 'componentKey', type: 'key prop', description: '동일 ID라도 재마운트 필요시 key 변경' },
-                    ]}
-                />
-            </Section>
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <Section as="h2" id="how-it-works" title="동작 원리">
+      <Section as="h3" id="subscription" title="스토어 구독">
+        <CodeBlock language="tsx" code={howItWorks} />
+        <PropertyTable
+          items={[
+            { name: 'useSyncExternalStore', type: 'React 18', description: '스토어 상태 변경 시 자동 리렌더링' },
+            { name: 'entries.map', type: 'iteration', description: '각 엔트리를 개별 컴포넌트로 렌더링' },
+            { name: 'componentKey', type: 'key prop', description: '동일 ID라도 재마운트 필요시 key 변경' },
+          ]}
+        />
+      </Section>
 
-            <Section as="h3" id="context-injection" title="컨텍스트 주입">
-                <CodeBlock language="tsx" code={contextInjection} />
-                <DocCallout variant="info" title="컨트롤러 컨텍스트">
-                    각 다이얼로그 인스턴스는 자신만의 컨트롤러 컨텍스트를 받습니다.
-                    컴포넌트에서 <InlineCode>useDialogController()</InlineCode>를 호출하면 이 컨텍스트에 접근합니다.
-                </DocCallout>
-            </Section>
-        </Section>
+      <Section as="h3" id="context-injection" title="컨텍스트 주입">
+        <CodeBlock language="tsx" code={contextInjection} />
+        <DocCallout variant="info" title="컨트롤러 컨텍스트">
+          각 다이얼로그 인스턴스는 자신만의 컨트롤러 컨텍스트를 받습니다.
+          컴포넌트에서 <InlineCode>useDialogController()</InlineCode>를 호출하면 이 컨텍스트에 접근합니다.
+        </DocCallout>
+      </Section>
+    </Section>
 
-        {/* ───────────────────────────────────────────────────────────────────── */}
-        <Section as="h2" id="animation" title="애니메이션 통합">
-            <CodeBlock language="tsx" code={animationPattern} />
-            <PropertyTable
-                items={[
-                    { name: 'isOpen', type: 'boolean', description: 'close() 시 false로 전환. 퇴장 애니메이션 조건으로 사용' },
-                    { name: 'unmount()', type: 'method', description: '애니메이션 완료 후 호출하여 DOM에서 제거' },
-                    { name: 'zIndex', type: 'number', description: '스타일에 적용하여 레이어 순서 보장' },
-                ]}
-            />
-            <DocCallout variant="warning" title="close vs unmount">
-                <InlineCode>close()</InlineCode>만 호출하면 <InlineCode>isOpen=false</InlineCode>가 되어 퇴장 애니메이션이 시작됩니다.
-                애니메이션 완료 후 반드시 <InlineCode>unmount()</InlineCode>를 호출해 메모리에서 제거하세요.
-            </DocCallout>
-        </Section>
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <Section as="h2" id="animation" title="애니메이션 통합">
+      <CodeBlock language="tsx" code={animationPattern} />
+      <PropertyTable
+        items={[
+          { name: 'isOpen', type: 'boolean', description: 'close() 시 false로 전환. 퇴장 애니메이션 조건으로 사용' },
+          { name: 'unmount()', type: 'method', description: '애니메이션 완료 후 호출하여 DOM에서 제거' },
+          { name: 'zIndex', type: 'number', description: '스타일에 적용하여 레이어 순서 보장' },
+        ]}
+      />
+      <DocCallout variant="warning" title="close vs unmount">
+        <InlineCode>close()</InlineCode>만 호출하면 <InlineCode>isOpen=false</InlineCode>가 되어 퇴장 애니메이션이 시작됩니다.
+        애니메이션 완료 후 반드시 <InlineCode>unmount()</InlineCode>를 호출해 메모리에서 제거하세요.
+      </DocCallout>
+    </Section>
 
-        {/* ───────────────────────────────────────────────────────────────────── */}
-        <Section as="h2" id="behavior" title="동작 보장 사항">
-            <PropertyTable
-                items={[
-                    { name: '렌더링 순서', type: 'stack order', description: 'entries 배열 순서대로 렌더링. zIndex로 시각적 순서 결정' },
-                    { name: '컨텍스트 격리', type: 'per-dialog', description: '각 다이얼로그는 독립적인 컨트롤러 컨텍스트 보유' },
-                    { name: '스택 정보 계산', type: 'computed', description: 'isOpen=true인 항목만 스택 크기/인덱스에 포함' },
-                    { name: '메모이제이션', type: 'useMemo', description: '컨트롤러 객체는 entry 변경 시에만 재생성' },
-                ]}
-            />
-        </Section>
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <Section as="h2" id="behavior" title="동작 보장 사항">
+      <PropertyTable
+        items={[
+          { name: '렌더링 순서', type: 'stack order', description: 'entries 배열 순서대로 렌더링. zIndex로 시각적 순서 결정' },
+          { name: '컨텍스트 격리', type: 'per-dialog', description: '각 다이얼로그는 독립적인 컨트롤러 컨텍스트 보유' },
+          { name: '스택 정보 계산', type: 'computed', description: 'isOpen=true인 항목만 스택 크기/인덱스에 포함' },
+          { name: '메모이제이션', type: 'useMemo', description: '컨트롤러 객체는 entry 변경 시에만 재생성' },
+        ]}
+      />
+    </Section>
 
-        {/* ───────────────────────────────────────────────────────────────────── */}
-        <Section as="h2" id="ssr" title="SSR 고려사항">
-            <DocCallout variant="warning" title="서버 사이드 렌더링">
-                다이얼로그는 클라이언트 인터랙션으로만 열리므로 SSR 시점에는 빈 상태입니다.
-                서버와 클라이언트의 초기 상태가 동일하게 빈 배열이므로 hydration mismatch가 발생하지 않습니다.
-            </DocCallout>
-            <p className="mt-2 text-sm text-muted-foreground">
-                Next.js 등 SSR 환경에서는 각 요청마다 새 스토어 인스턴스를 생성하거나,
-                전역 스토어를 사용하되 서버에서는 빈 상태로 유지하세요.
-            </p>
-        </Section>
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <Section as="h2" id="ssr" title="SSR 고려사항">
+      <DocCallout variant="warning" title="서버 사이드 렌더링">
+        다이얼로그는 클라이언트 인터랙션으로만 열리므로 SSR 시점에는 빈 상태입니다.
+        서버와 클라이언트의 초기 상태가 동일하게 빈 배열이므로 hydration mismatch가 발생하지 않습니다.
+      </DocCallout>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Next.js 등 SSR 환경에서는 각 요청마다 새 스토어 인스턴스를 생성하거나,
+        전역 스토어를 사용하되 서버에서는 빈 상태로 유지하세요.
+      </p>
+    </Section>
 
-        {/* ───────────────────────────────────────────────────────────────────── */}
-        <Section as="h2" id="related" title="Related">
-            <DocLinks
-                links={[
-                    { to: '/api/dialog-store', label: 'API → DialogStore' },
-                    { to: '/api/use-dialog-controller', label: 'API → useDialogController' },
-                    { to: '/api/types', label: 'API → Types (DialogEntry)' },
-                    { to: '/api/advanced/multi-store-ssr', label: '고급 → Multi-store/SSR' },
-                ]}
-            />
-        </Section>
-    </DocArticle>
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <Section as="h2" id="related" title="Related">
+      <DocLinks
+        links={[
+          { to: '/api/dialog-store', label: 'API → DialogStore' },
+          { to: '/api/use-dialog-controller', label: 'API → useDialogController' },
+          { to: '/api/types', label: 'API → Types (DialogEntry)' },
+          { to: '/api/advanced/multi-store-ssr', label: '고급 → Multi-store/SSR' },
+        ]}
+      />
+    </Section>
+  </DocArticle>
 );
