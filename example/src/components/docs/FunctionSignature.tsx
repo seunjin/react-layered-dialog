@@ -93,7 +93,7 @@ export function FunctionSignature({
                 <CodeBlock
                     language="ts"
                     code={fullSignature}
-                    className="!my-0 !border-0 !rounded-none !shadow-none"
+                    className="!my-0"
                 />
 
                 {/* 하단: 사용 예제 (Usage) */}

@@ -172,13 +172,26 @@ export const ApiDefineDialogPage = () => (
 
         {/* ───────────────────────────────────────────────────────────────────── */}
         <Section as="h2" id="behavior" title="동작 보장 사항">
-            <PropertyTable
-                items={[
-                    { name: '기본 모드', type: "'sync'", description: 'mode 미지정 시 동기 모드로 동작' },
-                    { name: 'displayName 우선순위', type: 'cascade', description: 'options.displayName > component.displayName > component.name > "DialogDefinition"' },
-                    { name: '레지스트리 호환', type: 'normalized', description: 'createDialogApi에서 객체 형태와 동일하게 처리됨' },
-                ]}
-            />
+            <ul className="space-y-4 text-base">
+                <li className="flex gap-3">
+                    <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+                    <span>
+                        <strong>기본 모드:</strong> <InlineCode>mode</InlineCode>를 명시적으로 지정하지 않을 경우 기본값인 <InlineCode>{'\'sync\''}</InlineCode>(동기 모드)로 동작합니다.
+                    </span>
+                </li>
+                <li className="flex gap-3">
+                    <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+                    <span>
+                        <strong>displayName 우선순위:</strong> DevTools에 표시될 이름은 <InlineCode>options.displayName</InlineCode> → <InlineCode>component.displayName</InlineCode> → <InlineCode>component.name</InlineCode> 순서로 결정됩니다.
+                    </span>
+                </li>
+                <li className="flex gap-3">
+                    <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+                    <span>
+                        <strong>레지스트리 호환:</strong> <InlineCode>defineDialog</InlineCode>로 생성한 객체는 <InlineCode>createDialogApi</InlineCode>의 레지스트리에서 일반 객체 설정과 동일하게 호환되어 처리됩니다.
+                    </span>
+                </li>
+            </ul>
         </Section>
 
         {/* ───────────────────────────────────────────────────────────────────── */}

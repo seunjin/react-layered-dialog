@@ -298,30 +298,32 @@ export const ApiDialogStorePage = () => (
 
     {/* ───────────────────────────────────────────────────────────────────── */}
     <Section as="h2" id="behavior" title="동작 보장 사항">
-      <PropertyTable
-        items={[
-          {
-            name: 'z-index 자동 증가',
-            type: 'number',
-            description: 'baseZIndex부터 시작하여 open() 호출 시 1씩 증가. 커스텀 값 지정 시 내부 카운터도 조정됨'
-          },
-          {
-            name: 'z-index 리셋',
-            type: 'auto',
-            description: '스택이 비워지거나 unmountAll() 호출 시 baseZIndex로 초기화'
-          },
-          {
-            name: 'ID 중복 방지',
-            type: 'Error',
-            description: '동일한 ID로 open() 시도 시 에러 발생'
-          },
-          {
-            name: '불변 스냅샷',
-            type: 'immutable',
-            description: 'getSnapshot()은 매번 새 객체를 반환하여 React 렌더링 최적화에 적합'
-          },
-        ]}
-      />
+      <ul className="space-y-4 text-base">
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>z-index 자동 증가:</strong> <InlineCode>baseZIndex</InlineCode>부터 시작하여 <InlineCode>open()</InlineCode> 호출 시마다 1씩 자동 증가합니다. 커스텀 z-index를 수동으로 지정할 경우 내부 카운터도 활성화된 최대값에 맞춰 조정됩니다.
+          </span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>z-index 리셋:</strong> 스택이 완전히 비워지거나 <InlineCode>unmountAll()</InlineCode>이 호출될 경우, z-index 카운터는 다시 <InlineCode>baseZIndex</InlineCode>로 초기화됩니다.
+          </span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>ID 중복 방지:</strong> 이미 스택에 존재하는 ID로 <InlineCode>open()</InlineCode>을 시도할 경우, 상태 충돌 데이터 보존을 위해 에러를 발생시켜 안전한 스택 관리를 보장합니다.
+          </span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>불변 스냅샷:</strong> <InlineCode>getSnapshot()</InlineCode>은 상태 변경 시마다 새로운 객체 참조를 반환하여, React의 <InlineCode>useSyncExternalStore</InlineCode>와 같은 상태 구독 메커니즘에서 효율적인 비교와 리렌더링을 가능하게 합니다.
+          </span>
+        </li>
+      </ul>
     </Section>
 
     {/* ───────────────────────────────────────────────────────────────────── */}

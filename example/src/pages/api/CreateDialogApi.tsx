@@ -172,14 +172,32 @@ export const ApiCreateDialogApiPage = () => (
 
     {/* ───────────────────────────────────────────────────────────────────── */}
     <Section as="h2" id="behavior" title="동작 보장 사항">
-      <PropertyTable
-        items={[
-          { name: '모드 자동 분기', type: 'auto', description: "sync → store.open(), async → store.openAsync() 자동 선택" },
-          { name: '타입 안전성', type: 'TypeScript', description: '레지스트리 컴포넌트의 props가 호출부에 정확히 추론됨' },
-          { name: '기본 메서드 노출', type: 'passthrough', description: 'open, close, update 등 스토어 메서드도 API에서 직접 사용 가능' },
-          { name: 'ID 카운터 독립', type: 'per-key', description: '각 레지스트리 키마다 별도 순번 카운터 유지' },
-        ]}
-      />
+      <ul className="space-y-4 text-base">
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>모드 자동 분기:</strong> 레지스트리에 정의된 모드에 따라 <InlineCode>store.open()</InlineCode>과 <InlineCode>store.openAsync()</InlineCode>를 자동으로 선택하여 실행합니다.
+          </span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>타입 안전성:</strong> 레지스트리에 등록된 컴포넌트의 Props 타입이 호출부에서 정확하게 추론되어 IDE 자동완성을 지원합니다.
+          </span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>기본 메서드 노출:</strong> <InlineCode>open</InlineCode>, <InlineCode>close</InlineCode>, <InlineCode>update</InlineCode> 등 기본 스토어 메서드들도 API 객체에서 직접 접근할 수 있습니다.
+          </span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>ID 카운터 독립:</strong> 각 레지스트리 키마다 별도의 순번 카운터를 유지하여 ID 충돌을 방지합니다.
+          </span>
+        </li>
+      </ul>
     </Section>
 
     {/* ───────────────────────────────────────────────────────────────────── */}

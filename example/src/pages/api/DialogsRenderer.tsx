@@ -190,14 +190,32 @@ export const ApiDialogsRendererPage = () => (
 
     {/* ───────────────────────────────────────────────────────────────────── */}
     <Section as="h2" id="behavior" title="동작 보장 사항">
-      <PropertyTable
-        items={[
-          { name: '렌더링 순서', type: 'stack order', description: 'entries 배열 순서대로 렌더링. zIndex로 시각적 순서 결정' },
-          { name: '컨텍스트 격리', type: 'per-dialog', description: '각 다이얼로그는 독립적인 컨트롤러 컨텍스트 보유' },
-          { name: '스택 정보 계산', type: 'computed', description: 'isOpen=true인 항목만 스택 크기/인덱스에 포함' },
-          { name: '메모이제이션', type: 'useMemo', description: '컨트롤러 객체는 entry 변경 시에만 재생성' },
-        ]}
-      />
+      <ul className="space-y-4 text-base">
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>렌더링 순서:</strong> <InlineCode>entries</InlineCode> 배열의 순서대로 컴포넌트 트리를 구성하며, 시각적인 레이어 순서는 각 엔트리의 <InlineCode>zIndex</InlineCode> 스타일에 의해 결정됩니다.
+          </span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>컨텍스트 격리:</strong> 각 다이얼로그 인스턴스는 매핑된 고유한 컨트롤러 컨텍스트를 보유하여, 서로의 상태나 제어 로직이 섞이지 않도록 보장합니다.
+          </span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>스택 정보 계산:</strong> 스택 내에서의 현재 인덱스나 총 스택 크기 정보는 <InlineCode>isOpen=true</InlineCode>인 활성 다이얼로그들을 기준으로 실시간 계산됩니다.
+          </span>
+        </li>
+        <li className="flex gap-3">
+          <span className="text-muted-foreground font-mono mt-1 shrink-0">·</span>
+          <span>
+            <strong>메모이제이션:</strong> 레지더링 성능 최적화를 위해 다이얼로그 컨트롤러 객체는 해당 엔트리의 핵심 메타데이터가 변경될 때만 재생성됩니다.
+          </span>
+        </li>
+      </ul>
     </Section>
 
     {/* ───────────────────────────────────────────────────────────────────── */}
