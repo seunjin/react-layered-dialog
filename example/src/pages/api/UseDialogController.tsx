@@ -243,11 +243,11 @@ export const ApiUseDialogControllerPage = () => (
             { name: 'reject(reason)', type: '(reason?) => void', description: 'Promise reject', required: false },
           ]}
         />
-        <DocCallout variant="info" title="async 모드 전용">
+        {/* <DocCallout variant="info" title="async 모드 전용">
           <InlineCode>resolve</InlineCode>와 <InlineCode>reject</InlineCode>는{' '}
           <InlineCode>mode: &apos;async&apos;</InlineCode>로 정의된 다이얼로그에서만 존재합니다.
           sync 모드에서는 <InlineCode>undefined</InlineCode>입니다.
-        </DocCallout>
+        </DocCallout> */}
       </Section>
     </Section>
 
@@ -264,10 +264,10 @@ export const ApiUseDialogControllerPage = () => (
     {/* ───────────────────────────────────────────────────────────────────── */}
     <Section as="h2" id="stack-example" title="스택 정보 활용">
       <CodeBlock language="tsx" code={stackExample} />
-      <DocCallout variant="tip" title="최상단 감지">
+      {/* <DocCallout variant="tip" title="최상단 감지">
         <InlineCode>stack.topId === id</InlineCode>를 비교하여 현재 다이얼로그가 최상단인지 확인하고,
         키보드 이벤트, 자동 포커스 등을 최상단에서만 처리할 수 있습니다.
-      </DocCallout>
+      </DocCallout> */}
     </Section>
 
     {/* ───────────────────────────────────────────────────────────────────── */}

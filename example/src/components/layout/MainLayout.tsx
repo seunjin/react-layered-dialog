@@ -20,8 +20,8 @@ export function MainLayout() {
         <Header />
         <div className="flex flex-1">
           <Sidebar />
-          <SidebarInset className="flex flex-1 flex-col">
-            <div className="grid grid-rows-[1fr_auto] h-full mx-auto">
+          <SidebarInset className="flex flex-1 flex-col min-w-0">
+            <div className="grid grid-rows-[1fr_auto] h-full mx-auto min-w-0 w-full">
               <Outlet />
               <PageNavigation />
             </div>
