@@ -1,6 +1,6 @@
-# 1. 시작하기
+# 개발 환경 설정 (Development Setup)
 
-이 문서는 `react-layered-dialog` 라이브러리 개발을 위한 로컬 환경 설정 방법을 안내합니다.
+이 문서는 `react-layered-dialog` 라이브러리의 기여를 위한 로컬 개발 환경 설정 방법을 가이드합니다.
 
 ## 사전 준비
 

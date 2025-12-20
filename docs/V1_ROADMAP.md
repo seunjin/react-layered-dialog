@@ -50,7 +50,7 @@
 
 ---
 
-### M1-4: 네이밍 개선 (`getProps`, `getProp`) �
+### M1-4: 네이밍 개선 (`getProps`, `getProp`) 
 > `getStateFields` 보다 직관적인 네이밍 필요
 
 **작업 내용**:
@@ -129,6 +129,9 @@
 - [x] z-index 계층 구조 예시
 - [x] `baseZIndex` 설정 가이드
 - [x] 다른 오버레이 라이브러리와의 공존 패턴
+- [x] **접근성(Availability)** 가이드를 통해 `role="dialog"`, Focus Trap, ESC 처리 등 안내
+- [x] **SSR(Server-Side Rendering)** 가이드를 통해 하이드레이션 에러 방지 안내
+- [x] **고급 기법**으로 커스텀 레지스트리 및 다중 스토어 운영법 안내
 
 **파일**: `docs/guides/z-index-strategy.md`
 

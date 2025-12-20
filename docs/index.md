@@ -21,7 +21,7 @@
 | [상태 관리](./guides/state-management.md) | update, getProps 사용법 | 🟢 완료 |
 | [애니메이션](./guides/animations.md) | close/unmount 분리 활용 | 🟢 완료 |
 | [Z-Index 전략](./guides/z-index-strategy.md) | 계층 구조 및 외부 연동 가이드 | 🟢 완료 |
-| [접근성](./guides/accessibility.md) | ARIA, 키보드 네비게이션 | 🔴 미작성 |
+| [접근성](./guides/accessibility.md) | ARIA, 키보드 네비게이션 | 🟢 완료 |
 
 ### API 레퍼런스 (API Reference)
 | 문서 | 설명 | 상태 |
@@ -35,16 +35,17 @@
 ### 고급 (Advanced)
 | 문서 | 설명 | 상태 |
 |------|------|------|
-| [커스텀 레지스트리](./advanced/custom-registry.md) | defineDialog 심화 | 🔴 미작성 |
-| [다중 스토어](./advanced/multiple-stores.md) | 여러 스토어 운영 | 🔴 미작성 |
-| [SSR 지원](./advanced/ssr.md) | 서버사이드 렌더링 | 🔴 미작성 |
+| [커스텀 레지스트리](./advanced/custom-registry.md) | defineDialog 심화 | 🟢 완료 |
+| [다중 스토어](./advanced/multiple-stores.md) | 여러 스토어 운영 | 🟢 완료 |
+| [SSR 지원](./advanced/ssr.md) | 서버사이드 렌더링 | 🟢 완료 |
 
 ### 기여하기 (Contributing)
 | 문서 | 설명 | 상태 |
 |------|------|------|
-| [개발 환경](./contributing/development.md) | 로컬 개발 설정 | 🟢 완료 (`01-getting-started.md`) |
-| [커밋 가이드](./contributing/commit-guide.md) | 커밋 메시지 규칙 | 🟢 완료 (`04-commit-message-guide.md`) |
-| [릴리즈 절차](./contributing/releasing.md) | 배포 프로세스 | 🟢 완료 (`03-releasing.md`) |
+| [개발 환경](./contributing/development.md) | 로컬 개발 설정 | 🟢 완료 |
+| [개발 워크플로우](./contributing/workflow.md) | 기능 추가 및 테스트 절차 | 🟢 완료 |
+| [커밋 가이드](./contributing/commit-guide.md) | 커밋 메시지 규칙 | 🟢 완료 |
+| [릴리즈 절차](./contributing/releasing.md) | 배포 프로세스 | 🟢 완료 |
 
 ---
 
