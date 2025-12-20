@@ -91,7 +91,6 @@ export class DialogStore {
       renderer: renderer as DialogRenderFn,
       componentKey,
       isOpen: true,
-      isMounted: true,
       zIndex,
       state: {},
       meta: {

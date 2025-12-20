@@ -34,8 +34,6 @@ export interface DialogEntry {
   componentKey: string;
   /** 다이얼로그가 열려 있는지 여부. 닫힘 애니메이션 제어에 사용됩니다. */
   isOpen: boolean;
-  /** 다이얼로그가 DOM에 마운트되어 있는지 여부. */
-  isMounted: boolean;
   /** z-index 값. 지정하지 않으면 Store가 자동으로 증가시키며 부여합니다. */
   zIndex: number;
   /** 사용자 정의 상태. `update`를 통해 변경되며 컨트롤러를 통해 노출됩니다. */

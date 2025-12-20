@@ -159,23 +159,23 @@
 
 ## M4: 품질 개선
 
-### M4-1: `useMemo` 의존성 검토 🔴
+### M4-1: `useMemo` 의존성 검토 🟢
 > `store`가 의존성에 포함되어 있으나 변경되지 않음
 
 **작업 내용**:
-- [ ] `DialogInstance`의 `useMemo` 의존성 배열 정리
-- [ ] 불필요한 리렌더링 확인
+- [x] `DialogInstance`의 `useMemo` 의존성 배열 정리 (store 제거)
+- [x] 불필요한 리렌더링 방지 확인
 
 **파일**: `renderer.tsx`
 
 ---
 
-### M4-2: `isMounted` 필드 정리 🟡
-> 현재 코드에서 활용되지 않음
+### M4-2: `isMounted` 필드 제거 🟢
+> 현재 코드에서 Mounted 여부는 스택 배열 존재 여부와 동일함
 
 **작업 내용**:
-- [ ] 향후 사용 계획 확정 또는 제거
-- [ ] 타입 정의 업데이트
+- [x] 중복 데이터인 `isMounted` 필드 제거 결정
+- [x] `types.ts`, `store.ts`, `renderer.tsx`에서 필드 및 초기화 로직 제거
 
 **파일**: `types.ts`, `store.ts`
 
