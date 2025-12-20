@@ -1,6 +1,13 @@
-# react-layered-dialog
+## 0.6.0
 
-## 0.5.0
+### Minor Changes
+
+- **feat**: `createDialogApi` 레지스트리 키 기반의 ID 생성 로직 도입 (각 키마다 독립된 순번 카운터 유지)
+- **feat**: `resolve` 호출 시 제네릭 타입을 통한 비동기 데이터 반환 지원 강화
+- **refactor**: API 명칭 일관성 확보 (`getStateFields` -> `getProps`, `getStateField` -> `getProp`)
+- **refactor**: 불필요한 `isMounted` 필드 제거 및 `useMemo` 의존성 보강을 통한 렌더링 안정성 최적화
+- **test**: `DialogStore` 및 `DialogsRenderer`에 대한 엣지 케이스 테스트 추가 (총 16개 테스트 통과)
+- **docs**: API 문서의 시각적 계층 구조 재설계 (미니멀 JSDoc 스타일 도입, 폰트 스케일 상향, 사이드바 최적화)
 
 ### Minor Changes
 
