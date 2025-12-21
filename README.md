@@ -97,6 +97,7 @@ npm i react-layered-dialog
 - [시작하기 가이드](./docs/index.md)
 - [애니메이션 적용 가이드](./docs/guides/animations.md)
 - [API Reference](./docs/api/dialog-store.md)
+- [AI 도구용 문서 (llms.txt)](./llms.txt) - AI에게 이 라이브러리를 설명할 때 참조
 
 ---
 

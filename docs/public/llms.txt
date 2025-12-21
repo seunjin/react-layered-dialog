@@ -1,0 +1,229 @@
+# react-layered-dialog
+
+> React용 타입 안전 다이얼로그/모달 관리 라이브러리
+
+## 핵심 개념
+
+react-layered-dialog는 **Headless 아키텍처**를 채택한 다이얼로그 관리 라이브러리입니다.
+UI 렌더링은 개발자에게 맡기고, 상태 관리와 레이어링만 담당합니다.
+
+### 아키텍처 구성요소
+
+1. **DialogStore**: 다이얼로그 상태를 관리하는 중앙 저장소
+2. **DialogsRenderer**: 다이얼로그 컴포넌트를 DOM에 렌더링하는 컴포넌트
+3. **useDialogController**: 개별 다이얼로그 내부에서 상태/제어를 제공하는 훅
+
+## 설치
+
+```bash
+pnpm add react-layered-dialog
+```
+
+## 기본 사용법 (React SPA)
+
+```tsx
+// lib/dialogs.ts
+import { DialogStore } from 'react-layered-dialog';
+export const dialog = new DialogStore();
+
+// App.tsx
+import { DialogsRenderer } from 'react-layered-dialog';
+import { dialog } from './lib/dialogs';
+
+function App() {
+  return (
+    <>
+      <button onClick={() => dialog.open(() => <MyModal />)}>
+        열기
+      </button>
+      <DialogsRenderer store={dialog} />
+    </>
+  );
+}
+```
+
+## 주요 API
+
+### DialogStore
+
+```tsx
+const store = new DialogStore({ baseZIndex?: number });
+
+// 다이얼로그 열기 (직접 컴포넌트 렌더링)
+store.open(() => <MyDialog />);
+store.open(() => <MyDialog />, { id: 'my-dialog' });
+
+// 특정 다이얼로그 닫기
+store.close(dialogId);      // 닫기 애니메이션 시작
+store.unmount(dialogId);    // 즉시 제거
+
+// 전체 닫기
+store.closeAll();
+store.unmountAll();
+
+// 상태 업데이트
+store.update(dialogId, { isLoading: true });
+store.update(dialogId, (prev) => ({ count: prev.count + 1 }));
+```
+
+### useDialogController
+
+다이얼로그 컴포넌트 내부에서 사용하는 훅:
+
+```tsx
+import { useDialogController } from 'react-layered-dialog';
+
+function MyDialog() {
+  const {
+    id,           // 다이얼로그 고유 ID
+    isOpen,       // 열림 상태 (애니메이션용)
+    zIndex,       // 현재 z-index
+    stack,        // 스택 정보 { index, total, isTop }
+    close,        // 닫기 (애니메이션 시작)
+    unmount,      // 즉시 제거
+    update,       // 상태 업데이트
+    getProp,      // 특정 상태 값 조회
+    getProps,     // 여러 상태 값 조회
+  } = useDialogController();
+
+  return (
+    <div style={{ zIndex }}>
+      <button onClick={close}>닫기</button>
+    </div>
+  );
+}
+```
+
+### DialogsRenderer
+
+```tsx
+<DialogsRenderer
+  store={store}           // 필수: DialogStore 인스턴스
+  wrapper={CustomWrapper} // 선택: 각 다이얼로그를 감싸는 컴포넌트
+/>
+```
+
+## 비동기 다이얼로그 (Promise 기반)
+
+```tsx
+// Confirm 다이얼로그 정의
+const confirmDialog = defineDialog<{ message: string }, boolean>((props) => {
+  const { resolve, close } = useDialogController();
+  
+  const handleConfirm = () => {
+    resolve({ result: true });
+    close();
+  };
+  
+  return (
+    <div>
+      <p>{props.message}</p>
+      <button onClick={handleConfirm}>확인</button>
+    </div>
+  );
+});
+
+// 사용
+const result = await store.openAsync(confirmDialog, { message: '삭제하시겠습니까?' });
+if (result.result) {
+  // 확인됨
+}
+```
+
+## Next.js SSR 주의사항
+
+### ⚠️ 전역 스토어 사용 금지
+
+Next.js에서 파일 최상위에 `new DialogStore()`를 선언하면 **서버 메모리가 공유**되어 보안 사고가 발생합니다.
+
+```tsx
+// ❌ 위험: 서버에서 모든 사용자가 공유
+export const dialog = new DialogStore();
+```
+
+### ✅ Client-Only Provider 패턴 사용
+
+```tsx
+// lib/dialog/DialogProvider.tsx
+"use client";
+
+import { useState, useEffect } from 'react';
+import { DialogStore, DialogsRenderer } from 'react-layered-dialog';
+
+export function DialogProvider({ children }: { children: React.ReactNode }) {
+  const [store, setStore] = useState<DialogStore | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // useEffect는 브라우저에서만 실행됨
+    setStore(new DialogStore());
+    setIsMounted(true);
+  }, []);
+
+  return (
+    <>
+      {children}
+      {isMounted && store && <DialogsRenderer store={store} />}
+    </>
+  );
+}
+```
+
+### Proxy 패턴 (안전한 훅)
+
+스토어가 아직 없을 때 에러를 방지:
+
+```tsx
+export function useDialog(): DialogStore {
+  const store = useDialogStore();
+
+  return useMemo(() => {
+    if (store) return store;
+
+    return new Proxy({} as DialogStore, {
+      get(_, prop) {
+        return () => console.warn(`[Dialog] Store 미준비: ${String(prop)}`);
+      },
+    });
+  }, [store]);
+}
+```
+
+## 멀티 스토어
+
+독립적인 다이얼로그 스택이 필요한 경우:
+
+```tsx
+const mainStore = new DialogStore({ baseZIndex: 1000 });
+const sidebarStore = new DialogStore({ baseZIndex: 5000 });
+
+<DialogsRenderer store={mainStore} />
+<DialogsRenderer store={sidebarStore} />
+```
+
+## 타입 정의
+
+```tsx
+interface DialogHandle {
+  id: string;
+  isOpen: boolean;
+  zIndex: number;
+  close: () => void;
+  unmount: () => void;
+  update: (updater: Partial<State> | ((prev: State) => Partial<State>)) => void;
+  getProp: <V>(key: PropertyKey, fallback: V) => V;
+  getProps: <T extends Record<string, unknown>>(base: T) => T;
+}
+
+interface StackInfo {
+  index: number;   // 현재 인덱스 (0부터 시작)
+  total: number;   // 전체 다이얼로그 수
+  isTop: boolean;  // 최상위 여부
+}
+```
+
+## 문서 링크
+
+- 공식 문서: https://seunjin.github.io/react-layered-dialog/
+- GitHub: https://github.com/seunjin/react-layered-dialog
+- npm: https://www.npmjs.com/package/react-layered-dialog
