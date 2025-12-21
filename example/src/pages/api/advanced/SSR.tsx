@@ -77,6 +77,41 @@ export const store = new DialogStore();
 const [store, setStore] = useState<DialogStore | null>(null);
 useEffect(() => setStore(new DialogStore()), []);`;
 
+const globalDialogCode = `// lib/dialog/globalDialog.ts
+import { DialogStore } from "react-layered-dialog";
+
+let globalStore: DialogStore | null = null;
+
+/**
+ * 컴포넌트 외부(Axios Interceptor 등)에서 다이얼로그를 사용하기 위한 전역 스토어.
+ * 서버 환경에서는 null을 반환하여 SSR 안전성을 보장합니다.
+ */
+export function getGlobalDialog() {
+  if (typeof window === "undefined") return null;
+
+  if (!globalStore) {
+    globalStore = new DialogStore();
+  }
+  return globalStore;
+}`;
+
+const axiosExample = `// lib/axios.ts
+import axios from 'axios';
+import { getGlobalDialog } from './dialog/globalDialog';
+import { SessionExpiredModal } from '@/components/dialogs/SessionExpiredModal';
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      const dialog = getGlobalDialog();
+      // 서버에서는 dialog가 null이므로 안전
+      dialog?.open(() => <SessionExpiredModal />);
+    }
+    return Promise.reject(error);
+  }
+);`;
+
 const debugTips = `// 1. 스토어 생성 시점 확인
 useEffect(() => {
   console.log('[Dialog] 스토어 생성 - 이 로그는 브라우저 콘솔에서만 보여야 함');
@@ -278,6 +313,30 @@ dialog.open(() => <Modal />); // ❌ TypeError: Cannot read property 'open' of n
         Edge Runtime은 Node.js와 다른 격리 모델을 사용하지만, 여전히 전역 변수가 요청 간 공유될 수 있습니다.
       </p>
       <CodeBlock language="ts" code={edgeWarning} />
+    </Section>
+
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <Section as="h2" id="outside-component" title="컴포넌트 외부에서 사용하기">
+      <p className="text-sm text-muted-foreground mb-4">
+        Axios Interceptor나 일반 <InlineCode>.ts</InlineCode> 파일은 React 컴포넌트가 아니므로
+        <InlineCode>useDialog</InlineCode> 훅을 사용할 수 없습니다.
+        <strong> Lazy Singleton 패턴</strong>으로 SSR 안전성을 유지하면서 전역 접근이 가능합니다.
+      </p>
+
+      <Section as="h3" id="global-dialog" title="1. getGlobalDialog 함수 생성">
+        <CodeBlock language="ts" code={globalDialogCode} />
+      </Section>
+
+      <Section as="h3" id="axios-example" title="2. Axios Interceptor 사용 예시">
+        <CodeBlock language="tsx" code={axiosExample} />
+      </Section>
+
+      <DocCallout variant="info" title="별도의 스토어입니다">
+        <p className="text-sm">
+          이 전역 스토어는 Context 기반 <InlineCode>useDialog</InlineCode> 훅과 <strong>별도의 인스턴스</strong>입니다.
+          따라서 <InlineCode>DialogsRenderer</InlineCode>도 각각 배치해야 합니다.
+        </p>
+      </DocCallout>
     </Section>
 
     <Section as="h2" id="debug" title="디버깅 팁">

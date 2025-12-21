@@ -189,6 +189,50 @@ export function useDialog(): DialogStore {
 }
 ```
 
+## 컴포넌트 외부에서 사용하기 (Axios Interceptor 등)
+
+Axios Interceptor나 일반 `.ts` 파일은 React 컴포넌트가 아니므로 `useDialog` 훅을 사용할 수 없습니다.
+**Lazy Singleton 패턴**으로 SSR 안전성을 유지하면서 전역 접근이 가능합니다:
+
+```ts
+// lib/dialog/globalDialog.ts
+import { DialogStore } from "react-layered-dialog";
+
+let globalStore: DialogStore | null = null;
+
+export function getGlobalDialog() {
+  // 서버에서는 null 반환 (SSR 안전)
+  if (typeof window === "undefined") return null;
+
+  if (!globalStore) {
+    globalStore = new DialogStore();
+  }
+  return globalStore;
+}
+```
+
+**Axios Interceptor 사용 예시:**
+
+```ts
+// lib/axios.ts
+import axios from 'axios';
+import { getGlobalDialog } from './dialog/globalDialog';
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      const dialog = getGlobalDialog();
+      dialog?.open(() => <SessionExpiredModal />);
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+> ⚠️ 이 전역 스토어는 Context 기반 `useDialog`와 별도의 인스턴스입니다. 
+> `DialogsRenderer`도 별도로 배치해야 합니다.
+
 ## 멀티 스토어
 
 독립적인 다이얼로그 스택이 필요한 경우:
