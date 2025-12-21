@@ -166,7 +166,7 @@ export function useDialog(): DialogStore {
     return new Proxy({} as DialogStore, {
       get(_, prop) {
         // 어떤 메서드를 호출해도 경고만 출력하고 앱은 죽지 않음
-        return (...args: unknown[]) => {
+        return () => {
           console.warn(`[DialogSystem] '${String(prop)}' 호출 시점에 아직 Store가 준비되지 않았습니다.`);
         };
       },

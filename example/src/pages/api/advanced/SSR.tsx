@@ -48,7 +48,7 @@ export function useDialog(): DialogStore {
     return new Proxy({} as DialogStore, {
       get(_, prop) {
         // 어떤 메서드를 호출해도 경고만 출력하고 앱은 죽지 않음
-        return (...args: unknown[]) => {
+        return () => {
           console.warn(\`[Dialog] Store 미준비 상태에서 '\${String(prop)}' 호출됨\`);
           // 아무것도 하지 않고 무시
         };
