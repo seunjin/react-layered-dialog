@@ -13,7 +13,7 @@ type AlertDialogProps = {
 
 export function Alert(props: AlertDialogProps) {
   const controller = useDialogController<AlertDialogProps>();
-  const { close, unmount, update, stack, zIndex, getStateFields } = controller;
+  const { close, unmount, update, stack, zIndex, getProps } = controller;
 
   const handleConfirm = () => {
     close();
@@ -21,7 +21,7 @@ export function Alert(props: AlertDialogProps) {
   };
 
   const isTopMost = stack.index === stack.size - 1;
-  const { title, message } = getStateFields({ title: props.title, message: props.message });
+  const { title, message } = getProps({ title: props.title, message: props.message });
 
   return (
     <div role="alertdialog" aria-modal="true" data-topmost={isTopMost} style={{ zIndex }}>
@@ -106,7 +106,7 @@ export const UseDialogControllerPage = () => (
           <InlineCode>resolve(payload)</InlineCode>, <InlineCode>reject(reason)</InlineCode>:{' '}
           <InlineCode>openAsync</InlineCode> 호출에서 반환된 Promise를 완료하거나 거부합니다.
         </li>
-        
+
         <li>
           <InlineCode>stack</InlineCode>: <InlineCode>index</InlineCode>와 <InlineCode>size</InlineCode> 정보를 포함한 스택 메타 데이터.
         </li>
@@ -114,7 +114,7 @@ export const UseDialogControllerPage = () => (
           <InlineCode>handle</InlineCode>: 현재 다이얼로그의 ID와 componentKey를 담은 핸들.
         </li>
         <li>
-          <InlineCode>getStateFields</InlineCode>, <InlineCode>getStateField</InlineCode>: props와 사용자 정의 상태를 병합해 안전하게 추출합니다.
+          <InlineCode>getProps</InlineCode>, <InlineCode>getProp</InlineCode>: props와 사용자 정의 상태를 병합해 안전하게 추출합니다.
         </li>
         <li>
           <InlineCode>zIndex</InlineCode>, <InlineCode>isOpen</InlineCode>, <InlineCode>state</InlineCode>: 스타일 제어나 렌더 조건 분기에 활용할 수 있는 메타와 상태입니다.
@@ -125,7 +125,7 @@ export const UseDialogControllerPage = () => (
     <Section as="h2" id="tips" title="Tips">
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          <InlineCode>getStateFields</InlineCode>로 props와 사용자 정의 상태를 병합하면 안전하게 기본값을
+          <InlineCode>getProps</InlineCode>로 props와 사용자 정의 상태를 병합하면 안전하게 기본값을
           지정할 수 있습니다.
         </li>
         <li>

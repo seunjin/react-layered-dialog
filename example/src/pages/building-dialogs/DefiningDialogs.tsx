@@ -27,14 +27,14 @@ export const DefiningDialogsPage = () => (
     <p className="lead">
       다이얼로그마다 필요한 데이터 구조(<InlineCode>TProps</InlineCode>)를 명확히 정의해 두면,
       레지스트리와 컨트롤러/렌더러 전반에서 타입 안전한 계약을 유지할 수 있습니다.
-      동작 플래그도 props 안에서 함께 관리해 <InlineCode>getStateFields</InlineCode>로 병합하세요.
+      동작 플래그도 props 안에서 함께 관리해 <InlineCode>getProps</InlineCode>로 병합하세요.
     </p>
 
     <Section as="h2" id="props" title="Props Definition">
       <p>
         다이얼로그 UI에 필요한 데이터(<InlineCode>TProps</InlineCode>)를 한 타입으로 묶어두면 컨트롤러/렌더러 전반에서
         계약이 선명해집니다. 표시/동작 관련 플래그가 필요하다면 함께 정의하고, 컴포넌트 내부에서 컨트롤러 도우미(
-        <InlineCode>getStateFields</InlineCode> 등)로 조합해 사용하세요.
+        <InlineCode>getProps</InlineCode> 등)로 조합해 사용하세요.
       </p>
       <CodeBlock language="ts" code={propsSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
@@ -89,7 +89,7 @@ export const DefiningDialogsPage = () => (
         컴포넌트를 만들 때 <InlineCode>DialogComponent&lt;TProps&gt;</InlineCode>{' '}
         형태로 선언하면 레지스트리와 컨트롤러가 동일한 타입 정보를 공유합니다.
         컨트롤러 훅도 <InlineCode>useDialogController&lt;TProps&gt;</InlineCode>처럼
-        같은 제네릭을 사용해 <InlineCode>getStateFields</InlineCode> 등에서 정확한 자동 완성을 받을 수 있습니다.
+        같은 제네릭을 사용해 <InlineCode>getProps</InlineCode> 등에서 정확한 자동 완성을 받을 수 있습니다.
       </p>
       <CodeBlock
         language="tsx"
@@ -111,7 +111,7 @@ export const AlertB = ((props: AlertDialogProps) => null) satisfies DialogCompon
         <InlineCode>dialog.store.open</InlineCode> / <InlineCode>dialog.store.openAsync</InlineCode> 호출 시{' '}
         <InlineCode>open&lt;AlertDialogProps&gt;(...)</InlineCode> 처럼 제네릭을
         명시해 컨트롤러 메서드(
-        <InlineCode>getStateFields</InlineCode> 등)의 타입을 정확히 고정할 수 있습니다.
+        <InlineCode>getProps</InlineCode> 등)의 타입을 정확히 고정할 수 있습니다.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         특히 커스텀 <InlineCode>DialogRenderFn</InlineCode>을 구성하거나
@@ -146,7 +146,7 @@ export const AlertB = ((props: AlertDialogProps) => null) satisfies DialogCompon
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
           입력과 상태를 구분하세요. props는 열기 시점의 입력, 컨트롤러 <InlineCode>update</InlineCode>로 바뀌는 값은
-          내부 상태로 다룹니다. 기본값이 필요하다면 읽을 때 <InlineCode>getStateFields</InlineCode>로 합치면 됩니다.
+          내부 상태로 다룹니다. 기본값이 필요하다면 읽을 때 <InlineCode>getProps</InlineCode>로 합치면 됩니다.
         </li>
         <li>
           한 다이얼로그는 한 가지 역할에 집중하세요. 여러 단계를 표현할 때는 <InlineCode>step</InlineCode> 같은 필드로

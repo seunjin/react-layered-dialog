@@ -97,10 +97,6 @@ export type DialogOpenResult<
   getProp: <V>(key: PropertyKey, fallback: V) => V;
   /** 현재 state를 주어진 기본 객체와 병합해 반환합니다. */
   getProps: <T extends Record<string, unknown>>(base: T) => T;
-  /** @alias getProp */
-  getStateField: <V>(key: PropertyKey, fallback: V) => V;
-  /** @alias getProps */
-  getStateFields: <T extends Record<string, unknown>>(base: T) => T;
 };
 
 export type DialogAsyncResult<
@@ -157,10 +153,6 @@ export interface DialogControllerContextValue<
    * state가 비어 있으면 기본 객체가 그대로 반환됩니다.
    */
   getProps: <T extends Record<string, unknown>>(base: T) => T;
-  /** @alias getProp */
-  getStateField: <V>(key: PropertyKey, fallback: V) => V;
-  /** @alias getProps */
-  getStateFields: <T extends Record<string, unknown>>(base: T) => T;
   /** Promise 기반 컨트롤러에서 결과를 resolve */
   resolve?: (payload: DialogAsyncResolvePayload<unknown>) => void;
   /** Promise 기반 컨트롤러에서 Promise를 reject */

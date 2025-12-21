@@ -21,7 +21,8 @@ import { ApiTypesPage } from '@/pages/api/Types';
 import { ApiAdvancedStateLifecyclePage } from '@/pages/api/advanced/StateLifecycle';
 import { ApiAdvancedZIndexLayeringPage } from '@/pages/api/advanced/ZIndexLayering';
 import { ApiAdvancedAsyncStatusPage } from '@/pages/api/advanced/AsyncStatus';
-import { ApiAdvancedMultiStoreSSRPage } from '@/pages/api/advanced/MultiStoreSSR';
+import { ApiAdvancedMultiStorePage } from '@/pages/api/advanced/MultiStore';
+import { ApiAdvancedSSRPage } from '@/pages/api/advanced/SSR';
 // Appendix routes removed for now
 
 export const routeConfig = [
@@ -119,9 +120,14 @@ export const routeConfig = [
         name: 'Async Status',
       },
       {
-        path: 'advanced/multi-store-ssr',
-        element: <ApiAdvancedMultiStoreSSRPage />,
-        name: 'Multi-store/SSR',
+        path: 'advanced/multi-store',
+        element: <ApiAdvancedMultiStorePage />,
+        name: 'Multi-store',
+      },
+      {
+        path: 'advanced/ssr',
+        element: <ApiAdvancedSSRPage />,
+        name: 'SSR 지원',
       },
       // Appendix removed
     ],

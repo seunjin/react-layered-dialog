@@ -15,15 +15,15 @@ type AlertDialogProps = {
 
 export const AlertDialog: DialogComponent<AlertDialogProps> = (props) => {
   const controller = useDialogController<AlertDialogProps>();
-  const { close, unmount, getStateField, getStateFields, zIndex } = controller;
+  const { close, unmount, getProp, getProps, zIndex } = controller;
 
   // 기본값과 props를 병합해 항상 완전한 객체를 유지합니다.
-  const { title, message } = getStateFields({
+  const { title, message } = getProps({
     title: '알림',
     message: props.message,
   });
-  // 개별 필드만 필요하다면 getStateField로 fallback을 지정할 수 있습니다.
-  const onOk = getStateField('onOk', undefined);
+  // 개별 필드만 필요하다면 getProp으로 fallback을 지정할 수 있습니다.
+  const onOk = getProp('onOk', undefined);
 
   const handleConfirm = () => {
     onOk?.();
@@ -69,10 +69,10 @@ export const ComponentBasicsPage = () => (
       <CodeBlock language="tsx" code={basicComponentSnippet} />
       <ul className="ml-6 list-disc space-y-2 text-sm text-muted-foreground">
         <li>
-          <InlineCode>getStateFields</InlineCode>로 기본값과 props를 병합하면 <InlineCode>update</InlineCode> 호출 이후에도 전체 형태가 유지되어 안전하게 상태를 갱신할 수 있습니다.
+          <InlineCode>getProps</InlineCode>로 기본값과 props를 병합하면 <InlineCode>update</InlineCode> 호출 이후에도 전체 형태가 유지되어 안전하게 상태를 갱신할 수 있습니다.
         </li>
         <li>
-          특정 필드만 필요하다면 <InlineCode>getStateField(key, fallback)</InlineCode>를 사용해 undefined를 허용하지 않는 값을 쉽게 얻을 수 있습니다.
+          특정 필드만 필요하다면 <InlineCode>getProp(key, fallback)</InlineCode>를 사용해 undefined를 허용하지 않는 값을 쉽게 얻을 수 있습니다.
         </li>
         <li>
           컨트롤러는 자동 계산된 <InlineCode>zIndex</InlineCode>를 제공하므로 스타일이나 포탈 전략을 제어할 때 활용하세요.

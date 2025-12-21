@@ -86,6 +86,9 @@ npm i react-layered-dialog
 - **Automatic Z-Index**: 다이얼로그가 층층이 쌓일 때 레이어 순서를 자동으로 관리합니다.
 - **Headless & Flexible**: UI 프레임워크나 애니메이션 라이브러리에 의존하지 않아 자유로운 디자인이 가능합니다.
 
+> [!WARNING]
+> **Next.js/SSR 환경에서 사용 시 주의**: 전역 스토어를 서버에서 생성하면 다른 사용자의 모달 상태가 공유될 수 있습니다. 반드시 [SSR 가이드](./docs/advanced/ssr.md)를 확인하세요.
+
 ---
 
 ## More Resources

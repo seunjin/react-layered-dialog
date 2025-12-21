@@ -64,8 +64,6 @@ const dialogControllerType = `export interface DialogControllerContextValue<TPro
   update: (updater: DialogStateUpdater<TProps>) => void;
   getProp: <V>(key: PropertyKey, fallback: V) => V;
   getProps: <T extends Record<string, unknown>>(base: T) => T;
-  getStateField: <V>(key: PropertyKey, fallback: V) => V;
-  getStateFields: <T extends Record<string, unknown>>(base: T) => T;
   resolve?: (payload: DialogAsyncResolvePayload) => void;
   reject?: (reason?: unknown) => void;
   status: DialogStatus;
@@ -99,8 +97,6 @@ const dialogOpenResultType = `export type DialogOpenResult<TProps = Record<strin
   zIndex: number;
   getProp: <V>(key: PropertyKey, fallback: V) => V;
   getProps: <T extends Record<string, unknown>>(base: T) => T;
-  getStateField: <V>(key: PropertyKey, fallback: V) => V;
-  getStateFields: <T extends Record<string, unknown>>(base: T) => T;
 }`;
 
 const dialogAsyncResultType = `export type DialogAsyncResult<TProps = Record<string, unknown>, TData = unknown> = 

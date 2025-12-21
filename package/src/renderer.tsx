@@ -2,6 +2,7 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { DialogControllerProvider, useDialogControllerInternal } from './controller';
 import type { DialogStore } from './store';
 import type { DialogControllerContextValue, DialogEntry } from './types';
+import { getProp, getProps } from './utils';
 
 type DialogsRendererProps = {
   /** 다이얼로그 상태를 관리하는 스토어 */
@@ -63,22 +64,10 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
       unmountAll: store.unmountAll,
       update: (updater) => store.update(entry.id, updater),
       getProp: <V,>(key: PropertyKey, fallback: V) => {
-        const current = entry.state as Record<PropertyKey, unknown> | undefined;
-        if (current && Object.prototype.hasOwnProperty.call(current, key)) {
-          return current[key] as V;
-        }
-        return fallback;
+        return getProp(entry.state as Record<string, unknown>, key, fallback);
       },
       getProps: <T extends Record<string, unknown>>(base: T) => {
-        const current = entry.state as Partial<T> | undefined;
-        if (!current) return base;
-        return { ...base, ...current };
-      },
-      getStateField: <V,>(key: PropertyKey, fallback: V) => {
-        return (entry.state as Record<PropertyKey, unknown> | undefined)?.[key] as V ?? fallback;
-      },
-      getStateFields: <T extends Record<string, unknown>>(base: T) => {
-        return { ...base, ...(entry.state as Partial<T>) };
+        return getProps(entry.state as Record<string, unknown>, base);
       },
       resolve: entry.asyncHandlers?.resolve as
         | ((payload: import('./types').DialogAsyncResolvePayload<unknown>) => void)

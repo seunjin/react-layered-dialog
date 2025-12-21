@@ -12,6 +12,7 @@ import type {
   DialogStatus,
   DialogOpenResult,
 } from './types';
+import { getProp, getProps } from './utils';
 
 const DEFAULT_BASE_Z_INDEX = 1000;
 let dialogSeq = 0;
@@ -139,24 +140,11 @@ export class DialogStore {
       zIndex,
       getProp: <V>(key: PropertyKey, fallback: V) => {
         const entry = this.entries.find((e) => e.id === handle.id);
-        if (entry && Object.prototype.hasOwnProperty.call(entry.state, key)) {
-          return (entry.state as Record<PropertyKey, unknown>)[key] as V;
-        }
-        return fallback;
+        return getProp(entry?.state as Record<string, unknown>, key, fallback);
       },
       getProps: <T extends Record<string, unknown>>(base: T) => {
         const entry = this.entries.find((e) => e.id === handle.id);
-        const current = entry?.state as Partial<T> | undefined;
-        if (!current) return base;
-        return { ...base, ...current };
-      },
-      getStateField: <V>(key: PropertyKey, fallback: V) => {
-        const entry = this.entries.find((e) => e.id === handle.id);
-        return (entry?.state as Record<PropertyKey, unknown> | undefined)?.[key] as V ?? fallback;
-      },
-      getStateFields: <T extends Record<string, unknown>>(base: T) => {
-        const entry = this.entries.find((e) => e.id === handle.id);
-        return { ...base, ...(entry?.state as Partial<T>) };
+        return getProps(entry?.state as Record<string, unknown>, base);
       },
     };
 

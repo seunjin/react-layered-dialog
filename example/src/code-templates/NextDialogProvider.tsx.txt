@@ -1,0 +1,28 @@
+// lib/dialog/DialogProvider.tsx
+"use client";
+
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { DialogStore, DialogsRenderer } from "react-layered-dialog";
+
+const DialogStoreContext = createContext<DialogStore | null>(null);
+
+export function DialogProvider({ children }: { children: ReactNode }) {
+  const [store, setStore] = useState<DialogStore | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setStore(new DialogStore());
+    setIsMounted(true);
+  }, []);
+
+  return (
+    <DialogStoreContext.Provider value={store}>
+      {children}
+      {isMounted && store && <DialogsRenderer store={store} />}
+    </DialogStoreContext.Provider>
+  );
+}
+
+export function useDialogStore() {
+  return useContext(DialogStoreContext);
+}

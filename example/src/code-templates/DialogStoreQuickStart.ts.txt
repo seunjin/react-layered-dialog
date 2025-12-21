@@ -1,4 +1,5 @@
-import { DialogStore } from 'react-layered-dialog';
+import { DialogStore, DialogsRenderer } from 'react-layered-dialog';
 
 // 애플리케이션 전역에서 공유할 스토어 인스턴스
+// ⚠️ React SPA (Vite/CRA) 전용. Next.js에서는 사용하지 마세요!
 export const dialog = new DialogStore();

@@ -1,0 +1,21 @@
+// lib/dialog/useDialog.ts
+import { useMemo } from "react";
+import type { DialogStore } from "react-layered-dialog";
+import { useDialogStore } from "./DialogProvider";
+
+export function useDialog(): DialogStore {
+  const store = useDialogStore();
+
+  return useMemo(() => {
+    if (store) return store;
+
+    // SSR/초기 마운트 전 안전 처리
+    return new Proxy({} as DialogStore, {
+      get(_, prop) {
+        return () => console.warn(`[Dialog] Store 미준비: ${String(prop)}`);
+      },
+    });
+  }, [store]);
+}
+
+export { useDialogController } from "react-layered-dialog";
