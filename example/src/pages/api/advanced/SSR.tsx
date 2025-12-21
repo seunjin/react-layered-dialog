@@ -83,19 +83,71 @@ import { DialogStore } from "react-layered-dialog";
 let globalStore: DialogStore | null = null;
 
 /**
- * 컴포넌트 외부(Axios Interceptor 등)에서 다이얼로그를 사용하기 위한 전역 스토어.
- * 서버 환경에서는 null을 반환하여 SSR 안전성을 보장합니다.
+ * 컴포넌트 외부(유틸리티 함수, API 레이어, Interceptor 등)에서
+ * 다이얼로그를 사용하기 위한 전역 스토어.
+ * 
+ * ⚠️ 서버 환경에서는 null을 반환 → SSR 안전
  */
 export function getGlobalDialog() {
+  // 서버(Node.js)에서는 window가 없으므로 null 반환
   if (typeof window === "undefined") return null;
 
+  // 브라우저에서만 Lazy하게 인스턴스 생성
   if (!globalStore) {
     globalStore = new DialogStore();
   }
   return globalStore;
 }`;
 
-const axiosExample = `// lib/axios.ts
+const fetchExample = `// lib/api.ts - fetch 기반 API 유틸리티
+import { getGlobalDialog } from './dialog/globalDialog';
+import { ErrorModal } from '@/components/dialogs/ErrorModal';
+
+export async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(url, options);
+  
+  if (!response.ok) {
+    const dialog = getGlobalDialog();
+    
+    if (response.status === 401) {
+      // 서버에서는 dialog가 null이므로 안전하게 무시됨
+      dialog?.open(() => <SessionExpiredModal />);
+    } else if (response.status >= 500) {
+      dialog?.open(() => <ErrorModal message="서버 오류가 발생했습니다." />);
+    }
+    
+    throw new Error(\`HTTP \${response.status}\`);
+  }
+  
+  return response.json();
+}`;
+
+const utilityExample = `// lib/utils/fileUpload.ts - 일반 유틸리티 함수
+import { getGlobalDialog } from '../dialog/globalDialog';
+import { UploadProgressModal } from '@/components/dialogs/UploadProgressModal';
+import { UploadCompleteModal } from '@/components/dialogs/UploadCompleteModal';
+
+export async function uploadFile(file: File) {
+  const dialog = getGlobalDialog();
+  
+  // 서버에서 호출되면 dialog가 null → 조용히 무시
+  const handle = dialog?.open(() => <UploadProgressModal filename={file.name} />);
+  
+  try {
+    const result = await performUpload(file);
+    
+    // 업로드 완료 후 모달 교체
+    handle?.unmount();
+    dialog?.open(() => <UploadCompleteModal url={result.url} />);
+    
+    return result;
+  } catch (error) {
+    handle?.unmount();
+    throw error;
+  }
+}`;
+
+const axiosExample = `// lib/axios.ts - Axios Interceptor
 import axios from 'axios';
 import { getGlobalDialog } from './dialog/globalDialog';
 import { SessionExpiredModal } from '@/components/dialogs/SessionExpiredModal';
@@ -105,7 +157,6 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       const dialog = getGlobalDialog();
-      // 서버에서는 dialog가 null이므로 안전
       dialog?.open(() => <SessionExpiredModal />);
     }
     return Promise.reject(error);
@@ -318,16 +369,40 @@ dialog.open(() => <Modal />); // ❌ TypeError: Cannot read property 'open' of n
     {/* ───────────────────────────────────────────────────────────────────── */}
     <Section as="h2" id="outside-component" title="컴포넌트 외부에서 사용하기">
       <p className="text-sm text-muted-foreground mb-4">
-        Axios Interceptor나 일반 <InlineCode>.ts</InlineCode> 파일은 React 컴포넌트가 아니므로
+        유틸리티 함수, API 레이어, Interceptor 등 React 컴포넌트가 아닌 곳에서는
         <InlineCode>useDialog</InlineCode> 훅을 사용할 수 없습니다.
         <strong> Lazy Singleton 패턴</strong>으로 SSR 안전성을 유지하면서 전역 접근이 가능합니다.
       </p>
 
+      <DocCallout variant="warning" title="⚠️ SSR 핵심 원칙">
+        <p className="text-sm">
+          <InlineCode>getGlobalDialog()</InlineCode>는 서버에서 <InlineCode>null</InlineCode>을 반환합니다.
+          반드시 <strong>옵셔널 체이닝</strong> (<InlineCode>dialog?.open</InlineCode>)을 사용하세요.
+        </p>
+      </DocCallout>
+
       <Section as="h3" id="global-dialog" title="1. getGlobalDialog 함수 생성">
+        <p className="text-sm text-muted-foreground mb-3">
+          이 함수가 모든 컴포넌트 외부 호출의 기반입니다.
+        </p>
         <CodeBlock language="ts" code={globalDialogCode} />
       </Section>
 
-      <Section as="h3" id="axios-example" title="2. Axios Interceptor 사용 예시">
+      <Section as="h3" id="fetch-example" title="2. fetch 기반 API 유틸리티">
+        <p className="text-sm text-muted-foreground mb-3">
+          공통 API 호출 함수에서 에러 발생 시 다이얼로그를 띄웁니다.
+        </p>
+        <CodeBlock language="tsx" code={fetchExample} />
+      </Section>
+
+      <Section as="h3" id="utility-example" title="3. 일반 유틸리티 함수">
+        <p className="text-sm text-muted-foreground mb-3">
+          파일 업로드 등 긴 작업에서 진행 상황 모달을 표시합니다.
+        </p>
+        <CodeBlock language="tsx" code={utilityExample} />
+      </Section>
+
+      <Section as="h3" id="axios-example" title="4. Axios Interceptor">
         <CodeBlock language="tsx" code={axiosExample} />
       </Section>
 

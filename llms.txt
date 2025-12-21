@@ -53,9 +53,10 @@ const store = new DialogStore({ baseZIndex?: number });
 store.open(() => <MyDialog />);
 store.open(() => <MyDialog />, { id: 'my-dialog' });
 
-// 특정 다이얼로그 닫기
-store.close(dialogId);      // 닫기 애니메이션 시작
-store.unmount(dialogId);    // 즉시 제거
+// 특정 다이얼로그 닫기 (2단계 분리: 애니메이션 지원)
+store.close(dialogId);      // 1. isOpen = false → 애니메이션 시작
+// ... (애니메이션 종료 이벤트 감지 후)
+store.unmount(dialogId);    // 2. DOM에서 완전히 제거
 
 // 전체 닫기
 store.closeAll();
@@ -76,18 +77,21 @@ import { useDialogController } from 'react-layered-dialog';
 function MyDialog() {
   const {
     id,           // 다이얼로그 고유 ID
-    isOpen,       // 열림 상태 (애니메이션용)
+    isOpen,       // 열림 상태 (애니메이션용: false가 되면 exit 애니메이션 시작)
     zIndex,       // 현재 z-index
     stack,        // 스택 정보 { index, total, isTop }
-    close,        // 닫기 (애니메이션 시작)
-    unmount,      // 즉시 제거
+    close,        // 닫기 (isOpen = false, 애니메이션 시작)
+    unmount,      // DOM에서 완전히 제거 (애니메이션 종료 후 호출)
     update,       // 상태 업데이트
-    getProp,      // 특정 상태 값 조회
-    getProps,     // 여러 상태 값 조회
+    getProps,     // 기본값과 현재 state를 안전하게 병합
   } = useDialogController();
+
+  // getProps: 전달받은 props와 store state를 기본값과 병합
+  const finalProps = getProps({ title: '기본 제목', color: 'blue' });
 
   return (
     <div style={{ zIndex }}>
+      <h2>{finalProps.title}</h2>
       <button onClick={close}>닫기</button>
     </div>
   );
@@ -128,6 +132,39 @@ const result = await store.openAsync(confirmDialog, { message: '삭제하시겠�
 if (result.result) {
   // 확인됨
 }
+```
+
+## 다이얼로그 모듈화 (Registry 패턴)
+
+대규모 앱에서 다이얼로그를 미리 정의하고 타입 안전하게 재사용하려면 `createDialogApi`를 사용하세요:
+
+```tsx
+// dialogs.ts
+import { DialogStore, createDialogApi, defineDialog } from 'react-layered-dialog';
+
+const store = new DialogStore();
+
+// 다이얼로그 정의
+const alertDialog = defineDialog<{ title: string; message: string }>((props) => {
+  const { close } = useDialogController();
+  return (
+    <div>
+      <h2>{props.title}</h2>
+      <p>{props.message}</p>
+      <button onClick={close}>확인</button>
+    </div>
+  );
+});
+
+// Registry 기반 API 생성
+export const dialog = createDialogApi(store, {
+  alert: alertDialog,
+  confirm: confirmDialog,
+});
+
+// 사용처 - 타입 안전하게 호출
+dialog.alert({ title: '알림', message: '저장되었습니다.' });
+const result = await dialog.confirm({ message: '삭제하시겠습니까?' });
 ```
 
 ## Next.js SSR 주의사항
@@ -189,10 +226,14 @@ export function useDialog(): DialogStore {
 }
 ```
 
-## 컴포넌트 외부에서 사용하기 (Axios Interceptor 등)
+## 컴포넌트 외부에서 사용하기 (유틸리티 함수, API 레이어 등)
 
-Axios Interceptor나 일반 `.ts` 파일은 React 컴포넌트가 아니므로 `useDialog` 훅을 사용할 수 없습니다.
-**Lazy Singleton 패턴**으로 SSR 안전성을 유지하면서 전역 접근이 가능합니다:
+유틸리티 함수, API 레이어, Interceptor 등 React 컴포넌트가 아닌 곳에서는 `useDialog` 훅을 사용할 수 없습니다.
+**Lazy Singleton 패턴**으로 SSR 안전성을 유지하면서 전역 접근이 가능합니다.
+
+> ⚠️ `getGlobalDialog()`는 서버에서 `null`을 반환합니다. 반드시 **옵셔널 체이닝** (`dialog?.open`)을 사용하세요.
+
+### 1. getGlobalDialog 함수 생성
 
 ```ts
 // lib/dialog/globalDialog.ts
@@ -201,7 +242,7 @@ import { DialogStore } from "react-layered-dialog";
 let globalStore: DialogStore | null = null;
 
 export function getGlobalDialog() {
-  // 서버에서는 null 반환 (SSR 안전)
+  // 서버(Node.js)에서는 window가 없으므로 null 반환
   if (typeof window === "undefined") return null;
 
   if (!globalStore) {
@@ -211,13 +252,55 @@ export function getGlobalDialog() {
 }
 ```
 
-**Axios Interceptor 사용 예시:**
+### 2. fetch 기반 API 유틸리티
+
+```ts
+// lib/api.ts
+export async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(url, options);
+  
+  if (!response.ok) {
+    const dialog = getGlobalDialog();
+    
+    if (response.status === 401) {
+      dialog?.open(() => <SessionExpiredModal />);
+    } else if (response.status >= 500) {
+      dialog?.open(() => <ErrorModal message="서버 오류" />);
+    }
+    
+    throw new Error(`HTTP ${response.status}`);
+  }
+  
+  return response.json();
+}
+```
+
+### 3. 일반 유틸리티 함수
+
+```ts
+// lib/utils/fileUpload.ts
+export async function uploadFile(file: File) {
+  const dialog = getGlobalDialog();
+  
+  // 서버에서 호출되면 dialog가 null → 조용히 무시
+  const handle = dialog?.open(() => <UploadProgressModal filename={file.name} />);
+  
+  try {
+    const result = await performUpload(file);
+    handle?.unmount();
+    dialog?.open(() => <UploadCompleteModal url={result.url} />);
+    return result;
+  } catch (error) {
+    handle?.unmount();
+    throw error;
+  }
+}
+```
+
+### 4. Axios Interceptor
 
 ```ts
 // lib/axios.ts
-import axios from 'axios';
-import { getGlobalDialog } from './dialog/globalDialog';
-
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -230,7 +313,7 @@ axios.interceptors.response.use(
 );
 ```
 
-> ⚠️ 이 전역 스토어는 Context 기반 `useDialog`와 별도의 인스턴스입니다. 
+> ⚠️ 이 전역 스토어는 Context 기반 `useDialog`와 **별도의 인스턴스**입니다. 
 > `DialogsRenderer`도 별도로 배치해야 합니다.
 
 ## 멀티 스토어
