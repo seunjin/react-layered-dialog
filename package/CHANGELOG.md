@@ -1,3 +1,16 @@
+## 0.6.1
+
+### Patch Changes
+
+- **refactor**: 내부 타입 안전성 개선 (`any` → `unknown` 타입 변환)
+- **docs**: SSR 가이드 대폭 보강
+  - React SPA vs Next.js SSR 비교 표
+  - 서버 메모리 공유 문제 상세 시나리오
+  - Hydration Mismatch 설명
+  - 컴포넌트 외부 사용 가이드 (fetch, 유틸리티 함수, Axios Interceptor)
+- **docs**: `llms.txt` 추가 (AI 도구용 라이브러리 문서)
+- **docs**: Example 앱 페이지 전면 수정 (`getStateFields` → `getProps` 반영)
+
 ## 0.6.0
 
 ### Minor Changes

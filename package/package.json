@@ -1,6 +1,6 @@
 {
   "name": "react-layered-dialog",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A flexible and layered dialog component for React",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
