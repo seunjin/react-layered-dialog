@@ -184,11 +184,45 @@
 
 ---
 
-### M4-3: Live Demo 링크 검증 🔴
+### M4-3: Live Demo 링크 검증 🟡
 **작업 내용**:
-- [ ] GitHub Pages 배포 상태 확인
-- [ ] CI에서 빌드/배포 검증
-- [ ] README 링크 유효성 확인
+- [ ] GitHub Pages 활성화 여부 레포 Settings에서 확인
+- [x] CI에서 빌드/배포 검증 (ci.yml 추가: React 18/19 매트릭스, 번들 사이즈 체크, lint)
+- [x] example 앱 빌드 정상 확인 (vite base: '/react-layered-dialog/')
+- [x] README 링크 확인 (https://seunjin.github.io/react-layered-dialog/ 올바름)
+
+---
+
+---
+
+## 추가 완료 작업 (세션 2)
+
+### 버그 수정
+- [x] 전역 `dialogSeq` / `componentSeq` → `DialogStore` 인스턴스 내부로 이동 (SSR 격리)
+- [x] `openAsync` / `unmountAll` — unmount 시 pending async dialog 자동 reject
+- [x] `openAsync` closure 메모리 정리 (settle/rejectPromiseRef null 처리)
+- [x] `useMemo` deps에서 불필요한 `store` 제거
+
+### 신규 기능
+- [x] `store.isOpen(id)` 편의 메서드 추가
+- [x] `useDialogStore(store)` 훅 추가 (스토어 상태 React 구독)
+- [x] `SyncDialogController` / `AsyncDialogController` discriminated union 타입 추가
+
+### API 정비 (Breaking)
+- [x] `OpenDialogResult` → `DialogRef` 리네임 (deprecated alias 유지)
+- [x] `DialogOpenResult` → `DialogHandle` 리네임 (deprecated alias 유지)
+- [x] `DialogControllerContextValue.handle` → `ref` 필드명 변경
+
+### 품질
+- [x] `DialogAsyncEntryHandlers` public export 제거 (`@internal` 마킹)
+- [x] size-limit 설치 및 설정 (ESM 2kb / CJS 2.3kb)
+- [x] CI 워크플로 신규 생성 (React 18/19 매트릭스 + 번들 사이즈 + lint)
+- [x] 테스트 커버리지 확대 (15개 → 24개)
+
+### 문서
+- [x] 예제 앱 타입명 동기화
+- [x] docs API 문서 업데이트 (새 타입명 + 신규 API)
+- [x] llms.txt 전면 재작성 (실제 API와 일치)
 
 ---
 

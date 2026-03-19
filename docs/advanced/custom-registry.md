@@ -40,7 +40,7 @@ const registry = {
 
 `createDialogApi`는 전달된 레지스트리의 타입을 분석하여 자동으로 메서드 시그니처를 생성합니다.
 
-- **Sync 모드**: `(props, options) => DialogOpenResult`
+- **Sync 모드**: `(props, options) => DialogHandle`
 - **Async 모드**: `(props, options) => Promise<DialogAsyncResult>`
 
 ```ts

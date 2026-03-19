@@ -5,7 +5,7 @@ import type {
   DialogControllerContextValue,
   DialogRenderFn,
   DialogAsyncResult,
-  DialogOpenResult,
+  DialogHandle,
   OpenDialogOptions,
 } from './types';
 
@@ -59,7 +59,7 @@ export type DialogMethodFromDefinition<D> = DefinitionParams<D> extends infer P
             DialogControllerContextValue<P['props']>
           >,
           options?: OpenDialogOptions
-        ) => DialogOpenResult<P['props']>
+        ) => DialogHandle<P['props']>
       : (
           input: DialogInput<
             P['props'],

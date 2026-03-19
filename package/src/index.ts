@@ -1,6 +1,6 @@
 export { DialogStore } from './store';
 export type { DialogStoreOptions } from './store';
-export { DialogsRenderer, useDialogController } from './renderer';
+export { DialogsRenderer, useDialogController, useDialogStore } from './renderer';
 export {
   createDialogApi,
   defineDialog,
@@ -11,7 +11,12 @@ export {
   type DefineDialogOptions,
 } from './registry';
 export type {
-  DialogAsyncEntryHandlers,
+  // 새 이름
+  DialogRef,
+  DialogHandle,
+  SyncDialogController,
+  AsyncDialogController,
+  // 기존 타입
   DialogAsyncResolvePayload,
   DialogAsyncResult,
   DialogControllerContextValue,
@@ -19,12 +24,13 @@ export type {
   DialogEntryMeta,
   DialogId,
   DialogListener,
-  DialogOpenResult,
   DialogRenderFn,
   DialogStackInfo,
   DialogStateUpdater,
   DialogStatus,
   DialogStoreSnapshot,
   OpenDialogOptions,
+  // deprecated aliases
   OpenDialogResult,
+  DialogOpenResult,
 } from './types';

@@ -8,9 +8,9 @@
 type DialogStatus = 'idle' | 'loading' | 'done' | 'error';
 ```
 
-## DialogOpenResult<TProps>
+## DialogHandle<TProps>
 `open` 메서드 호출 시 반환되는 제어 핸들 객체입니다.
-- `dialog`: 엔트리 정보
+- `ref`: 엔트리 정보
 - `close()`: 닫기
 - `unmount()`: 제거
 - `update(props)`: 상태 업데이트
@@ -18,10 +18,20 @@ type DialogStatus = 'idle' | 'loading' | 'done' | 'error';
 - `getStatus()`: 현재 상태 조회
 - `zIndex`: 적층 순서
 
+## DialogRef
+`DialogHandle`의 `ref` 필드 타입으로, 열린 다이얼로그의 참조 정보를 담습니다.
+- `ref.id`: 다이얼로그 고유 ID
+
 ## DialogAsyncResult<TProps, TData>
-비동기 호출 성공 시 Promise가 반환하는 값입니다. `DialogOpenResult`에 다음이 추가됩니다.
+비동기 호출 성공 시 Promise가 반환하는 값입니다. `DialogHandle`에 다음이 추가됩니다.
 - `ok`: `boolean` (resolve 시 전달된 성공 여부)
 - `data`: `TData` (resolve 시 전달된 사용자 데이터)
+
+## SyncDialogController<TProps>
+동기 다이얼로그 컴포넌트에서 사용하는 컨트롤러 타입입니다. `resolve`/`reject` 없이 `close`, `unmount`, `update`, `zIndex` 등 기본 제어 메서드만 포함합니다.
+
+## AsyncDialogController<TProps, TData>
+비동기 다이얼로그 컴포넌트에서 사용하는 컨트롤러 타입입니다. `SyncDialogController`의 모든 멤버에 더해 `resolve(result)`와 `reject(error)`가 포함됩니다.
 
 ## DialogRenderFn<TProps>
 다이얼로그를 어떻게 그릴지 정의하는 함수 타입입니다.

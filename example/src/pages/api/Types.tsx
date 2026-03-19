@@ -55,7 +55,7 @@ const dialogControllerType = `export interface DialogControllerContextValue<TPro
   isOpen: boolean;
   state: TProps;
   zIndex: number;
-  handle: OpenDialogResult;
+  ref: DialogRef;
   stack: DialogStackInfo;
   close: () => void;
   unmount: () => void;
@@ -86,8 +86,8 @@ const dialogStateUpdaterType = `export type DialogStateUpdater<TProps = Record<s
 // Result Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-const dialogOpenResultType = `export type DialogOpenResult<TProps = Record<string, unknown>> = {
-  dialog: OpenDialogResult;
+const dialogOpenResultType = `export type DialogHandle<TProps = Record<string, unknown>> = {
+  ref: DialogRef;
   close: () => void;
   unmount: () => void;
   update: (updater: DialogStateUpdater<TProps>) => void;
@@ -99,16 +99,16 @@ const dialogOpenResultType = `export type DialogOpenResult<TProps = Record<strin
   getProps: <T extends Record<string, unknown>>(base: T) => T;
 }`;
 
-const dialogAsyncResultType = `export type DialogAsyncResult<TProps = Record<string, unknown>, TData = unknown> = 
-  DialogOpenResult<TProps> & DialogAsyncResolvePayload<TData>;`;
+const dialogAsyncResultType = `export type DialogAsyncResult<TProps = Record<string, unknown>, TData = unknown> =
+  DialogHandle<TProps> & DialogAsyncResolvePayload<TData>;`;
 
 const dialogAsyncResolvePayloadType = `export type DialogAsyncResolvePayload<T = unknown> = {
   ok: boolean;  // 사용자가 확인/취소 중 무엇을 선택했는지
   data?: T;     // 추가 데이터 (선택)
 }`;
 
-const openDialogResultType = `export interface OpenDialogResult {
-  id: DialogId;        // 생성된 다이얼로그 ID
+const openDialogResultType = `export interface DialogRef {
+  id: DialogId;         // 생성된 다이얼로그 ID
   componentKey: string; // React key
 }`;
 
@@ -255,7 +255,7 @@ export const ApiTypesPage = () => (
                         { name: 'isOpen', type: 'boolean', description: '다이얼로그가 열려 있는지 여부', required: true },
                         { name: 'state', type: 'TProps', description: '사용자 정의 상태', required: true },
                         { name: 'zIndex', type: 'number', description: '현재 z-index 값', required: true },
-                        { name: 'handle', type: 'OpenDialogResult', description: '다이얼로그 핸들 (id, componentKey)', required: true },
+                        { name: 'ref', type: 'DialogRef', description: '다이얼로그 식별 참조 (id, componentKey)', required: true },
                         { name: 'stack', type: 'DialogStackInfo', description: '현재 스택 정보 (topId, size, index)', required: true },
                         { name: 'close', type: '() => void', description: '현재 다이얼로그 닫기 (isOpen=false)', required: true },
                         { name: 'unmount', type: '() => void', description: '다이얼로그 완전 제거 (DOM에서 삭제)', required: true },
@@ -308,10 +308,10 @@ export const ApiTypesPage = () => (
                 <InlineCode>open()</InlineCode>과 <InlineCode>openAsync()</InlineCode>가 반환하는 결과 타입입니다.
             </p>
 
-            <Section as="h3" id="dialog-open-result" title="DialogOpenResult">
+            <Section as="h3" id="dialog-handle" title="DialogHandle">
                 <CodeBlock language="ts" code={dialogOpenResultType} />
                 <p className="mt-2 text-sm text-muted-foreground">
-                    <InlineCode>store.open()</InlineCode> 호출 시 즉시 반환되는 핸들입니다.
+                    <InlineCode>store.open()</InlineCode> 호출 시 즉시 반환되는 제어 객체입니다.
                     이 핸들을 통해 다이얼로그를 외부에서 제어할 수 있습니다.
                 </p>
             </Section>
@@ -320,7 +320,7 @@ export const ApiTypesPage = () => (
                 <CodeBlock language="ts" code={dialogAsyncResultType} />
                 <p className="mt-2 text-sm text-muted-foreground">
                     <InlineCode>store.openAsync()</InlineCode>가 반환하는 Promise의 resolve 값입니다.
-                    <InlineCode>DialogOpenResult</InlineCode>에 <InlineCode>ok</InlineCode>와 <InlineCode>data</InlineCode>가 추가됩니다.
+                    <InlineCode>DialogHandle</InlineCode>에 <InlineCode>ok</InlineCode>와 <InlineCode>data</InlineCode>가 추가됩니다.
                 </p>
             </Section>
 
@@ -334,7 +334,7 @@ export const ApiTypesPage = () => (
                 />
             </Section>
 
-            <Section as="h3" id="open-dialog-result" title="OpenDialogResult">
+            <Section as="h3" id="dialog-ref" title="DialogRef">
                 <CodeBlock language="ts" code={openDialogResultType} />
                 <PropertyTable
                     items={[
@@ -383,7 +383,7 @@ export const ApiTypesPage = () => (
                 <CodeBlock language="ts" code={dialogModeType} />
                 <PropertyTable
                     items={[
-                        { name: 'sync', type: 'string', description: '동기 모드. open() → DialogOpenResult 즉시 반환' },
+                        { name: 'sync', type: 'string', description: '동기 모드. open() → DialogHandle 즉시 반환' },
                         { name: 'async', type: 'string', description: '비동기 모드. openAsync() → Promise<DialogAsyncResult> 반환' },
                     ]}
                 />

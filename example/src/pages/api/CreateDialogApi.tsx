@@ -147,7 +147,7 @@ export const ApiCreateDialogApiPage = () => (
         <CodeBlock language="tsx" code={usageExample} />
         <PropertyTable
           items={[
-            { name: "mode: 'sync'", type: 'DialogOpenResult', description: '즉시 핸들 반환. close(), update() 등으로 외부 제어' },
+            { name: "mode: 'sync'", type: 'DialogHandle', description: '즉시 핸들 반환. close(), update() 등으로 외부 제어' },
             { name: "mode: 'async'", type: 'Promise<DialogAsyncResult>', description: 'Promise 반환. resolve 호출 시 ok/data 포함하여 완료' },
           ]}
         />

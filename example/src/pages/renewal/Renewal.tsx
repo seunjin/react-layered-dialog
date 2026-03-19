@@ -54,7 +54,7 @@ const Renewal = () => {
     result.setStatus('done');
     result.update({
       title: '삭제 완료',
-      message: `다이얼로그 ${result.dialog.id}에서 resolve되었습니다.`,
+      message: `다이얼로그 ${result.ref.id}에서 resolve되었습니다.`,
       confirmLabel: '확인',
       onConfirm() {
         result.close();

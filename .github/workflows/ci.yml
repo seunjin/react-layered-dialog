@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test (React ${{ matrix.react-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        react-version: ['18', '19']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Override React version (${{ matrix.react-version }})
+        if: matrix.react-version != '19'
+        run: |
+          pnpm --filter react-layered-dialog add -D \
+            react@${{ matrix.react-version }} \
+            react-dom@${{ matrix.react-version }} \
+            @types/react@${{ matrix.react-version }} \
+            @types/react-dom@${{ matrix.react-version }}
+
+      - name: Run tests
+        run: pnpm test
+
+  build:
+    name: Build & Size
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build library
+        run: pnpm build
+
+      - name: Check bundle size
+        run: pnpm size
+        working-directory: package
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm lint

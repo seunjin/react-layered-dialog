@@ -65,7 +65,7 @@ package/src/
 **주요 메서드**:
 | 메서드 | 반환 타입 | 설명 |
 |--------|----------|------|
-| `open(renderer, options?)` | `DialogOpenResult` | 새 다이얼로그 열기 |
+| `open(renderer, options?)` | `DialogHandle` | 새 다이얼로그 열기 |
 | `openAsync(renderer, options?)` | `Promise<DialogAsyncResult>` | Promise 기반 다이얼로그 |
 | `close(id?)` | `void` | isOpen=false 설정 |
 | `unmount(id?)` | `void` | 스택에서 완전 제거 |
@@ -74,6 +74,7 @@ package/src/
 | `unmountAll()` | `void` | 모든 다이얼로그 제거 |
 | `subscribe(listener)` | `() => void` | 상태 변경 구독 |
 | `getSnapshot()` | `DialogStoreSnapshot` | 현재 스냅샷 반환 |
+| `isOpen(id)` | `boolean` | 특정 다이얼로그 열림 여부 확인 |
 
 **특이사항**:
 - `useSyncExternalStore` 호환을 위한 External Store 패턴
@@ -136,7 +137,10 @@ const { isOpen, close, unmount, update, state, zIndex } = useDialogController<My
 |------|------|
 | `DialogEntry` | 스택에 저장되는 단일 다이얼로그 정보 |
 | `DialogControllerContextValue` | 컨트롤러 훅에서 반환하는 값 |
-| `DialogOpenResult` | `open()` 반환값 (핸들, 제어 함수) |
+| `DialogHandle` | `open()` 반환값 (핸들, 제어 함수) |
+| `DialogRef` | `DialogHandle`의 `ref` 필드 타입 (다이얼로그 참조 정보) |
+| `SyncDialogController<TProps>` | 동기 다이얼로그 컨트롤러 타입 (resolve/reject 없음) |
+| `AsyncDialogController<TProps, TData>` | 비동기 다이얼로그 컨트롤러 타입 (resolve/reject 포함) |
 | `DialogAsyncResult` | `openAsync()` Promise 결과 |
 | `DialogStatus` | `'idle'` \| `'loading'` \| `'done'` \| `'error'` |
 | `OpenDialogOptions` | `open()` 옵션 (id, zIndex, componentKey) |

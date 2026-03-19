@@ -56,7 +56,7 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
       isOpen: entry.isOpen,
       state: entry.state,
       zIndex: entry.zIndex,
-      handle: { id: entry.id, componentKey: entry.componentKey },
+      ref: { id: entry.id, componentKey: entry.componentKey },
       stack: computeStackInfo(allEntries, entry.id),
       close: () => store.close(entry.id),
       unmount: () => store.unmount(entry.id),
@@ -77,7 +77,7 @@ function DialogInstance({ store, entry, allEntries }: DialogInstanceProps) {
       getStatus,
       setStatus: (status) => store.setStatus(entry.id, status),
     };
-  }, [allEntries, entry, store]);
+  }, [allEntries, entry]);
 
   return <DialogControllerProvider value={controller}>{entry.renderer(controller)}</DialogControllerProvider>;
 }
@@ -91,4 +91,16 @@ export function useDialogController<
 >() {
   const controller = useDialogControllerInternal();
   return controller as DialogControllerContextValue<TProps>;
+}
+
+/**
+ * 다이얼로그 스토어의 스냅샷을 React에서 구독하는 훅.
+ * 열린 다이얼로그 수나 특정 다이얼로그 상태를 UI에 반영할 때 사용합니다.
+ *
+ * @example
+ * const { entries } = useDialogStore(store);
+ * const isAnyOpen = entries.some((e) => e.isOpen);
+ */
+export function useDialogStore(store: DialogStore) {
+  return useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
 }

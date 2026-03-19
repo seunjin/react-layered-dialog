@@ -80,12 +80,13 @@ export type DialogAsyncResolvePayload<T = unknown> = {
 };
 
 /**
- * 비동기 다이얼로그 호출 결과입니다.
+ * `open` 호출 결과로 반환되는 제어 객체입니다.
+ * close/unmount/update 등 다이얼로그를 외부에서 제어할 수 있는 메서드를 포함합니다.
  */
-export type DialogOpenResult<
+export type DialogHandle<
   TProps extends Record<string, unknown> = Record<string, unknown>
 > = {
-  dialog: OpenDialogResult;
+  ref: DialogRef;
   close: () => void;
   unmount: () => void;
   update: (updater: DialogStateUpdater<TProps>) => void;
@@ -102,10 +103,11 @@ export type DialogOpenResult<
 export type DialogAsyncResult<
   TProps extends Record<string, unknown> = Record<string, unknown>,
   TData = unknown
-> = DialogOpenResult<TProps> & DialogAsyncResolvePayload<TData>;
+> = DialogHandle<TProps> & DialogAsyncResolvePayload<TData>;
 
 /**
  * 비동기 다이얼로그를 위해 엔트리에 저장되는 핸들러 모음입니다.
+ * @internal
  */
 export interface DialogAsyncEntryHandlers<TData = unknown> {
   resolve: (payload: DialogAsyncResolvePayload<TData>) => void;
@@ -126,8 +128,8 @@ export interface DialogControllerContextValue<
   state: TProps;
   /** 다이얼로그의 z-index 메타 */
   zIndex: number;
-  /** 다이얼로그 핸들 (id, componentKey) */
-  handle: OpenDialogResult;
+  /** 다이얼로그 식별 참조 (id, componentKey) */
+  ref: DialogRef;
   /** 현재 스택 정보 */
   stack: DialogStackInfo;
   /** 현재 다이얼로그를 닫음. (isOpen=false) */
@@ -166,6 +168,26 @@ export interface DialogControllerContextValue<
 }
 
 /**
+ * sync 다이얼로그 컨트롤러 타입.
+ * resolve/reject가 없음을 타입으로 보장합니다.
+ */
+export type SyncDialogController<
+  TProps extends Record<string, unknown> = Record<string, unknown>
+> = Omit<DialogControllerContextValue<TProps>, 'resolve' | 'reject'>;
+
+/**
+ * async 다이얼로그 컨트롤러 타입.
+ * resolve/reject가 반드시 존재함을 타입으로 보장합니다.
+ */
+export type AsyncDialogController<
+  TProps extends Record<string, unknown> = Record<string, unknown>,
+  TData = unknown
+> = Omit<DialogControllerContextValue<TProps>, 'resolve' | 'reject'> & {
+  resolve: (payload: DialogAsyncResolvePayload<TData>) => void;
+  reject: (reason?: unknown) => void;
+};
+
+/**
  * 스토어 스냅샷 구조.
  */
 export interface DialogStoreSnapshot {
@@ -185,11 +207,23 @@ export type OpenDialogOptions = {
 };
 
 /**
- * `open` 호출 결과로 반환되는 정보입니다.
+ * 다이얼로그의 식별 참조입니다. (id, componentKey)
  */
-export interface OpenDialogResult {
+export interface DialogRef {
   /** 생성된 다이얼로그 ID */
   id: DialogId;
   /** React key */
   componentKey: string;
 }
+
+// ---------------------------------------------------------------------------
+// Deprecated aliases — 이전 버전과의 호환성을 위해 유지합니다. v1에서 제거됩니다.
+// ---------------------------------------------------------------------------
+
+/** @deprecated `DialogRef`를 사용하세요. */
+export type OpenDialogResult = DialogRef;
+
+/** @deprecated `DialogHandle`을 사용하세요. */
+export type DialogOpenResult<
+  TProps extends Record<string, unknown> = Record<string, unknown>
+> = DialogHandle<TProps>;

@@ -23,7 +23,7 @@ const classSignature = `class DialogStore {
   constructor(options?: DialogStoreOptions);
 
   // Stack Management
-  open<TProps>(renderer: DialogRenderFn<TProps>, options?: OpenDialogOptions): DialogOpenResult<TProps>;
+  open<TProps>(renderer: DialogRenderFn<TProps>, options?: OpenDialogOptions): DialogHandle<TProps>;
   openAsync<TProps, TData>(renderer: DialogRenderFn<TProps>, options?: OpenDialogOptions): Promise<DialogAsyncResult<TProps, TData>>;
   close(id?: DialogId): void;
   unmount(id?: DialogId): void;
@@ -156,13 +156,13 @@ export const ApiDialogStorePage = () => (
         signature={`open<TProps>(
   renderer: DialogRenderFn<TProps>,
   options?: OpenDialogOptions
-): DialogOpenResult<TProps>`}
+): DialogHandle<TProps>`}
         description="새 다이얼로그를 스택에 추가하고 제어 핸들을 즉시 반환합니다."
         parameters={[
           { name: 'renderer', type: 'DialogRenderFn<TProps>', description: '컨트롤러를 받아 ReactNode를 반환하는 렌더링 함수' },
           { name: 'options', type: 'OpenDialogOptions', description: 'ID, z-index, componentKey 등 옵션', optional: true },
         ]}
-        returnType="DialogOpenResult<TProps>"
+        returnType="DialogHandle<TProps>"
         returnDescription="close, unmount, update 등의 메서드를 포함한 제어 핸들"
         usage={openExample}
       />

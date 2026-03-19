@@ -13,7 +13,7 @@
     "test:ui": "vitest --ui",
     "changeset": "changeset",
     "release:version": "changeset version",
-    "release:publish": "pnpm run build && changeset publish"
+    "release:publish": "pnpm run build && cd package && npm publish --access public && cd .. && git tag v$(node -p \"require('./package/package.json').version\") && git push origin --tags"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.6",

@@ -52,7 +52,7 @@ describe('DialogStore', () => {
     const result = await promise;
 
     expect(result.ok).toBe(true);
-    expect(result.dialog.id).toBe(entry.id);
+    expect(result.ref.id).toBe(entry.id);
   });
 
   it('openAsync resolves with custom data', async () => {
@@ -102,8 +102,8 @@ describe('DialogStore', () => {
     expect(h1.zIndex).toBe(1000);
     expect(h2.zIndex).toBe(1001);
 
-    store.unmount(h1.dialog.id);
-    store.unmount(h2.dialog.id);
+    store.unmount(h1.ref.id);
+    store.unmount(h2.ref.id);
 
     // 스택이 비면 다시 1000부터 시작해야 함
     const h3 = store.open(() => null);
@@ -171,17 +171,17 @@ describe('createDialogApi', () => {
     const c2 = dialog.confirm({ message: 'c2' });
     const a1 = dialog.alert({ message: 'a1' });
 
-    expect(c1.dialog.id).toBe('confirm-0');
-    expect(c2.dialog.id).toBe('confirm-1');
-    expect(a1.dialog.id).toBe('alert-0');
+    expect(c1.ref.id).toBe('confirm-0');
+    expect(c2.ref.id).toBe('confirm-1');
+    expect(a1.ref.id).toBe('alert-0');
 
     // 명시적 ID 지정 시 우선순위 확인
     const manual = dialog.confirm({ message: 'custom' }, { id: 'manual-id' });
-    expect(manual.dialog.id).toBe('manual-id');
+    expect(manual.ref.id).toBe('manual-id');
 
     // 수동 지정 이후에도 시퀀스는 독립적으로 예약됨 (다음은 confirm-2)
     const c3 = dialog.confirm({ message: 'c3' });
-    expect(c3.dialog.id).toBe('confirm-2');
+    expect(c3.ref.id).toBe('confirm-2');
   });
 
   it('respects baseZIndex option when provided', () => {
@@ -192,5 +192,95 @@ describe('createDialogApi', () => {
     const entries = store.getSnapshot().entries;
     expect(entries[0].zIndex).toBe(5000);
     expect(entries[1].zIndex).toBe(5001);
+  });
+
+  it('closeAll sets all entries to isOpen=false', () => {
+    const store = new DialogStore();
+    store.open(() => null);
+    store.open(() => null);
+
+    store.closeAll();
+    const entries = store.getSnapshot().entries;
+    expect(entries).toHaveLength(2);
+    expect(entries[0].isOpen).toBe(false);
+    expect(entries[1].isOpen).toBe(false);
+  });
+
+  it('unmountAll removes all entries and resets z-index', () => {
+    const store = new DialogStore({ baseZIndex: 1000 });
+    store.open(() => null);
+    store.open(() => null);
+
+    store.unmountAll();
+    expect(store.getSnapshot().entries).toHaveLength(0);
+
+    const h = store.open(() => null);
+    expect(h.zIndex).toBe(1000);
+  });
+
+  it('unmountAll auto-rejects pending async dialogs', async () => {
+    const store = new DialogStore();
+    const promise = store.openAsync(() => null);
+
+    store.unmountAll();
+
+    await expect(promise).rejects.toThrow('unmounted before resolving');
+  });
+
+  it('unmount auto-rejects pending async dialog', async () => {
+    const store = new DialogStore();
+    const promise = store.openAsync(() => null);
+    const entry = store.getSnapshot().entries[0];
+
+    store.unmount(entry.id);
+
+    await expect(promise).rejects.toThrow('unmounted before resolving');
+  });
+
+  it('update supports function updater', () => {
+    const store = new DialogStore();
+    store.open(() => null);
+    const id = store.getSnapshot().entries[0].id;
+
+    store.update(id, { count: 1 });
+    store.update(id, (prev) => ({ count: (prev.count as number) + 1 }));
+
+    expect(store.getSnapshot().entries[0].state).toMatchObject({ count: 2 });
+  });
+
+  it('setStatus and getStatus work correctly', () => {
+    const store = new DialogStore();
+    store.open(() => null);
+    const id = store.getSnapshot().entries[0].id;
+
+    expect(store.getStatus(id)).toBe('idle');
+    store.setStatus(id, 'loading');
+    expect(store.getStatus(id)).toBe('loading');
+    store.setStatus(id, 'done');
+    expect(store.getStatus(id)).toBe('done');
+  });
+
+  it('isOpen returns correct state by id', () => {
+    const store = new DialogStore();
+    const h = store.open(() => null);
+    const id = h.ref.id;
+
+    expect(store.isOpen(id)).toBe(true);
+    store.close(id);
+    expect(store.isOpen(id)).toBe(false);
+    store.unmount(id);
+    expect(store.isOpen(id)).toBe(false);
+    expect(store.isOpen('non-existent')).toBe(false);
+  });
+
+  it('dialog IDs are isolated per store instance', () => {
+    const store1 = new DialogStore();
+    const store2 = new DialogStore();
+
+    const h1 = store1.open(() => null);
+    const h2 = store2.open(() => null);
+
+    expect(h1.ref.id).toBe('dialog-0');
+    expect(h2.ref.id).toBe('dialog-0');
   });
 });

@@ -1,5 +1,75 @@
 ## 0.6.1
 
+## 1.0.0
+
+### Major Changes
+
+- ## v1.0.0
+
+  ### Breaking Changes
+
+  **타입명 변경**
+  - `OpenDialogResult` → `DialogRef` (내부 핸들 `{ id, componentKey }`)
+  - `DialogOpenResult` → `DialogHandle` (`.open()` 반환값 전체)
+  - `DialogControllerContextValue.handle` → `ref` 필드명 변경
+
+  마이그레이션:
+
+  ```ts
+  // 이전
+  const result: DialogOpenResult = store.open(...);
+  result.dialog.id;
+
+  // 이후
+  const result: DialogHandle = store.open(...);
+  result.ref.id;
+  ```
+
+  deprecated 별칭(`OpenDialogResult`, `DialogOpenResult`)은 v1에서 유지되며 추후 제거됩니다.
+
+  ***
+
+  ### 새 기능
+
+  **`store.isOpen(id)`**
+  특정 ID의 다이얼로그가 열려 있는지 확인하는 편의 메서드.
+
+  ```ts
+  store.isOpen('confirm-0'); // boolean
+  ```
+
+  **`useDialogStore(store)`**
+  스토어 스냅샷을 React 컴포넌트에서 구독하는 훅.
+
+  ```tsx
+  const { entries } = useDialogStore(store);
+  const isAnyOpen = entries.some((e) => e.isOpen);
+  ```
+
+  **`SyncDialogController<TProps>`**
+  sync 다이얼로그 컴포넌트에서 `resolve`/`reject`가 없음을 타입으로 보장.
+
+  **`AsyncDialogController<TProps, TData>`**
+  async 다이얼로그 컴포넌트에서 `resolve`/`reject`가 반드시 존재함을 타입으로 보장.
+
+  ***
+
+  ### 버그 수정
+  - **SSR 격리**: 전역 `dialogSeq` / `componentSeq` 카운터를 `DialogStore` 인스턴스 내부로 이동.
+    서버 환경에서 요청 간 ID가 누출되던 문제 해결.
+  - **async dialog 메모리 누수 방지**: `unmount()` / `unmountAll()` 호출 시 pending 상태의 async dialog를
+    자동으로 reject. 이전에는 Promise가 영원히 pending 상태로 남아 메모리 누수 발생.
+  - **closure 정리**: `openAsync` 내부 `settle` / `rejectPromiseRef` 참조를 resolve/reject 후 null로 정리.
+
+  ***
+
+  ### 품질 개선
+  - `DialogAsyncEntryHandlers` public export 제거 (`@internal` 마킹)
+  - `useMemo` deps에서 불필요한 `store` 참조 제거
+  - 테스트 커버리지 확대 (15개 → 24개)
+  - `size-limit` 설정 추가 (ESM 2kb / CJS 2.3kb)
+  - CI 워크플로 추가: React 18/19 매트릭스 테스트, 번들 사이즈 검증, lint
+
 ### Patch Changes
 
 - **refactor**: 내부 타입 안전성 개선 (`any` → `unknown` 타입 변환)

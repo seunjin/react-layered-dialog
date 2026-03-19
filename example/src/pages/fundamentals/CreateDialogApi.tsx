@@ -78,7 +78,7 @@ export const CreateDialogApiPage = () => (
           메서드가 생성됩니다. 이 메서드는 내부적으로 <InlineCode>store.openAsync</InlineCode>에
           대응하며, 반환 타입은 <InlineCode>Promise&lt;DialogAsyncResult&lt;TProps&gt;&gt;</InlineCode>입니다.
           기본값인 <InlineCode>mode: &apos;sync&apos;</InlineCode>는 <InlineCode>store.open</InlineCode>에
-          대응해 <InlineCode>DialogOpenResult&lt;TProps&gt;</InlineCode>를 반환합니다.
+          대응해 <InlineCode>DialogHandle&lt;TProps&gt;</InlineCode>를 반환합니다.
         </li>
         <li>
           반환된 <InlineCode>dialog</InlineCode> 객체에는 <InlineCode>open</InlineCode>,

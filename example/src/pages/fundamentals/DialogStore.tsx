@@ -64,7 +64,7 @@ export const DialogStorePage = () => (
       <ul className="ml-6 list-disc space-y-2">
         <li>
           <InlineCode>open</InlineCode>은 즉시{' '}
-          <InlineCode>DialogOpenResult&lt;TProps&gt;</InlineCode>를 반환해 제어
+          <InlineCode>DialogHandle&lt;TProps&gt;</InlineCode>를 반환해 제어
           메서드(<InlineCode>close</InlineCode>,{' '}
           <InlineCode>unmount</InlineCode>, <InlineCode>update</InlineCode>,
           <InlineCode>setStatus</InlineCode>)와 메타(

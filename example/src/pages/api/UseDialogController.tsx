@@ -14,7 +14,7 @@ const signature = `function useDialogController<
 const controllerInterface = `interface DialogControllerContextValue<TProps = Record<string, unknown>> {
   // 식별 정보
   id: DialogId;
-  handle: OpenDialogResult;
+  ref: DialogRef;
   
   // 상태
   isOpen: boolean;
@@ -188,7 +188,7 @@ export const ApiUseDialogControllerPage = () => (
         <PropertyTable
           items={[
             { name: 'id', type: 'DialogId', description: '현재 다이얼로그의 고유 ID', required: true },
-            { name: 'handle', type: 'OpenDialogResult', description: 'id와 componentKey를 포함한 핸들 객체', required: true },
+            { name: 'ref', type: 'DialogRef', description: 'id와 componentKey를 포함한 식별 참조', required: true },
           ]}
         />
       </Section>

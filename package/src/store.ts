@@ -4,19 +4,17 @@ import type {
   DialogStoreSnapshot,
   DialogId,
   OpenDialogOptions,
-  OpenDialogResult,
+  DialogRef,
   DialogRenderFn,
   DialogAsyncResult,
   DialogAsyncResolvePayload,
   DialogStateUpdater,
   DialogStatus,
-  DialogOpenResult,
+  DialogHandle,
 } from './types';
 import { getProp, getProps } from './utils';
 
 const DEFAULT_BASE_Z_INDEX = 1000;
-let dialogSeq = 0;
-let componentSeq = 0;
 
 export type DialogStoreOptions = {
   baseZIndex?: number;
@@ -32,6 +30,8 @@ export class DialogStore {
   private baseZIndex: number;
   private nextZIndex: number;
   private snapshot: DialogStoreSnapshot;
+  private dialogSeq = 0;
+  private componentSeq = 0;
 
   constructor(options: DialogStoreOptions = {}) {
     const baseZIndex = options.baseZIndex ?? DEFAULT_BASE_Z_INDEX;
@@ -70,9 +70,9 @@ export class DialogStore {
       componentKey: providedComponentKey,
       zIndex: providedZIndex,
     } = options;
-    const id = providedId ?? `dialog-${dialogSeq++}`;
+    const id = providedId ?? `dialog-${this.dialogSeq++}`;
     const componentKey =
-      providedComponentKey ?? `dialog-component-${componentSeq++}`;
+      providedComponentKey ?? `dialog-component-${this.componentSeq++}`;
 
     if (this.entries.some((entry) => entry.id === id)) {
       throw new Error(`[react-layered-dialog] Duplicate dialog id "${id}".`);
@@ -106,7 +106,7 @@ export class DialogStore {
 
     return {
       entry,
-      handle: { id, componentKey } as OpenDialogResult,
+      handle: { id, componentKey } as DialogRef,
       zIndex,
     };
   };
@@ -114,7 +114,7 @@ export class DialogStore {
   private createOpenResult = <
     TProps extends Record<string, unknown> = Record<string, unknown>
   >(
-    handle: OpenDialogResult,
+    handle: DialogRef,
     zIndex: number
   ) => {
     const close = () => this.close(handle.id);
@@ -127,8 +127,8 @@ export class DialogStore {
     };
     const getStatus = () => this.getStatus(handle.id);
 
-    const result: DialogOpenResult<TProps> = {
-      dialog: handle,
+    const result: DialogHandle<TProps> = {
+      ref: handle,
       close,
       unmount,
       update,
@@ -164,7 +164,7 @@ export class DialogStore {
   >(
     renderer: DialogRenderFn<TProps>,
     options: OpenDialogOptions = {}
-  ): DialogOpenResult<TProps> => {
+  ): DialogHandle<TProps> => {
     const { entry, handle, zIndex } = this.createEntry(renderer, options);
     this.entries = [...this.entries, entry];
     this.updateSnapshot();
@@ -198,13 +198,17 @@ export class DialogStore {
       if (settled) return;
       settled = true;
       const base = this.createOpenResult<TProps>(handle, zIndex);
-      settle?.(Object.assign(base, { ok: payload.ok, data: payload.data }));
+      settle?.({ ...base, ok: payload.ok, data: payload.data });
+      settle = null;
+      rejectPromiseRef = null;
     };
 
     const rejectController = (reason?: unknown) => {
       if (settled) return;
       settled = true;
       rejectPromiseRef?.(reason);
+      settle = null;
+      rejectPromiseRef = null;
     };
 
     const promise = new Promise<DialogAsyncResult<TProps, TData>>(
@@ -242,6 +246,15 @@ export class DialogStore {
   getStatus = (id: DialogId): DialogStatus => {
     const entry = this.entries.find((item) => item.id === id);
     return entry?.meta.status ?? 'idle';
+  };
+
+  /**
+   * 특정 ID의 다이얼로그가 현재 열려 있는지 확인합니다.
+   * 스택에 존재하지 않으면 false를 반환합니다.
+   */
+  isOpen = (id: DialogId): boolean => {
+    const entry = this.entries.find((item) => item.id === id);
+    return entry?.isOpen ?? false;
   };
 
   /**
@@ -294,9 +307,13 @@ export class DialogStore {
 
   /**
    * 모든 다이얼로그를 스택에서 제거하고 z-index 카운터를 초기화합니다.
+   * pending 상태의 async 다이얼로그는 자동으로 reject됩니다.
    */
   unmountAll = () => {
     if (this.entries.length === 0) return;
+    this.entries.forEach((entry) => {
+      entry.asyncHandlers?.reject(new Error(`[react-layered-dialog] Dialog "${entry.id}" was unmounted before resolving.`));
+    });
     this.entries = [];
     this.nextZIndex = this.baseZIndex;
     this.updateSnapshot();
@@ -364,11 +381,13 @@ export class DialogStore {
 
   /**
    * 내부 헬퍼: 엔트리를 완전히 제거합니다.
+   * pending 상태의 async 다이얼로그는 자동으로 reject됩니다.
    */
   private removeEntry = (id: DialogId) => {
-    const next = this.entries.filter((entry) => entry.id !== id);
-    if (next.length === this.entries.length) return;
-    this.entries = next;
+    const target = this.entries.find((entry) => entry.id === id);
+    if (!target) return;
+    target.asyncHandlers?.reject(new Error(`[react-layered-dialog] Dialog "${id}" was unmounted before resolving.`));
+    this.entries = this.entries.filter((entry) => entry.id !== id);
     if (this.entries.length === 0) {
       this.nextZIndex = this.baseZIndex;
     }

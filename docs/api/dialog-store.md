@@ -14,7 +14,7 @@ const store = new DialogStore();
 - **매개변수**
   - `renderer`: `DialogRenderFn<TProps>` - 다이얼로그의 UI를 결정하는 함수입니다.
   - `options`: `OpenDialogOptions` - `id`, `props` 등을 지정할 수 있습니다.
-- **반환값**: `DialogOpenResult<TProps>` (제어 핸들)
+- **반환값**: `DialogHandle<TProps>` (제어 핸들)
 
 ### `openAsync<TProps, TData>(renderer, options?)`
 비동기 다이얼로그를 열고 사용자의 응답을 기다리는 Promise를 반환합니다.
@@ -42,3 +42,14 @@ const store = new DialogStore();
 
 ### `getStatus(id)`
 특정 다이얼로그의 현재 상태를 반환합니다.
+
+### `isOpen(id)`
+특정 ID의 다이얼로그가 현재 열려 있는지 여부를 `boolean`으로 반환합니다.
+
+## React 연동
+
+### `useDialogStore(store)`
+React 컴포넌트 내에서 스토어 상태를 구독하는 훅입니다. 스토어의 스냅샷이 변경될 때마다 컴포넌트를 리렌더링합니다. 내부적으로 `useSyncExternalStore`를 사용합니다.
+```ts
+const snapshot = useDialogStore(store);
+```
