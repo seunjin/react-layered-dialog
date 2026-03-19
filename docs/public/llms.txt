@@ -1,356 +1,342 @@
 # react-layered-dialog
 
-> React용 타입 안전 다이얼로그/모달 관리 라이브러리
+> Type-safe, headless dialog/modal management library for React
 
-## 핵심 개념
+## What It Does
 
-react-layered-dialog는 **Headless 아키텍처**를 채택한 다이얼로그 관리 라이브러리입니다.
-UI 렌더링은 개발자에게 맡기고, 상태 관리와 레이어링만 담당합니다.
+react-layered-dialog manages dialog state and layering without owning any UI.
+You provide the component; the library handles open/close state, z-index stacking,
+async resolution, and React subscription.
 
-### 아키텍처 구성요소
+## Core Concepts
 
-1. **DialogStore**: 다이얼로그 상태를 관리하는 중앙 저장소
-2. **DialogsRenderer**: 다이얼로그 컴포넌트를 DOM에 렌더링하는 컴포넌트
-3. **useDialogController**: 개별 다이얼로그 내부에서 상태/제어를 제공하는 훅
+- **DialogStore** — central store holding all dialog entries. Not a React component.
+- **DialogsRenderer** — React component that reads the store and renders dialog entries.
+- **useDialogController** — hook used *inside* a dialog component to access state and controls.
+- **useDialogStore** — hook to subscribe to store snapshots in any React component.
+- **createDialogApi** — factory that wraps a store + registry into a typed, named API.
 
-## 설치
+## Installation
 
 ```bash
-pnpm add react-layered-dialog
+npm install react-layered-dialog
 ```
 
-## 기본 사용법 (React SPA)
+## Minimal Setup
 
 ```tsx
 // lib/dialogs.ts
-import { DialogStore } from 'react-layered-dialog';
-export const dialog = new DialogStore();
+import { DialogStore, createDialogApi } from 'react-layered-dialog';
+
+const store = new DialogStore();
+
+export const dialog = createDialogApi(store, {
+  alert: { component: AlertDialog },                     // sync
+  confirm: { component: ConfirmDialog, mode: 'async' },  // async (returns Promise)
+});
+
+export { store };
 
 // App.tsx
 import { DialogsRenderer } from 'react-layered-dialog';
-import { dialog } from './lib/dialogs';
+import { store } from './lib/dialogs';
 
 function App() {
   return (
     <>
-      <button onClick={() => dialog.open(() => <MyModal />)}>
-        열기
-      </button>
-      <DialogsRenderer store={dialog} />
+      <MyRoutes />
+      <DialogsRenderer store={store} />
     </>
   );
 }
 ```
 
-## 주요 API
+## Opening Dialogs
 
-### DialogStore
+### Sync (fire and forget)
 
-```tsx
-const store = new DialogStore({ baseZIndex?: number });
+```ts
+// via registry
+const handle = dialog.alert({ title: 'Done', message: 'Saved.' });
 
-// 다이얼로그 열기 (직접 컴포넌트 렌더링)
-store.open(() => <MyDialog />);
-store.open(() => <MyDialog />, { id: 'my-dialog' });
+// via store directly
+const handle = store.open(() => <MyDialog />, { id: 'optional-id' });
 
-// 특정 다이얼로그 닫기 (2단계 분리: 애니메이션 지원)
-store.close(dialogId);      // 1. isOpen = false → 애니메이션 시작
-// ... (애니메이션 종료 이벤트 감지 후)
-store.unmount(dialogId);    // 2. DOM에서 완전히 제거
-
-// 전체 닫기
-store.closeAll();
-store.unmountAll();
-
-// 상태 업데이트
-store.update(dialogId, { isLoading: true });
-store.update(dialogId, (prev) => ({ count: prev.count + 1 }));
+handle.close();           // isOpen = false  (triggers exit animation)
+handle.unmount();         // removes entry from store
+handle.update({ message: 'Updated' });
+handle.setStatus('loading');
+handle.ref.id;            // e.g. "alert-0"
 ```
 
-### useDialogController
+### Async (awaitable)
 
-다이얼로그 컴포넌트 내부에서 사용하는 훅:
+```ts
+// via registry (mode: 'async')
+const result = await dialog.confirm({ message: 'Delete?' });
+
+// via store directly
+const result = await store.openAsync(() => <ConfirmDialog />);
+
+result.ok;      // boolean — what the user chose
+result.data;    // optional typed payload from resolve()
+result.close();
+result.ref.id;
+```
+
+> **Important**: if you want to show a loading state *after* the user confirms,
+> call `resolve()` without calling `close()`. The dialog stays mounted so you can
+> call `result.setStatus('loading')` on the returned handle before closing.
+>
+> ```ts
+> // inside ConfirmDialog
+> onConfirm: () => controller.resolve?.({ ok: true }), // do NOT close here
+>
+> // caller side
+> const result = await dialog.confirm(...);
+> result.setStatus('loading');
+> await doWork();
+> result.close();
+> ```
+
+## Dialog Component Pattern
 
 ```tsx
 import { useDialogController } from 'react-layered-dialog';
 
-function MyDialog() {
-  const {
-    id,           // 다이얼로그 고유 ID
-    isOpen,       // 열림 상태 (애니메이션용: false가 되면 exit 애니메이션 시작)
-    zIndex,       // 현재 z-index
-    stack,        // 스택 정보 { index, total, isTop }
-    close,        // 닫기 (isOpen = false, 애니메이션 시작)
-    unmount,      // DOM에서 완전히 제거 (애니메이션 종료 후 호출)
-    update,       // 상태 업데이트
-    getProps,     // 기본값과 현재 state를 안전하게 병합
-  } = useDialogController();
+type Props = { title: string; message: string };
 
-  // getProps: 전달받은 props와 store state를 기본값과 병합
-  const finalProps = getProps({ title: '기본 제목', color: 'blue' });
+function AlertDialog(props: Props) {
+  const { isOpen, zIndex, close, unmount, getProps, status, setStatus } =
+    useDialogController<Props>();
+
+  // getProps merges initial props with any store.update() changes
+  const { title, message } = getProps(props);
 
   return (
-    <div style={{ zIndex }}>
-      <h2>{finalProps.title}</h2>
-      <button onClick={close}>닫기</button>
-    </div>
+    // AnimatePresence pattern: close() sets isOpen=false, unmount() removes from DOM
+    <AnimatePresence onExitComplete={unmount}>
+      {isOpen && (
+        <motion.div style={{ zIndex }} exit={{ opacity: 0 }}>
+          <h2>{title}</h2>
+          <p>{message}</p>
+          <button onClick={close}>OK</button>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 ```
 
-### DialogsRenderer
+## Async Dialog Component Pattern
 
 ```tsx
-<DialogsRenderer
-  store={store}           // 필수: DialogStore 인스턴스
-  wrapper={CustomWrapper} // 선택: 각 다이얼로그를 감싸는 컴포넌트
-/>
+type ConfirmProps = { message: string };
+type ConfirmData  = { itemId: string };
+
+function ConfirmDialog(props: ConfirmProps) {
+  const { isOpen, zIndex, close, unmount, resolve, reject, getProps } =
+    useDialogController<ConfirmProps>();
+
+  const { message } = getProps(props);
+
+  return (
+    <AnimatePresence onExitComplete={unmount}>
+      {isOpen && (
+        <motion.div style={{ zIndex }} exit={{ opacity: 0 }}>
+          <p>{message}</p>
+          <button onClick={() => { resolve?.({ ok: true }); close(); }}>Confirm</button>
+          <button onClick={() => { resolve?.({ ok: false }); close(); }}>Cancel</button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 ```
 
-## 비동기 다이얼로그 (Promise 기반)
+## useDialogController Return Values
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string` | Unique dialog ID |
+| `isOpen` | `boolean` | Drive animations; false = start exit |
+| `zIndex` | `number` | Current z-index, apply to root element |
+| `ref` | `DialogRef` | `{ id, componentKey }` |
+| `stack` | `DialogStackInfo` | `{ topId, size, index }` |
+| `state` | `TProps` | Current store state (from `update()`) |
+| `close` | `() => void` | Set isOpen = false |
+| `unmount` | `() => void` | Remove from store/DOM |
+| `closeAll` | `() => void` | Close all dialogs |
+| `unmountAll` | `() => void` | Remove all dialogs |
+| `update` | `(updater) => void` | Merge partial state |
+| `getProps` | `(base) => merged` | Merge base props with store state |
+| `status` | `DialogStatus` | `'idle' \| 'loading' \| 'done' \| 'error'` |
+| `setStatus` | `(s) => void` | Set status |
+| `resolve` | `(payload) => void` | Async only — fulfill the Promise |
+| `reject` | `(reason?) => void` | Async only — reject the Promise |
+
+## DialogStore API
+
+```ts
+const store = new DialogStore({ baseZIndex?: number }); // default baseZIndex: 1000
+
+// Open
+store.open(renderer, options?)                // returns DialogHandle
+store.openAsync(renderer, options?)           // returns Promise<DialogAsyncResult>
+
+// Close / remove
+store.close(id?)                              // id omitted = last in stack
+store.unmount(id?)
+store.closeAll()
+store.unmountAll()                            // also auto-rejects pending async dialogs
+
+// State
+store.update(id, updaterOrPartial)
+store.setStatus(id, status)
+store.getStatus(id)
+store.isOpen(id)                              // boolean
+
+// React subscription
+store.getSnapshot()                           // DialogStoreSnapshot
+store.subscribe(listener)                     // returns unsubscribe fn
+```
+
+## useDialogStore Hook
+
+Subscribe to store state inside any React component:
 
 ```tsx
-// Confirm 다이얼로그 정의
-const confirmDialog = defineDialog<{ message: string }, boolean>((props) => {
-  const { resolve, close } = useDialogController();
-  
-  const handleConfirm = () => {
-    resolve({ result: true });
-    close();
+import { useDialogStore } from 'react-layered-dialog';
+
+function Backdrop() {
+  const { entries } = useDialogStore(store);
+  const anyOpen = entries.some(e => e.isOpen);
+  return anyOpen ? <div className="backdrop" /> : null;
+}
+```
+
+## createDialogApi
+
+```ts
+const dialog = createDialogApi(store, {
+  alert:   { component: AlertDialog },                    // sync  → returns DialogHandle
+  confirm: { component: ConfirmDialog, mode: 'async' },   // async → returns Promise
+});
+
+// IDs are auto-prefixed by registry key: "confirm-0", "confirm-1", ...
+dialog.alert({ title: 'Hi' });
+const result = await dialog.confirm({ message: 'Sure?' });
+
+// Override ID
+dialog.alert({ title: 'Hi' }, { id: 'my-alert' });
+
+// Base store methods are also available on the api object
+dialog.store          // the DialogStore instance
+dialog.closeAll()
+dialog.unmountAll()
+```
+
+## Types
+
+```ts
+type DialogStatus = 'idle' | 'loading' | 'done' | 'error';
+
+type DialogRef = { id: string; componentKey: string };
+
+type DialogHandle<TProps> = {
+  ref: DialogRef;
+  close: () => void;
+  unmount: () => void;
+  update: (updater: Partial<TProps> | ((prev: TProps) => Partial<TProps>)) => void;
+  setStatus: (s: DialogStatus) => void;
+  getStatus: () => DialogStatus;
+  status: DialogStatus;
+  zIndex: number;
+  getProp: <V>(key: keyof TProps, fallback: V) => V;
+  getProps: <T extends Record<string, unknown>>(base: T) => T;
+};
+
+type DialogAsyncResult<TProps, TData> = DialogHandle<TProps> & {
+  ok: boolean;
+  data?: TData;
+};
+
+// Convenience controller types for typed annotations inside dialog components
+type SyncDialogController<TProps> =
+  Omit<DialogControllerContextValue<TProps>, 'resolve' | 'reject'>;
+
+type AsyncDialogController<TProps, TData = unknown> =
+  Omit<DialogControllerContextValue<TProps>, 'resolve' | 'reject'> & {
+    resolve: (payload: { ok: boolean; data?: TData }) => void;
+    reject: (reason?: unknown) => void;
   };
-  
-  return (
-    <div>
-      <p>{props.message}</p>
-      <button onClick={handleConfirm}>확인</button>
-    </div>
-  );
-});
-
-// 사용
-const result = await store.openAsync(confirmDialog, { message: '삭제하시겠습니까?' });
-if (result.result) {
-  // 확인됨
-}
 ```
 
-## 다이얼로그 모듈화 (Registry 패턴)
+## SSR / Next.js
 
-대규모 앱에서 다이얼로그를 미리 정의하고 타입 안전하게 재사용하려면 `createDialogApi`를 사용하세요:
-
-```tsx
-// dialogs.ts
-import { DialogStore, createDialogApi, defineDialog } from 'react-layered-dialog';
-
-const store = new DialogStore();
-
-// 다이얼로그 정의
-const alertDialog = defineDialog<{ title: string; message: string }>((props) => {
-  const { close } = useDialogController();
-  return (
-    <div>
-      <h2>{props.title}</h2>
-      <p>{props.message}</p>
-      <button onClick={close}>확인</button>
-    </div>
-  );
-});
-
-// Registry 기반 API 생성
-export const dialog = createDialogApi(store, {
-  alert: alertDialog,
-  confirm: confirmDialog,
-});
-
-// 사용처 - 타입 안전하게 호출
-dialog.alert({ title: '알림', message: '저장되었습니다.' });
-const result = await dialog.confirm({ message: '삭제하시겠습니까?' });
-```
-
-## Next.js SSR 주의사항
-
-### ⚠️ 전역 스토어 사용 금지
-
-Next.js에서 파일 최상위에 `new DialogStore()`를 선언하면 **서버 메모리가 공유**되어 보안 사고가 발생합니다.
+Do **not** create a `DialogStore` at module scope on the server — it is shared across requests.
 
 ```tsx
-// ❌ 위험: 서버에서 모든 사용자가 공유
-export const dialog = new DialogStore();
-```
-
-### ✅ Client-Only Provider 패턴 사용
-
-```tsx
-// lib/dialog/DialogProvider.tsx
-"use client";
-
+// app/providers.tsx  (Next.js App Router)
+'use client';
 import { useState, useEffect } from 'react';
 import { DialogStore, DialogsRenderer } from 'react-layered-dialog';
 
 export function DialogProvider({ children }: { children: React.ReactNode }) {
   const [store, setStore] = useState<DialogStore | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    // useEffect는 브라우저에서만 실행됨
-    setStore(new DialogStore());
-    setIsMounted(true);
-  }, []);
+  useEffect(() => { setStore(new DialogStore()); }, []);
 
   return (
     <>
       {children}
-      {isMounted && store && <DialogsRenderer store={store} />}
+      {store && <DialogsRenderer store={store} />}
     </>
   );
 }
 ```
 
-### Proxy 패턴 (안전한 훅)
+## Usage Outside React (Axios Interceptors, etc.)
 
-스토어가 아직 없을 때 에러를 방지:
+```ts
+// lib/globalDialog.ts
+import { DialogStore } from 'react-layered-dialog';
+
+let _store: DialogStore | null = null;
+
+export function getGlobalStore() {
+  if (typeof window === 'undefined') return null;  // SSR guard
+  return (_store ??= new DialogStore());
+}
+
+// axios interceptor
+axios.interceptors.response.use(null, (error) => {
+  if (error.response?.status === 401) {
+    getGlobalStore()?.open(() => <SessionExpiredModal />);
+  }
+  return Promise.reject(error);
+});
+```
+
+## Multi-Store
 
 ```tsx
-export function useDialog(): DialogStore {
-  const store = useDialogStore();
-
-  return useMemo(() => {
-    if (store) return store;
-
-    return new Proxy({} as DialogStore, {
-      get(_, prop) {
-        return () => console.warn(`[Dialog] Store 미준비: ${String(prop)}`);
-      },
-    });
-  }, [store]);
-}
-```
-
-## 컴포넌트 외부에서 사용하기 (유틸리티 함수, API 레이어 등)
-
-유틸리티 함수, API 레이어, Interceptor 등 React 컴포넌트가 아닌 곳에서는 `useDialog` 훅을 사용할 수 없습니다.
-**Lazy Singleton 패턴**으로 SSR 안전성을 유지하면서 전역 접근이 가능합니다.
-
-> ⚠️ `getGlobalDialog()`는 서버에서 `null`을 반환합니다. 반드시 **옵셔널 체이닝** (`dialog?.open`)을 사용하세요.
-
-### 1. getGlobalDialog 함수 생성
-
-```ts
-// lib/dialog/globalDialog.ts
-import { DialogStore } from "react-layered-dialog";
-
-let globalStore: DialogStore | null = null;
-
-export function getGlobalDialog() {
-  // 서버(Node.js)에서는 window가 없으므로 null 반환
-  if (typeof window === "undefined") return null;
-
-  if (!globalStore) {
-    globalStore = new DialogStore();
-  }
-  return globalStore;
-}
-```
-
-### 2. fetch 기반 API 유틸리티
-
-```ts
-// lib/api.ts
-export async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(url, options);
-  
-  if (!response.ok) {
-    const dialog = getGlobalDialog();
-    
-    if (response.status === 401) {
-      dialog?.open(() => <SessionExpiredModal />);
-    } else if (response.status >= 500) {
-      dialog?.open(() => <ErrorModal message="서버 오류" />);
-    }
-    
-    throw new Error(`HTTP ${response.status}`);
-  }
-  
-  return response.json();
-}
-```
-
-### 3. 일반 유틸리티 함수
-
-```ts
-// lib/utils/fileUpload.ts
-export async function uploadFile(file: File) {
-  const dialog = getGlobalDialog();
-  
-  // 서버에서 호출되면 dialog가 null → 조용히 무시
-  const handle = dialog?.open(() => <UploadProgressModal filename={file.name} />);
-  
-  try {
-    const result = await performUpload(file);
-    handle?.unmount();
-    dialog?.open(() => <UploadCompleteModal url={result.url} />);
-    return result;
-  } catch (error) {
-    handle?.unmount();
-    throw error;
-  }
-}
-```
-
-### 4. Axios Interceptor
-
-```ts
-// lib/axios.ts
-axios.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      const dialog = getGlobalDialog();
-      dialog?.open(() => <SessionExpiredModal />);
-    }
-    return Promise.reject(error);
-  }
-);
-```
-
-> ⚠️ 이 전역 스토어는 Context 기반 `useDialog`와 **별도의 인스턴스**입니다. 
-> `DialogsRenderer`도 별도로 배치해야 합니다.
-
-## 멀티 스토어
-
-독립적인 다이얼로그 스택이 필요한 경우:
-
-```tsx
-const mainStore = new DialogStore({ baseZIndex: 1000 });
-const sidebarStore = new DialogStore({ baseZIndex: 5000 });
+const mainStore    = new DialogStore({ baseZIndex: 1000 });
+const overlayStore = new DialogStore({ baseZIndex: 9000 });
 
 <DialogsRenderer store={mainStore} />
-<DialogsRenderer store={sidebarStore} />
+<DialogsRenderer store={overlayStore} />
 ```
 
-## 타입 정의
+## Common Mistakes
 
-```tsx
-interface DialogHandle {
-  id: string;
-  isOpen: boolean;
-  zIndex: number;
-  close: () => void;
-  unmount: () => void;
-  update: (updater: Partial<State> | ((prev: State) => Partial<State>)) => void;
-  getProp: <V>(key: PropertyKey, fallback: V) => V;
-  getProps: <T extends Record<string, unknown>>(base: T) => T;
-}
+1. **Calling `close()` and `resolve()` together in async dialogs** — if you need to show loading after confirm, call only `resolve()` first, then close after your async work completes.
+2. **Global store in SSR** — use `useEffect` or lazy singleton with `typeof window` guard.
+3. **Forgetting `unmount()`** — `close()` only sets `isOpen = false`. The entry stays in the store until `unmount()` is called. Use `onExitComplete={unmount}` in AnimatePresence.
+4. **Duplicate IDs** — `store.open()` throws if an entry with the same ID already exists. Use `store.isOpen(id)` to guard.
 
-interface StackInfo {
-  index: number;   // 현재 인덱스 (0부터 시작)
-  total: number;   // 전체 다이얼로그 수
-  isTop: boolean;  // 최상위 여부
-}
-```
+## Links
 
-## 문서 링크
-
-- 공식 문서: https://seunjin.github.io/react-layered-dialog/
-- GitHub: https://github.com/seunjin/react-layered-dialog
 - npm: https://www.npmjs.com/package/react-layered-dialog
+- GitHub: https://github.com/seunjin/react-layered-dialog
+- Docs: https://seunjin.github.io/react-layered-dialog/

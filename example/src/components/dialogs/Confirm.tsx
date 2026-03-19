@@ -127,7 +127,7 @@ const Confirm: DialogComponent<ConfirmProps> = ((props: ConfirmProps) => {
             </header>
 
             <div className="flex justify-end gap-2">
-              {status !== 'done' && (
+              {status !== 'done' && cancelLabel && (
                 <Button
                   variant="outline"
                   size="sm"

@@ -22,6 +22,7 @@
 | [애니메이션](./guides/animations.md) | close/unmount 분리 활용 | 🟢 완료 |
 | [Z-Index 전략](./guides/z-index-strategy.md) | 계층 구조 및 외부 연동 가이드 | 🟢 완료 |
 | [접근성](./guides/accessibility.md) | ARIA, 키보드 네비게이션 | 🟢 완료 |
+| [useDialogStore 가이드](./guides/use-dialog-store.md) | 스토어 상태 React 구독 활용 | 🟢 완료 |
 
 ### API 레퍼런스 (API Reference)
 | 문서 | 설명 | 상태 |
@@ -66,6 +67,7 @@
 
 ## 📋 관련 문서
 
+- [v1.0.0 마이그레이션 가이드](./migration-v1.md) - v0 → v1 업그레이드 체크리스트
 - [문서화 규칙](./DOCUMENTATION_RULES.md) - 문서 작성 시 따라야 할 규칙
 - [코드베이스 분석](./CODEBASE_ANALYSIS.md) - 라이브러리 구조 상세 분석
 - [V1.0 로드맵](./V1_ROADMAP.md) - 버전 1.0 릴리즈 체크리스트

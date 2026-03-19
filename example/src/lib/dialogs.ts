@@ -6,5 +6,6 @@ import { DialogStore, createDialogApi } from 'react-layered-dialog';
  * 애플리케이션 어디에서든 동일한 인스턴스를 공유합니다.
  */
 export const dialog = createDialogApi(new DialogStore(), {
+  alert: { component: Confirm, mode: 'sync' },
   confirm: { component: Confirm, mode: 'async' },
 });

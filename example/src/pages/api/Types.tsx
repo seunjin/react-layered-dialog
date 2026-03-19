@@ -83,6 +83,44 @@ const dialogStateUpdaterType = `export type DialogStateUpdater<TProps = Record<s
   | ((prev: TProps) => TProps | Partial<TProps> | null | undefined);`;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Controller Shorthand Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+const syncDialogControllerType = `// resolve/reject 없음을 타입 수준에서 보장
+type SyncDialogController<TProps> = Omit<
+  DialogControllerContextValue<TProps>,
+  'resolve' | 'reject'
+>;
+
+// 사용 예시
+function AlertDialog(props: AlertProps) {
+  const controller: SyncDialogController<AlertProps> =
+    useDialogController<AlertProps>();
+  // controller.resolve → TypeScript 오류 (존재하지 않음)
+}`;
+
+const asyncDialogControllerType = `// resolve/reject 필수 존재를 타입 수준에서 보장
+type AsyncDialogController<TProps, TData = unknown> = Omit<
+  DialogControllerContextValue<TProps>,
+  'resolve' | 'reject'
+> & {
+  resolve: (payload: { ok: boolean; data?: TData }) => void;
+  reject: (reason?: unknown) => void;
+};
+
+// 사용 예시
+function ConfirmDialog(props: ConfirmProps) {
+  const { resolve, close }: AsyncDialogController<ConfirmProps, { userId: string }> =
+    useDialogController<ConfirmProps>();
+
+  return (
+    <button onClick={() => { resolve({ ok: true, data: { userId: '123' } }); close(); }}>
+      확인
+    </button>
+  );
+}`;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Result Types
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -299,6 +337,22 @@ export const ApiTypesPage = () => (
                     <li>부분 업데이트: <InlineCode>{`update({ count: 5 })`}</InlineCode> (기존 상태와 병합)</li>
                     <li>함수형 업데이트: <InlineCode>{`update(prev => ({ count: prev.count + 1 }))`}</InlineCode></li>
                 </ul>
+            </Section>
+
+            <Section as="h3" id="sync-dialog-controller" title="SyncDialogController">
+                <CodeBlock language="ts" code={syncDialogControllerType} />
+                <p className="mt-2 text-sm text-muted-foreground">
+                    동기 다이얼로그 컴포넌트에서 <InlineCode>useDialogController()</InlineCode> 반환값에 명시적 타입을 적용할 때 사용합니다.
+                    <InlineCode>resolve</InlineCode> / <InlineCode>reject</InlineCode>가 없음을 타입 수준에서 보장합니다.
+                </p>
+            </Section>
+
+            <Section as="h3" id="async-dialog-controller" title="AsyncDialogController">
+                <CodeBlock language="ts" code={asyncDialogControllerType} />
+                <p className="mt-2 text-sm text-muted-foreground">
+                    비동기 다이얼로그 컴포넌트에서 사용합니다. <InlineCode>resolve</InlineCode>와 <InlineCode>reject</InlineCode>가
+                    반드시 존재함을 보장하며, <InlineCode>TData</InlineCode> 제네릭으로 resolve 페이로드 타입을 지정할 수 있습니다.
+                </p>
             </Section>
         </Section>
 

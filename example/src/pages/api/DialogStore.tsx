@@ -34,6 +34,7 @@ const classSignature = `class DialogStore {
   update<TProps>(id: DialogId, updater: DialogStateUpdater<TProps>): void;
   setStatus(id: DialogId, status: DialogStatus): void;
   getStatus(id: DialogId): DialogStatus;
+  isOpen(id: DialogId): boolean;
 
   // Subscription
   subscribe(listener: DialogListener): () => void;
@@ -97,6 +98,29 @@ store.setStatus('my-dialog', 'loading');
 
 // 상태 조회
 const status = store.getStatus('my-dialog'); // 'loading'`;
+
+const isOpenExample = `// 특정 ID가 열려 있는지 확인
+if (store.isOpen('confirm-dialog')) {
+  console.log('이미 열려 있음');
+  return; // 중복 열기 방지
+}
+
+store.open(() => <ConfirmDialog />, { id: 'confirm-dialog' });`;
+
+const useDialogStoreExample = `import { useDialogStore } from 'react-layered-dialog';
+
+// 스토어 구독 - 다이얼로그가 열릴 때마다 리렌더링
+function Backdrop() {
+  const { entries } = useDialogStore(store);
+  const isAnyOpen = entries.some((e) => e.isOpen);
+
+  return (
+    <div
+      className="backdrop"
+      style={{ opacity: isAnyOpen ? 1 : 0, transition: 'opacity 0.2s' }}
+    />
+  );
+}`;
 
 const subscribeExample = `// 상태 변경 구독
 const unsubscribe = store.subscribe(() => {
@@ -264,6 +288,39 @@ export const ApiDialogStorePage = () => (
         ]}
         returnType="DialogStatus"
         returnDescription="현재 상태. 다이얼로그가 없으면 'idle' 반환"
+      />
+
+      <FunctionSignature
+        id="is-open"
+        title="isOpen()"
+        signature="isOpen(id: DialogId): boolean"
+        description="특정 ID의 다이얼로그가 현재 열려 있는지 확인합니다. 중복 열기 방지나 조건부 로직에 유용합니다."
+        parameters={[
+          { name: 'id', type: 'DialogId', description: '확인할 다이얼로그 ID' },
+        ]}
+        returnType="boolean"
+        returnDescription="isOpen이 true인 엔트리가 존재하면 true, 없으면 false"
+        usage={isOpenExample}
+      />
+    </Section>
+
+    {/* ───────────────────────────────────────────────────────────────────── */}
+    <Section as="h2" id="react-integration" title="React Integration">
+      <p className="text-sm text-muted-foreground mb-4">
+        React 컴포넌트에서 스토어 상태를 구독하는 훅입니다.
+      </p>
+
+      <FunctionSignature
+        id="use-dialog-store"
+        title="useDialogStore()"
+        signature="useDialogStore(store: DialogStore): DialogStoreSnapshot"
+        description="스토어 상태를 React 컴포넌트에서 구독합니다. 상태가 바뀔 때마다 리렌더링이 트리거됩니다. 내부적으로 useSyncExternalStore를 사용합니다."
+        parameters={[
+          { name: 'store', type: 'DialogStore', description: '구독할 DialogStore 인스턴스' },
+        ]}
+        returnType="DialogStoreSnapshot"
+        returnDescription="entries 배열을 포함한 스냅샷. entries[n].isOpen으로 열림 상태 확인"
+        usage={useDialogStoreExample}
       />
     </Section>
 
